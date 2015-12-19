@@ -1,16 +1,22 @@
 package org.crama.jelin.model;
 
-public class UserModel {
+import java.io.Serializable;
 
-	private int id;
+public class UserModel implements Serializable {
+
+	private static final long serialVersionUID = -5360750778811586440L;
+	
 	private String username;
+	private String password;
 	private String email;
 	
-	public int getId() {
-		return id;
-	}
-	public void setId(int id) {
-		this.id = id;
+	public UserModel() {}
+	
+	public UserModel(String username, String email, String password) {
+		super();
+		this.username = username;
+		this.email = email;
+		this.password = password;
 	}
 	public String getUsername() {
 		return username;
@@ -24,5 +30,17 @@ public class UserModel {
 	public void setEmail(String email) {
 		this.email = email;
 	}
+	public String getPassword() {
+		return password;
+	}
+	public void setPassword(String password) {
+		this.password = password;
+	}
+	
+	@Override
+	public String toString() {
+		return "UserModel [username=" + username + ", email=" + email + ", password=" + password + "]";
+	}
+	
 	
 }
