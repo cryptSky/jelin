@@ -1,3 +1,4 @@
+
 package org.crama.jelin.model;
 
 import java.io.Serializable;

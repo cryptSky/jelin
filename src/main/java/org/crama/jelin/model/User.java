@@ -1,3 +1,4 @@
+
 package org.crama.jelin.model;
 
 public class User {
