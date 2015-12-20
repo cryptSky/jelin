@@ -1,5 +1,6 @@
 package org.crama.jelin.controller;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.crama.jelin.model.User;
@@ -26,15 +27,25 @@ public class UserController {
 	
 	@RequestMapping(value="/api/user/checkFree", method=RequestMethod.GET)
 	@ResponseStatus(HttpStatus.OK)
-    public boolean checkFree(@RequestParam String username, @RequestParam String email) {
-        System.out.println(username);
-        boolean isFreeUsername = userService.checkUsername(username);
-        
-        boolean isFreeEmail = userService.checkEmail(email);
-        return isFreeUsername && isFreeEmail;
-        
-        
+    public boolean checkFree(@RequestParam(value="username", required=false) String username, 
+    						 @RequestParam(value="email", required=false) String email) {
+                
+		System.out.println(username);
+		boolean isFreeUsername = false;
+		boolean isFreeEmail = false;
+		if (username != null && email == null) {
+			isFreeUsername = userService.checkUsername(username);
+			return isFreeUsername;
+		}
+		if (username == null && email != null) {
+			isFreeEmail = userService.checkEmail(email);
+			return isFreeEmail;
+		}
+		if (isFreeUsername && isFreeEmail) return true;
+		else return false; // probably should throw exception in case incorrect parameters  		
+          
     }
+	
 	@RequestMapping(value="/api/user/", method=RequestMethod.PUT)
 	@ResponseStatus(HttpStatus.CREATED)
     public boolean signup(@Valid @RequestBody UserModel model, BindingResult result) {
