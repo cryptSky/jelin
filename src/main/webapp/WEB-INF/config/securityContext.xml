@@ -13,7 +13,7 @@
    <security:intercept-url pattern="/api/user/checkFree" access="permitAll" />
    <security:intercept-url pattern="/api/user/" method="PUT" access="permitAll"/>
    <security:intercept-url pattern="/api/user/" method="GET" access="hasRole('ROLE_USER')"/>
-   <!-- <security:intercept-url pattern="/**" access="hasRole('ROLE_USER')"/>  -->
+   <security:intercept-url pattern="/**" access="hasRole('ROLE_USER')"/>
    <security:http-basic />
    <security:csrf disabled="true"/>
 </security:http>

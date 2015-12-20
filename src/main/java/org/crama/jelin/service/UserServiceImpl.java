@@ -22,7 +22,7 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public boolean checkUsername(String username) {
 		UserModel userModel = userRepository.getUserModel(username);
-		if (userModel != null) {
+		if (userModel == null) {
 			return true;
 		}
 		else {
@@ -60,7 +60,7 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public boolean checkEmail(String email) {
 		UserModel userModel = userRepository.getUserModelEmail(email);
-		if (userModel != null) {
+		if (userModel == null) {
 			return true;
 		}
 		else {

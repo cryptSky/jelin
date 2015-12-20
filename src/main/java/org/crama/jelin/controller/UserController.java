@@ -31,18 +31,9 @@ public class UserController {
     						 @RequestParam(value="email", required=false) String email) {
                 
 		System.out.println(username);
-		boolean isFreeUsername = false;
-		boolean isFreeEmail = false;
-		if (username != null && email == null) {
-			isFreeUsername = userService.checkUsername(username);
-			return isFreeUsername;
-		}
-		if (username == null && email != null) {
-			isFreeEmail = userService.checkEmail(email);
-			return isFreeEmail;
-		}
-		if (isFreeUsername && isFreeEmail) return true;
-		else return false; // probably should throw exception in case incorrect parameters  		
+		boolean isFreeUsername = userService.checkUsername(username);
+		boolean isFreeEmail = userService.checkEmail(email);
+		return isFreeUsername && isFreeEmail;	
           
     }
 	
