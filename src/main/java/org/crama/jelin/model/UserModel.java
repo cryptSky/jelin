@@ -2,16 +2,17 @@
 package org.crama.jelin.model;
 
 import java.io.Serializable;
-import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -22,26 +23,39 @@ public class UserModel implements Serializable {
 	private static final long serialVersionUID = -5360750778811586440L;
 	
 	@Id
-	@Column(name="USERNAME", nullable=false)
+	@Column(name="USERNAME", nullable=false, unique=true)
+	@NotNull(message="Username should not be empty")
+	@Size(min=2, max=42, message="Username size should be from 2 to 42 characters")
+	@Pattern(regexp="[@._A-Za-z0-9-]{1,}", message="Wrong username pattern")
 	private String username;
 	
 	@Column(name="PASSWORD", nullable=false)
+	@NotNull(message="Password should not be empty")
+	@Size(min=2, max=42, message="Password size should be from 2 to 42 characters")
+	@Pattern(regexp="[@._A-Za-z0-9-]{1,}", message="Wrong password pattern")
 	private String password;
 	
-	@Column(name="EMAIL", nullable=false)
+	@Column(name="EMAIL", nullable=false, unique=true)
+	@NotNull(message="Password should not be empty")
+	@Size(min=6, message="Password should be from 6 characters long")
+	@Pattern(regexp="^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$", message="Wrong email pattern")
 	private String email;
 	
-	@Column(name="USER_ROLE", nullable=false)
-	@JsonIgnore
-	@ManyToMany(fetch=FetchType.EAGER)
+	/*@JsonIgnore
+	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JoinTable(name = "user_role", 
     joinColumns = { 
-           @JoinColumn(name = "USERNAME", referencedColumnName = "USERNAME")
+           @JoinColumn(name = "USERNAME")
     }, 
     inverseJoinColumns = { 
-           @JoinColumn(name = "ROLE_ID", referencedColumnName = "ROLE_ID")
+           @JoinColumn(name = "ROLE_ID")
     })
-	private Set<UserRole> roles;
+	private Set<UserRole> roles = new HashSet<UserRole>();*/
+	
+	@JsonIgnore
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "ROLE_ID", nullable = false)
+	private UserRole role;
 	
 	public UserModel() {}
 	
@@ -70,18 +84,25 @@ public class UserModel implements Serializable {
 		this.password = password;
 	}
 	
-	public Set<UserRole> getRoles() {
+	/*public Set<UserRole> getRoles() {
 		return roles;
 	}
 
 	public void setRoles(Set<UserRole> roles) {
 		this.roles = roles;
+	}*/
+
+	public UserRole getRole() {
+		return role;
 	}
 
+	public void setRole(UserRole role) {
+		this.role = role;
+	}
+	
 	@Override
 	public String toString() {
 		return "UserModel [username=" + username + ", email=" + email + ", password=" + password + "]";
 	}
-	
-	
+
 }
