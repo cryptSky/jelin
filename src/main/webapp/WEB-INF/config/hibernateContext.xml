@@ -12,7 +12,7 @@
 	
 	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
 		<property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-		 <property name="url" value="jdbc:mysql://localhost:3306/jelin?autoReconnect=true" />
+		 <property name="url" value="jdbc:mysql://localhost:3306/jelindb?autoReconnect=true" />
 		<!-- <property name="url" value="jdbc:sqlserver://localhost\\SQLEXPRESS:1433;databaseName=AscendazRoster100Staff" /> -->
 		<property name="username" value="root"/>
 		<property name="password" value="root"/>
