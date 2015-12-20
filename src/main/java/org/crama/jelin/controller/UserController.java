@@ -1,6 +1,5 @@
 package org.crama.jelin.controller;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.crama.jelin.model.User;
