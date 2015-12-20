@@ -4,6 +4,12 @@ import org.crama.jelin.model.UserModel;
 
 public interface UserService {
 
-	UserModel getUserModel(String email);
+	UserModel getUserModel(String username);
+
+	boolean checkUsername(String username);
+
+	boolean saveUser(UserModel model);
+
+	boolean checkEmail(String email);
 
 }

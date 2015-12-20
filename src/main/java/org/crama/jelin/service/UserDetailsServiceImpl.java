@@ -35,10 +35,12 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
       Collection<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
       
-      Set<UserRole> roles = userEntity.getRoles();
+      authorities.add(new SimpleGrantedAuthority(userEntity.getRole().getRole()));
+      
+      /*Set<UserRole> roles = userEntity.getRoles();
       for (UserRole role: roles) {
     	  authorities.add(new SimpleGrantedAuthority(role.getRole()));
-      }
+      }*/
       
       User user = new User(username, password, true, true, true, true, authorities);
       return user;
