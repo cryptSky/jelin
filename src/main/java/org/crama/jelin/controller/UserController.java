@@ -26,15 +26,30 @@ public class UserController {
 	
 	@RequestMapping(value="/api/user/checkFree", method=RequestMethod.GET)
 	@ResponseStatus(HttpStatus.OK)
-    public boolean checkFree(@RequestParam String username, @RequestParam String email) {
-        System.out.println(username);
-        boolean isFreeUsername = userService.checkUsername(username);
-        
-        boolean isFreeEmail = userService.checkEmail(email);
-        return isFreeUsername && isFreeEmail;
-        
-        
+    public boolean checkFree(@RequestParam(required = false) String username, @RequestParam(required = false) String email) {
+		System.out.println(username + ", " + email);
+		if (username != null && email != null) {
+			
+			boolean isFreeUsername = userService.checkUsername(username);
+	        
+	        boolean isFreeEmail = userService.checkEmail(email);
+	        return isFreeUsername && isFreeEmail;
+		}
+		else if (username != null) {
+			boolean isFreeUsername = userService.checkUsername(username);
+	        return isFreeUsername;
+		}
+		else if (email != null) {
+	     
+	        boolean isFreeEmail = userService.checkEmail(email);
+	        return isFreeEmail;
+		}
+		else {
+			return false;
+		}
+		
     }
+	
 	@RequestMapping(value="/api/user/", method=RequestMethod.PUT)
 	@ResponseStatus(HttpStatus.CREATED)
     public boolean signup(@Valid @RequestBody UserModel model, BindingResult result) {
