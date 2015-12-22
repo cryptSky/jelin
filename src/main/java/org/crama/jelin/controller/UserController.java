@@ -47,8 +47,8 @@ public class UserController {
 		else {
 			return false;
 		}
-		
-    }
+	}		
+
 	
 	@RequestMapping(value="/api/user/", method=RequestMethod.PUT)
 	@ResponseStatus(HttpStatus.CREATED)

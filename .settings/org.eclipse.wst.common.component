@@ -5,7 +5,7 @@
         <wb-resource deploy-path="/" source-path="/WebContent" tag="defaultRootSource"/>
         <wb-resource deploy-path="/" source-path="/target/m2e-wtp/web-resources"/>
         <wb-resource deploy-path="/" source-path="/src/main/webapp"/>
-        <property name="context-root" value="jelin"/>
         <property name="java-output-path" value="/jelin/target/classes"/>
+        <property name="context-root" value="jelin"/>
     </wb-module>
 </project-modules>
