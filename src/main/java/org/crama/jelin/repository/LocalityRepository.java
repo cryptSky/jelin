@@ -7,16 +7,16 @@ import org.crama.jelin.model.Locality;
 import org.crama.jelin.model.Region;
 
 public interface LocalityRepository {
-	public List<Country> getAllCountries();
+	List<Country> getAllCountries();
 	
-	public Country getCountryByName(String name);
+	Country getCountryByName(String name);
 	
-	public List<Region> getAllRegions();
+	List<Region> getAllRegions();
 	
-	public Region getRegionByName(String name);
+	Region getRegionByName(String name);
 	
-	public List<Region> getAllRegionsByCountryID(int countryID);
+	List<Region> getAllRegionsByCountryID(int country);
 	
-	public Locality getLocality(String name, int regionID);
+	Locality getLocality(String name, int region);
 
 }
