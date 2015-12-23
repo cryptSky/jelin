@@ -2,16 +2,26 @@
 package org.crama.jelin.model;
 
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
-@Table(name = "user")
+@Table(name = "User")
 public class User implements Serializable {
 	
 	private static final long serialVersionUID = -3214924530355260911L;
@@ -26,6 +36,22 @@ public class User implements Serializable {
 	
 	@Column(name="EMAIL", nullable=false, unique=true)
 	private String email;
+	
+	@JsonIgnore
+	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	@JoinTable(name = "UserCharacter", 
+    joinColumns = { 
+           @JoinColumn(name = "USER_ID")
+    }, 
+    inverseJoinColumns = { 
+           @JoinColumn(name = "CHARACTER_ID")
+    })
+	private Set<Character> characterSet = new HashSet<Character>();
+	
+	@JsonIgnore
+	@ManyToOne(cascade=CascadeType.ALL, fetch = FetchType.EAGER) 
+	@JoinColumn(name = "CHARACTER_ID", nullable = true)
+	private Character choosenCharacter;
 	
 	public User() {}
 	
@@ -60,6 +86,22 @@ public class User implements Serializable {
 	}
 	public void setEmail(String email) {
 		this.email = email;
+	}
+
+	public Set<Character> getCharacterSet() {
+		return characterSet;
+	}
+
+	public void setCharacterSet(Set<Character> characterSet) {
+		this.characterSet = characterSet;
+	}
+
+	public Character getChoosenCharacter() {
+		return choosenCharacter;
+	}
+
+	public void setChoosenCharacter(Character choosenCharacter) {
+		this.choosenCharacter = choosenCharacter;
 	}
 	
 }

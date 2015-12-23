@@ -1,6 +1,6 @@
 package org.crama.jelin.repository;
 
-import java.util.Set;
+import javax.transaction.Transactional;
 
 import org.crama.jelin.model.User;
 import org.crama.jelin.model.UserModel;
@@ -18,6 +18,9 @@ public class UserRepositoryImpl implements UserRepository {
 
 	@Autowired
 	private SessionFactory sessionFactory;
+	
+	private static final String GET_USER_BY_USERNAME = "FROM User "
+			+ "WHERE username = :username";
 	
 	private static final String GET_USER_MODEL = "FROM UserModel "
 										+ "WHERE username = :username";
@@ -123,6 +126,22 @@ public class UserRepositoryImpl implements UserRepository {
 		query.setParameter("role", roleUser);
 		UserRole role = (UserRole)query.uniqueResult();
 		return role;
+	}
+
+	@Override
+	public User getUserByUsername(String username) {
+		Query query = sessionFactory.getCurrentSession().createQuery(GET_USER_BY_USERNAME);
+		query.setParameter("username", username);
+		User user = (User)query.uniqueResult();
+		return user;
+	}
+
+	@Override
+	@Transactional
+	public void updateUser(User user) {
+		Session session = sessionFactory.getCurrentSession();	
+		session.update(user);
+		
 	}
 
 }
