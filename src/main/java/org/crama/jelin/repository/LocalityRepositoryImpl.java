@@ -1,6 +1,5 @@
 package org.crama.jelin.repository;
 
-import java.util.LinkedList;
 import java.util.List;
 
 import org.crama.jelin.model.Country;
@@ -37,11 +36,9 @@ public class LocalityRepositoryImpl implements LocalityRepository {
 	public List<Country> getAllCountries()
 	{
 		Query query = sessionFactory.getCurrentSession().createQuery(GET_ALL_COUNTRIES);
-		List<Country> countries = new LinkedList<Country>();
-		List<Object> objCountries = query.list();;
-	    for(final Object country: objCountries){
-	    	countries.add((Country)country);
-	    }
+		
+		@SuppressWarnings("unchecked")
+		List<Country> countries = query.list();
 	    	
 		return countries;
 	}
@@ -57,12 +54,9 @@ public class LocalityRepositoryImpl implements LocalityRepository {
 	public List<Region> getAllRegions()
 	{
 		Query query = sessionFactory.getCurrentSession().createQuery(GET_ALL_REGIONS);
-		List<Region> regions = new LinkedList<Region>();
-		List<Object> objRegions = query.list();;
-	    for(final Object region: objRegions){
-	    	regions.add((Region)region);
-	    }
-	    	
+		@SuppressWarnings("unchecked")
+		List<Region> regions = query.list();;
+	    
 		return regions;
 	}
 	
@@ -79,11 +73,9 @@ public class LocalityRepositoryImpl implements LocalityRepository {
 	{
 		Query query = sessionFactory.getCurrentSession().createQuery(GET_ALL_REGIONS_BY_COUNTRYID);
 		query.setParameter("countryId", countryID);
-		List<Region> regions = new LinkedList<Region>();
-		List<Object> objRegions = query.list();;
-	    for(final Object region: objRegions){
-	    	regions.add((Region)region);
-	    }
+		
+		@SuppressWarnings("unchecked")
+		List<Region> regions = query.list();;
 	    	
 		return regions;
 	}
