@@ -18,45 +18,45 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-@RestController("/api/location")
+@RestController
 public class LocalityController {
 	
 	@Autowired
 	private LocalityService localityService;
 	
-	@RequestMapping(value="/country", method=RequestMethod.GET)
+	@RequestMapping(value="/api/location/country", method=RequestMethod.GET)
 	@ResponseBody
     public List<Country> getAllCountries() {
 		return localityService.getAllCountries();
 	}		
 
-	@RequestMapping(value="/country", method=RequestMethod.GET, params={"name"})
+	@RequestMapping(value="/api/location/country", method=RequestMethod.GET, params={"name"})
 	@ResponseBody
-    public Country getCountry(@RequestParam(required = false) String name) {
+    public Country getCountry(@RequestParam String name) {
 		return localityService.getCountryByName(name);
 	}		
 	
-	@RequestMapping(value="/region", method=RequestMethod.GET)
+	@RequestMapping(value="/api/location/region", method=RequestMethod.GET)
 	@ResponseBody
     public List<Region> getAllregions() {
 		return localityService.getAllRegions();
 	}		
 	
-	@RequestMapping(value="/region", method=RequestMethod.GET, params={"name"})
+	@RequestMapping(value="/api/location/region", method=RequestMethod.GET, params={"name"})
 	@ResponseBody
     public Region getRegionByName(@RequestParam String name) {
 		return localityService.getRegionByName(name);
 	}	
 	
-	@RequestMapping(value="/region", method=RequestMethod.GET, params={"country"})
+	@RequestMapping(value="/api/location/region", method=RequestMethod.GET, params={"country"})
 	@ResponseBody
-    public List<Region> getAllregions(@RequestParam Integer country) {
+    public List<Region> getAllregions(@RequestParam int country) {
 		return localityService.getAllRegionsByCountryID(country);
 	}
 	
-	@RequestMapping(value="/locality", method=RequestMethod.GET)
+	@RequestMapping(value="/api/location/locality", method=RequestMethod.GET)
 	@ResponseBody
-    public Locality getLocality(@RequestParam String name, @RequestParam Integer region) {
+    public Locality getLocality(@RequestParam String name, @RequestParam int region) {
 		return localityService.getLocality(name, region);
 	}	
 	

@@ -42,8 +42,8 @@ public class LocalityServiceImpl implements LocalityService {
 	}
 
 	@Override
-	public Locality getLocality(String name, int regionID) {
-		return localityRepository.getLocality(name, regionID);
+	public Locality getLocality(String name, int region) {
+		return localityRepository.getLocality(name, region);
 	}
 
 }

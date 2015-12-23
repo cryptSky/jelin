@@ -89,10 +89,10 @@ public class LocalityRepositoryImpl implements LocalityRepository {
 	}
 
 	@Override
-	public Locality getLocality(String name, int regionID) {
+	public Locality getLocality(String name, int region) {
 		Query query = sessionFactory.getCurrentSession().createQuery(GET_LOCALITY);
 		query.setParameter("name", name);
-		query.setParameter("regionID", regionID);
+		query.setParameter("regionId", region);
 		Locality locality = (Locality)query.uniqueResult();
 		return locality;
 	}
