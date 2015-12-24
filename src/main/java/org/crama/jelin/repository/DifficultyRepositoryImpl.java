@@ -2,14 +2,13 @@ package org.crama.jelin.repository;
 
 import java.util.List;
 
-import org.crama.jelin.model.Country;
 import org.crama.jelin.model.Difficulty;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-@Repository("questionRepository")
+@Repository("difficultyRepository")
 public class DifficultyRepositoryImpl implements DifficultyRepository {
 
 	@Autowired

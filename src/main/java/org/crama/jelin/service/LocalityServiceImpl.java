@@ -6,7 +6,6 @@ import org.crama.jelin.model.Country;
 import org.crama.jelin.model.Locality;
 import org.crama.jelin.model.Region;
 import org.crama.jelin.repository.LocalityRepository;
-import org.crama.jelin.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

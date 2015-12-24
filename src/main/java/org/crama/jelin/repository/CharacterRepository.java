@@ -8,6 +8,6 @@ public interface CharacterRepository {
 
 	List<Character> getStandardCharacters();
 
-	Character getCharacter(String character);
+	Character getCharacter(int character);
 
 }

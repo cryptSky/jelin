@@ -1,11 +1,16 @@
 package org.crama.jelin.repository;
 
-import org.crama.jelin.model.Category;
 import org.crama.jelin.model.Difficulty;
+import org.crama.jelin.model.Game;
+import org.crama.jelin.model.User;
 
 public interface GameRepository {
 	
-	boolean initGame(Category theme, boolean random);
+	boolean saveGame(Game game);
 	
-	boolean updateDifficulty(int gameId, Difficulty difficulty);
+	//boolean updateDifficulty(int gameId, Difficulty difficulty);
+
+	Game getCreatedGame(User creator);
+
+	boolean updateGame(Game game);
 }

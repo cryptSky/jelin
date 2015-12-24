@@ -31,8 +31,8 @@ public class UserRepositoryImpl implements UserRepository {
 	private static final String GET_USER_ROLE = "FROM UserRole "
 										+ "WHERE role = :role";
 	
-	private static final String SAVE_USER_ROLE = "INSERT INTO user_role(USERNAME, ROLE_ID) "
-										+ "VALUES (?,?)";
+	/*private static final String SAVE_USER_ROLE = "INSERT INTO user_role(USERNAME, ROLE_ID) "
+										+ "VALUES (?,?)";*/
 	
 	@Override
 	public UserModel getUserModel(String username) {

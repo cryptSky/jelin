@@ -16,6 +16,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -37,6 +38,14 @@ public class User implements Serializable {
 	@Column(name="EMAIL", nullable=false, unique=true)
 	private String email;
 	
+	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JoinColumn(name = "NET_STATUS_ID")
+	private NetStatus netStatus;
+	
+	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JoinColumn(name = "PROCESS_STATUS_ID")
+	private ProcessStatus processStatus;
+	
 	@JsonIgnore
 	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JoinTable(name = "UserCharacter", 
@@ -52,6 +61,10 @@ public class User implements Serializable {
 	@ManyToOne(cascade=CascadeType.ALL, fetch = FetchType.EAGER) 
 	@JoinColumn(name = "CHARACTER_ID", nullable = true)
 	private Character choosenCharacter;
+	
+	/*@JsonIgnore
+	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade=CascadeType.ALL)
+    private Set<GameUser> gamePlayerSet = new HashSet<GameUser>();*/
 	
 	public User() {}
 	
@@ -103,5 +116,31 @@ public class User implements Serializable {
 	public void setChoosenCharacter(Character choosenCharacter) {
 		this.choosenCharacter = choosenCharacter;
 	}
+
+	public NetStatus getNetStatus() {
+		return netStatus;
+	}
+
+	public void setNetStatus(NetStatus netStatus) {
+		this.netStatus = netStatus;
+	}
+
+	public ProcessStatus getProcessStatus() {
+		return processStatus;
+	}
+
+	public void setProcessStatus(ProcessStatus processStatus) {
+		this.processStatus = processStatus;
+	}
+
+	/*public Set<GameUser> getGamePlayerSet() {
+		return gamePlayerSet;
+	}
+
+	public void setGamePlayerSet(Set<GameUser> gamePlayerSet) {
+		this.gamePlayerSet = gamePlayerSet;
+	}*/
+	
+	
 	
 }

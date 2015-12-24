@@ -26,6 +26,9 @@ public class Category implements Serializable {
 	@Column(name="NAME", nullable=false)
 	private String name;
 	
+	@Column(name="DESCRIPTION", nullable=true)
+	private String description;
+	
 	@Column(name="IS_CATEGORY", nullable=false)
 	private boolean isCategory;
 	
@@ -42,10 +45,11 @@ public class Category implements Serializable {
 		
 	}
 
-	public Category(int id, String name, boolean category, Category parent, Group group) {
+	public Category(int id, String name, String description, boolean category, Category parent, Group group) {
 		super();
 		this.id = id;
 		this.name = name;
+		this.description = description;
 		this.isCategory = category;
 		this.parent = parent;
 		this.group = group;
@@ -65,6 +69,14 @@ public class Category implements Serializable {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
 	public boolean isCategory() {

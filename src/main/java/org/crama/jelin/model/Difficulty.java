@@ -18,10 +18,13 @@ public class Difficulty implements Serializable {
 	@GeneratedValue
 	@Column(name = "DIFFICULTY_ID", nullable = false)
 	private int id;
+	
 	@Column(name = "CODE", length = 10, nullable = false)
 	private String code;
+	
 	@Column(name = "NAME", nullable = false)
 	private String name;
+	
 	@Column(name = "LEVEL", nullable = false)
 	private int level;
 	

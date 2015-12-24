@@ -24,7 +24,7 @@ public class CharacterServiceImpl implements CharacterService {
 	}
 
 	@Override
-	public boolean saveUserCharacter(String character, User user) {
+	public boolean saveUserCharacter(int character, User user) {
 		Character userCharacter = characterRepository.getCharacter(character);
 		if (userCharacter == null) return false;
 		System.out.println(userCharacter);
@@ -35,7 +35,7 @@ public class CharacterServiceImpl implements CharacterService {
 	}
 
 	@Override
-	public boolean saveCurrentCharacter(String character, User user) {
+	public boolean saveCurrentCharacter(int character, User user) {
 		Character userCharacter = characterRepository.getCharacter(character);
 		if (userCharacter == null) return false;
 		Set<Character> userCharacterSet = user.getCharacterSet();

@@ -15,4 +15,6 @@ public interface UserService {
 
 	User getUserByUsername(String username);
 
+	void updateUserProcessStatus(User creator, String processStatus);
+
 }

@@ -3,7 +3,6 @@ package org.crama.jelin.repository;
 import java.util.List;
 
 import org.crama.jelin.model.Character;
-import org.crama.jelin.model.User;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +29,7 @@ public class CharacterRepositoryImpl implements CharacterRepository {
 	}
 
 	@Override
-	public Character getCharacter(String characterId) {
+	public Character getCharacter(int characterId) {
 		Query query = sessionFactory.getCurrentSession().createQuery(GET_CHARACTER);
 		query.setParameter("id", characterId);
 		Character character = (Character)query.uniqueResult();

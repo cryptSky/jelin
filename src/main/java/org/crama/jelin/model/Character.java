@@ -6,7 +6,6 @@ import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
@@ -21,15 +20,20 @@ public class Character implements Serializable {
 	
 	@Id
 	@Column(name="CHARACTER_ID", nullable=false, unique = true)
-	private String id;
+	private int id;
+	
 	@Column(name="SPECIAL", nullable=false)
 	private boolean special;
+	
 	@Column(name="ACRONS", nullable=false)
 	private int acrons;
+	
 	@Column(name="GOLD_ACRONS", nullable=false)
 	private int goldAcrons;
+	
 	@Column(name="NAME", nullable=false)
 	private String name;
+	
 	@Column(name="DESCRIPTION", nullable=true)
 	private String description;
 	
@@ -37,9 +41,11 @@ public class Character implements Serializable {
 	@ManyToMany(mappedBy = "characterSet")
 	private Set<User> userSet = new HashSet<User>();
 	
-	public Character() {}
+	public Character() {
+		
+	}
 	
-	public Character(String id, boolean special, int acrons, int goldAcrons, String name, String description) {
+	public Character(int id, boolean special, int acrons, int goldAcrons, String name, String description) {
 		super();
 		this.id = id;
 		this.special = special;
@@ -49,10 +55,10 @@ public class Character implements Serializable {
 		this.description = description;
 	}
 	
-	public String getId() {
+	public int getId() {
 		return id;
 	}
-	public void setId(String id) {
+	public void setId(int id) {
 		this.id = id;
 	}
 	public boolean isSpecial() {
@@ -104,7 +110,7 @@ public class Character implements Serializable {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		result = prime * result + id;
 		return result;
 	}
 
@@ -117,13 +123,12 @@ public class Character implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		Character other = (Character) obj;
-		if (id == null) {
-			if (other.id != null)
-				return false;
-		} else if (!id.equals(other.id))
+		if (id != other.id)
 			return false;
 		return true;
 	}
+
+
 
 	
 	

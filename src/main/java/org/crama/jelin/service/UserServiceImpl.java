@@ -1,5 +1,7 @@
 package org.crama.jelin.service;
 
+import org.crama.jelin.model.NetStatus;
+import org.crama.jelin.model.ProcessStatus;
 import org.crama.jelin.model.User;
 import org.crama.jelin.model.UserModel;
 import org.crama.jelin.model.UserRole;
@@ -49,7 +51,12 @@ public class UserServiceImpl implements UserService {
 			
 			userRepository.saveUserModel(model);
 			//userRepository.saveUserRoles(model);
-			userRepository.saveUser(new User(model.getUsername(), model.getEmail()));
+			User newUser = new User(model.getUsername(), model.getEmail());
+			NetStatus netStatus = new NetStatus(NetStatus.ONLINE);
+			ProcessStatus processStatus = new ProcessStatus(ProcessStatus.FREE);
+			newUser.setNetStatus(netStatus);
+			newUser.setProcessStatus(processStatus);
+			userRepository.saveUser(newUser);
 			return true;
 		}
 		else {
@@ -72,6 +79,13 @@ public class UserServiceImpl implements UserService {
 	public User getUserByUsername(String username) {
 		
 		return userRepository.getUserByUsername(username);
+	}
+
+	@Override
+	public void updateUserProcessStatus(User creator, String status) {
+		ProcessStatus processStatus = new ProcessStatus(status);
+		creator.setProcessStatus(processStatus);
+		userRepository.updateUser(creator);
 	}
 
 }

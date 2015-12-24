@@ -2,10 +2,8 @@ package org.crama.jelin.service;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Set;
 
 import org.crama.jelin.model.UserModel;
-import org.crama.jelin.model.UserRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

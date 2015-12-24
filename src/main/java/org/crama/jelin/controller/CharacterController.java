@@ -37,7 +37,7 @@ public class CharacterController {
 	
 	@RequestMapping(value="/api/character/first/", method=RequestMethod.PUT)
 	@ResponseStatus(HttpStatus.OK)
-    public boolean chooseFirstCharacters(@RequestParam String character) {
+    public boolean chooseFirstCharacters(@RequestParam int character) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		if (!(auth instanceof AnonymousAuthenticationToken)) {
 		        UserDetails userDetails = (UserDetails)auth.getPrincipal();
@@ -58,7 +58,7 @@ public class CharacterController {
 	
 	@RequestMapping(value="/api/character/current/", method=RequestMethod.POST)
 	@ResponseStatus(HttpStatus.OK)
-    public boolean chooseCurrentCharacters(@RequestParam String character) {
+    public boolean chooseCurrentCharacters(@RequestParam int character) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		if (!(auth instanceof AnonymousAuthenticationToken)) {
 		        UserDetails userDetails = (UserDetails)auth.getPrincipal();

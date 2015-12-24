@@ -7,7 +7,7 @@ import org.crama.jelin.repository.DifficultyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-@Service("questionService")
+@Service("difficultyService")
 public class DifficultyServiceImpl implements DifficultyService {
 
 	@Autowired

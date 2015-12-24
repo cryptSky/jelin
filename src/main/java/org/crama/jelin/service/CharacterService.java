@@ -9,8 +9,8 @@ public interface CharacterService {
 
 	List<Character> getPublicCharacters();
 
-	boolean saveUserCharacter(String character, User user);
+	boolean saveUserCharacter(int character, User user);
 
-	boolean saveCurrentCharacter(String character, User user);
+	boolean saveCurrentCharacter(int character, User user);
 
 }
