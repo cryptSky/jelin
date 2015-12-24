@@ -29,4 +29,9 @@ public class CategoryServiceImpl implements CategoryService {
 		return categoryRepository.getAllCategoriesFromThemes(themeID);
 	}
 
+	@Override
+	public Category getThemeById(int themeID) {
+		return categoryRepository.getThemeById(themeID);
+	}
+
 }

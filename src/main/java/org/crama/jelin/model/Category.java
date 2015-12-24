@@ -10,9 +10,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "Category")
@@ -31,14 +29,10 @@ public class Category implements Serializable {
 	@Column(name="IS_CATEGORY", nullable=false)
 	private boolean isCategory;
 	
-	@JsonIgnore
 	@ManyToOne
     @JoinColumn(name="PARENT_ID")
-	private Category parentObject;
-	
-	@Transient
-	private Integer parent;
-	
+	private Category parent;
+		
 	@ManyToOne
     @JoinColumn(name="GROUP_ID", nullable=false)
 	private Group group;
@@ -53,11 +47,7 @@ public class Category implements Serializable {
 		this.id = id;
 		this.name = name;
 		this.isCategory = category;
-		if (this.parentObject == null) {
-			this.parent = null;
-		} else {
-			this.parent = parentObject.getId();
-		}
+		this.parent = parent;
 		this.group = group;
 	}
 
@@ -85,21 +75,12 @@ public class Category implements Serializable {
 		this.isCategory = category;
 	}
 
-	public Integer getParent() {
-		if (this.parentObject == null) {
-			return null;
-		} else {
-			return parentObject.getId();
-		}
+	public Category getParent() {
+		return this.parent;
 	}
 
 	public void setParent(Category parent) {
-		if (this.parentObject == null) {
-			this.parent = null;
-		} else {
-			this.parentObject = parent;
-			this.parent = parent.getId();
-		}
+		this.parent = parent;		
 	}
 
 	public Group getGroup() {

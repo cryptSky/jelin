@@ -4,8 +4,9 @@ import java.util.List;
 
 import org.crama.jelin.model.Difficulty;
 
-public interface QuestionRepository {
+public interface DifficultyRepository {
 
 	List<Difficulty> getAllDifficulties();
+	Difficulty getDifficultyById(int diffId);
 
 }

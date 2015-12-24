@@ -17,6 +17,8 @@ public class CategoryRepositoryImpl implements CategoryRepository {
 	
 	private static final String GET_ALL_GROUPS = "FROM Group";
 
+	private static final String GET_THEME_BY_ID = "FROM Category "
+			+ "WHERE is_category = FALSE AND id = :themeId";
 	
 	private static final String GET_ALL_THEMES_FROM_GROUP = "FROM Category "
 			+ "WHERE is_category = FALSE AND group_id = :groupId";
@@ -53,6 +55,15 @@ public class CategoryRepositoryImpl implements CategoryRepository {
 		List<Category> themes = query.list();
 	    	
 		return themes;
+	}
+
+	@Override
+	public Category getThemeById(int themeID) {
+		Query query = sessionFactory.getCurrentSession().createQuery(GET_THEME_BY_ID);
+		query.setParameter("themeId", themeID);
+		Category theme = (Category)query.uniqueResult();
+	    	
+		return theme;
 	}
 
 }
