@@ -1,5 +1,7 @@
 package org.crama.jelin.service;
 
+import java.util.Set;
+
 import org.crama.jelin.model.Category;
 import org.crama.jelin.model.Difficulty;
 import org.crama.jelin.model.Game;
@@ -13,5 +15,17 @@ public interface GameInitService {
 	Game getCreatedGame(User creator);
 
 	void removeOpponent(Game game, int userId);
+
+	Set<User> getGameOpponents(Game game);
+
+	void inviteUser(Game game, User creator, User opponent);
+
+	Game getInviteGame(User user);
+
+	void confirmInvite(Game game, User user);
+
+	void refuseInvite(Game game, User user);
+
+	boolean checkInviteStatus(Game game);
 
 }

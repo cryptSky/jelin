@@ -2,6 +2,7 @@ package org.crama.jelin.repository;
 
 import org.crama.jelin.model.Game;
 import org.crama.jelin.model.GameState;
+import org.crama.jelin.model.InviteStatus;
 import org.crama.jelin.model.User;
 
 public interface GameInitRepository {
@@ -15,5 +16,9 @@ public interface GameInitRepository {
 	boolean updateGame(Game game);
 
 	GameState getGameState(String state);
+
+	InviteStatus getInviteStatus(String status);
+
+	Game getInviteGame(User user);
 	
 }

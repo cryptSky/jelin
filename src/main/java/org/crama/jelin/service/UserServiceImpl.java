@@ -88,4 +88,10 @@ public class UserServiceImpl implements UserService {
 		userRepository.updateUser(creator);
 	}
 
+	@Override
+	public User getUser(int userId) {
+		
+		return userRepository.getUser(userId);
+	}
+
 }

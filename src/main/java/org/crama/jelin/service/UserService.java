@@ -17,4 +17,6 @@ public interface UserService {
 
 	void updateUserProcessStatus(User creator, String processStatus);
 
+	User getUser(int userId);
+
 }

@@ -6,6 +6,8 @@ import java.util.Set;
 import org.crama.jelin.model.Category;
 import org.crama.jelin.model.Difficulty;
 import org.crama.jelin.model.Game;
+import org.crama.jelin.model.GameState;
+import org.crama.jelin.model.NetStatus;
 import org.crama.jelin.model.ProcessStatus;
 import org.crama.jelin.model.User;
 import org.crama.jelin.service.CategoryService;
@@ -128,7 +130,7 @@ public class GameInitController {
 		if (creator.getProcessStatus().getStatus() == ProcessStatus.CALLING) {
 			return null;
 		}
-		Set<User> opponents = game.getGameOpponents();
+		Set<User> opponents = gameInitService.getGameOpponents(game);
 		return opponents;
 	}
 	
@@ -154,7 +156,7 @@ public class GameInitController {
 		if (creator.getProcessStatus().getStatus() == ProcessStatus.CALLING) {
 			return;
 		}
-		//5. check if user is in opponent set
+		//5. check if user is in opponent set and remove it
 		gameInitService.removeOpponent(game, user);
 		
 	}
@@ -163,4 +165,140 @@ public class GameInitController {
 		User creator = userDetailsService.getPrincipal();
 		return creator.getProcessStatus().getStatus();
 	}
+	
+	@RequestMapping(value = "/api/game/invite", method = RequestMethod.POST)
+	public void inviteUser(@RequestParam int user) {
+		User creator = userDetailsService.getPrincipal();
+		//1. check if user have created game
+		Game game = gameInitService.getCreatedGame(creator);
+		if (game == null) {
+			return;
+		}
+		//2. check if user set difficulty to the game
+		if (game.getDifficulty() == null) {
+			return;
+		}
+		//3. check if game is not random
+		if (game.getRandom()) {
+			return;
+		}
+		//4. check if user state is calling
+		if (creator.getProcessStatus().getStatus().equals(ProcessStatus.CALLING)) {
+			return;
+		}
+		User opponent = userService.getUser(user);
+		//5. check opponent net status is online or shadow
+		if (opponent.getNetStatus().getStatus().equals(NetStatus.OFFLINE)) {
+			return;
+		}
+		//6. check opponent process status is free
+		if (!opponent.getProcessStatus().getStatus().equals(ProcessStatus.FREE)) {
+			System.out.println("Opponent is not free");
+			return;
+		}
+		//invite user
+		gameInitService.inviteUser(game, creator, opponent);
+	}
+	
+	
+	@RequestMapping(value = "/api/game/invite/wait", method = RequestMethod.GET)
+	public boolean checkInviteStatus() {
+		User user = userDetailsService.getPrincipal();
+		
+		Game game = gameInitService.getCreatedGame(user);
+		if (game == null) {
+			//TODO throw Exception
+			System.out.println("game is null");
+			return true;
+		}
+		
+		return gameInitService.checkInviteStatus(game);
+		
+		
+	}
+	
+	
+	
+	@RequestMapping(value = "/api/game/invite", method = RequestMethod.GET)
+	public @ResponseBody Game getInvite() {
+		User user = userDetailsService.getPrincipal();
+		System.out.println(user.getUsername());
+		//1. check if user state is inviting
+		if (!user.getProcessStatus().getStatus().equals(ProcessStatus.INVITING)) {
+			System.out.println("User is not in state INVITING. State: " + user.getProcessStatus().getStatus());
+			return null;
+			
+		}
+		
+		//get invite game
+		Game game = gameInitService.getInviteGame(user);
+		return game;
+	}
+	
+	@RequestMapping(value = "/api/game/invite/confirm", method = RequestMethod.POST)
+	public void confirmInvite() {
+		User user = userDetailsService.getPrincipal();
+		
+		//1. check if user state is inviting
+		if (!user.getProcessStatus().getStatus().equals(ProcessStatus.INVITING)) {
+			System.out.println("User is not in state INVITING. State: " + user.getProcessStatus().getStatus());
+			return;
+			
+		}
+		
+		//get invite game
+		Game game = gameInitService.getInviteGame(user);
+		if (game == null) {
+			return;
+		}
+		//2. check if user set difficulty to the game
+		if (game.getDifficulty() == null) {
+			return;
+		}
+		//3. check if game is not random
+		if (game.getRandom()) {
+			return;
+		}
+		//4. check if game state is created
+		if (!game.getGameState().getState().equals(GameState.CREATED)) {
+			return;
+		}
+		gameInitService.confirmInvite(game, user);
+		
+	}
+	
+	
+	@RequestMapping(value = "/api/game/invite/refuse", method = RequestMethod.POST)
+	public void refuseInvite() {
+		User user = userDetailsService.getPrincipal();
+		
+		//1. check if user state is inviting
+		if (!user.getProcessStatus().getStatus().equals(ProcessStatus.INVITING)) {
+			System.out.println("User is not in state INVITING. State: " + user.getProcessStatus().getStatus());
+			return;
+			
+		}
+		
+		//get invite game
+		Game game = gameInitService.getInviteGame(user);
+		if (game == null) {
+			return;
+		}
+		//2. check if user set difficulty to the game
+		if (game.getDifficulty() == null) {
+			return;
+		}
+		//3. check if game is not random
+		if (game.getRandom()) {
+			return;
+		}
+		//4. check if game state is created
+		if (!game.getGameState().getState().equals(GameState.CREATED)) {
+			return;
+		}
+		gameInitService.refuseInvite(game, user);
+		
+	}
+	
+	
 }

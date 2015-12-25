@@ -2,6 +2,8 @@ package org.crama.jelin.repository;
 
 import javax.transaction.Transactional;
 
+import org.crama.jelin.model.GameState;
+import org.crama.jelin.model.ProcessStatus;
 import org.crama.jelin.model.User;
 import org.crama.jelin.model.UserModel;
 import org.crama.jelin.model.UserRole;
@@ -33,6 +35,9 @@ public class UserRepositoryImpl implements UserRepository {
 	
 	/*private static final String SAVE_USER_ROLE = "INSERT INTO user_role(USERNAME, ROLE_ID) "
 										+ "VALUES (?,?)";*/
+	
+	public static final String GET_PROCESS_STATUS = "FROM ProcessStatus " +
+			"WHERE status = :status ";
 	
 	@Override
 	public UserModel getUserModel(String username) {
@@ -142,6 +147,20 @@ public class UserRepositoryImpl implements UserRepository {
 		Session session = sessionFactory.getCurrentSession();	
 		session.update(user);
 		
+	}
+
+	@Override
+	public User getUser(int userId) {
+		
+		return (User)sessionFactory.getCurrentSession().get(User.class, userId);
+	}
+
+	@Override
+	public ProcessStatus getProcessStatus(String status) {
+		Query query = sessionFactory.getCurrentSession().createQuery(GET_PROCESS_STATUS);
+		query.setParameter("status", status);
+		ProcessStatus processStatus = (ProcessStatus)query.uniqueResult();
+		return processStatus;
 	}
 
 }

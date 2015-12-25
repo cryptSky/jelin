@@ -1,5 +1,6 @@
 package org.crama.jelin.repository;
 
+import org.crama.jelin.model.ProcessStatus;
 import org.crama.jelin.model.User;
 import org.crama.jelin.model.UserModel;
 import org.crama.jelin.model.UserRole;
@@ -21,5 +22,9 @@ public interface UserRepository {
 	User getUserByUsername(String username);
 
 	void updateUser(User user);
+
+	User getUser(int userId);
+
+	ProcessStatus getProcessStatus(String inviting);
 
 }
