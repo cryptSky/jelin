@@ -1,12 +1,15 @@
 package org.crama.jelin.service;
 
+import java.nio.file.attribute.UserPrincipal;
 import java.util.ArrayList;
 import java.util.Collection;
 
 import org.crama.jelin.model.UserModel;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -43,4 +46,18 @@ public class UserDetailsServiceImpl implements UserDetailsService {
       User user = new User(username, password, true, true, true, true, authorities);
       return user;
     }
+    
+    public org.crama.jelin.model.User getPrincipal() {
+      Authentication authentication = 
+        SecurityContextHolder.getContext().getAuthentication();
+      if ((authentication == null) || (!authentication.isAuthenticated())) {
+        return null;
+      }
+      
+      UserDetails userDetails = (UserDetails)authentication.getPrincipal();
+      org.crama.jelin.model.User loginUser = userService.getUserByUsername(userDetails.getUsername());
+      return loginUser;
+      
+    }
+    
 }

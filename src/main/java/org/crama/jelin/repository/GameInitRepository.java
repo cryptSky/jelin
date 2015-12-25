@@ -1,10 +1,10 @@
 package org.crama.jelin.repository;
 
-import org.crama.jelin.model.Difficulty;
 import org.crama.jelin.model.Game;
+import org.crama.jelin.model.GameState;
 import org.crama.jelin.model.User;
 
-public interface GameRepository {
+public interface GameInitRepository {
 	
 	boolean saveGame(Game game);
 	
@@ -13,4 +13,7 @@ public interface GameRepository {
 	Game getCreatedGame(User creator);
 
 	boolean updateGame(Game game);
+
+	GameState getGameState(String state);
+	
 }

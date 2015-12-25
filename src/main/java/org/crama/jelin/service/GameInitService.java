@@ -5,10 +5,13 @@ import org.crama.jelin.model.Difficulty;
 import org.crama.jelin.model.Game;
 import org.crama.jelin.model.User;
 
-public interface GameService {
+public interface GameInitService {
 	boolean initGame(User creator, Category theme, boolean random);
 	
 	boolean updateDifficulty(Game game, Difficulty difficulty);
 
 	Game getCreatedGame(User creator);
+
+	void removeOpponent(Game game, int userId);
+
 }

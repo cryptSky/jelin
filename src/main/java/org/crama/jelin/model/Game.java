@@ -12,16 +12,15 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.NamedNativeQueries;
-import javax.persistence.NamedNativeQuery;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 
-@NamedNativeQueries({
+/*@NamedNativeQueries({
 	@NamedNativeQuery(
 	name = "getCreatedGameSQL",
 	query = "SELECT * FROM game " +
@@ -33,7 +32,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 			"WHERE USER_ID = :userId);",
         resultClass = Game.class
 	)
-})
+})*/
 @Entity
 @Table(name = "Game")
 public class Game implements Serializable {
@@ -50,8 +49,9 @@ public class Game implements Serializable {
 	private Category theme;
 	
 	@Column(name="IS_RANDOM", nullable=false)
-	private boolean isRandom;
+	private boolean random;
 	
+	@JsonIgnore
 	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JoinColumn(name = "STATE_ID")
 	private GameState gameState;
@@ -60,16 +60,31 @@ public class Game implements Serializable {
 	@JoinColumn(name="DIFFICULTY_ID")
 	private Difficulty difficulty;
 	
+	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JoinColumn(name="CREATOR_ID", nullable = false)
+	private User creator;
+	
 	@JsonIgnore
+	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JoinTable(name = "GameOpponent", 
+    joinColumns = { 
+           @JoinColumn(name = "GAME_ID")
+    }, 
+    inverseJoinColumns = { 
+           @JoinColumn(name = "USER_ID")
+    })
+	private Set<User> gameOpponents = new HashSet<User>(); 
+	
+	/*@JsonIgnore
 	@OneToMany(mappedBy = "game", fetch = FetchType.LAZY, cascade=CascadeType.ALL)
     private Set<GameUser> gamePlayerSet = new HashSet<GameUser>(); 
-	
+	*/
 	public Game() {}
 
 	public Game(Category theme, boolean isRandom) {
 		super();
 		this.theme = theme;
-		this.isRandom = isRandom;		
+		this.random = isRandom;		
 	}
 
 	public int getId() {
@@ -88,12 +103,12 @@ public class Game implements Serializable {
 		this.theme = theme;
 	}
 
-	public boolean isRandom() {
-		return isRandom;
+	public boolean getRandom() {
+		return random;
 	}
 
-	public void setRandom(boolean isRandom) {
-		this.isRandom = isRandom;
+	public void setRandom(boolean random) {
+		this.random = random;
 	}
 
 	public Difficulty getDifficulty() {
@@ -103,14 +118,14 @@ public class Game implements Serializable {
 	public void setDifficulty(Difficulty difficulty) {
 		this.difficulty = difficulty;
 	}
-
+/*
 	public Set<GameUser> getGamePlayerSet() {
 		return gamePlayerSet;
 	}
 
 	public void setGamePlayerSet(Set<GameUser> gamePlayerSet) {
 		this.gamePlayerSet = gamePlayerSet;
-	}
+	}*/
 
 	public GameState getGameState() {
 		return gameState;
@@ -120,12 +135,27 @@ public class Game implements Serializable {
 		this.gameState = gameState;
 	}
 
+	public User getCreator() {
+		return creator;
+	}
+
+	public void setCreator(User creator) {
+		this.creator = creator;
+	}
+
+	public Set<User> getGameOpponents() {
+		return gameOpponents;
+	}
+
+	public void setGameOpponents(Set<User> gameOpponents) {
+		this.gameOpponents = gameOpponents;
+	}
+
 	@Override
 	public String toString() {
-		return "Game [id=" + id + ", theme=" + theme + ", isRandom=" + isRandom + ", gameState=" + gameState
-				+ ", difficulty=" + difficulty + ", gamePlayerSet=" + gamePlayerSet + "]";
+		return "Game [id=" + id + ", theme=" + theme + ", isRandom=" + random + ", gameState=" + gameState
+				+ ", difficulty=" + difficulty + "]";
 	}
-	
 	
 	
 }

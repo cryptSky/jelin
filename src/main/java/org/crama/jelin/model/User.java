@@ -16,7 +16,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -38,10 +37,12 @@ public class User implements Serializable {
 	@Column(name="EMAIL", nullable=false, unique=true)
 	private String email;
 	
+	@JsonIgnore
 	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JoinColumn(name = "NET_STATUS_ID")
 	private NetStatus netStatus;
 	
+	@JsonIgnore
 	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JoinColumn(name = "PROCESS_STATUS_ID")
 	private ProcessStatus processStatus;

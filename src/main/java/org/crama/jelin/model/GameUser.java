@@ -1,4 +1,4 @@
-package org.crama.jelin.model;
+/*package org.crama.jelin.model;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -83,3 +83,4 @@ public class GameUser {
 
 	
 }
+*/

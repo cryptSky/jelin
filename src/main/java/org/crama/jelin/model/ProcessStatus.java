@@ -9,17 +9,17 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "ProcessStatus")
 public class ProcessStatus {
-	public static final String FREE = "free";
-	public static final String CALLING = "calling";
-	public static final String INVITING = "inviting";
-	public static final String WAITING = "waiting";
-	public static final String INGAME = "ingame";
+	public static final String FREE = "FREE";
+	public static final String CALLING = "CALLING";
+	public static final String INVITING = "INIVITING";
+	public static final String WAITING = "WAITING";
+	public static final String INGAME = "INGAME";
 	
 	@Id
 	@GeneratedValue
 	@Column(name="ID", nullable=false)
 	private int id;
-	@Column(name="PROCESS_STATUS", nullable=false)
+	@Column(name="PROCESS_STATUS", nullable=false, unique = true)
 	private String status;
 	
 	public ProcessStatus() {

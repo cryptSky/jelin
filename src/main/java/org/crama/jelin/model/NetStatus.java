@@ -18,7 +18,7 @@ public class NetStatus {
 	@GeneratedValue
 	@Column(name="ID", nullable=false)
 	private int id;
-	@Column(name="NET_STATUS", nullable=false)
+	@Column(name="NET_STATUS", nullable=false, unique = true)
 	private String status;
 	
 	public NetStatus() {

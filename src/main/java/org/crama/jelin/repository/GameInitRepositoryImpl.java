@@ -1,8 +1,9 @@
 package org.crama.jelin.repository;
 
+import java.util.List;
+
 import javax.transaction.Transactional;
 
-import org.crama.jelin.model.Difficulty;
 import org.crama.jelin.model.Game;
 import org.crama.jelin.model.GameState;
 import org.crama.jelin.model.User;
@@ -12,14 +13,11 @@ import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-@Repository("gameRepository")
-public class GameRepositoryImpl implements GameRepository {
+@Repository("gameInitRepository")
+public class GameInitRepositoryImpl implements GameInitRepository {
 
 	@Autowired
 	private SessionFactory sessionFactory;
-	
-	public static final String GET_CREATED_GAME_HQL = "FROM GameUser " +
-			"WHERE user = :user AND ";
 	
 	public static final String GET_CREATED_GAME_SQL = "SELECT * FROM game " +
 			"WHERE STATE_ID = ( " +
@@ -29,7 +27,13 @@ public class GameRepositoryImpl implements GameRepository {
 				"SELECT GAME_ID FROM gameuser " +
 				"WHERE USER_ID = :userId);";
 			
+	public static final String GET_CREATED_GAME = "FROM Game " +
+			"WHERE creator = :creator " +
+			"AND gameState = :gameState";
 	
+	public static final String GET_GAME_STATE = "FROM GameState " +
+			"WHERE state = :state ";
+			
 	@Override
 	@Transactional
 	public boolean saveGame(Game game) {
@@ -100,14 +104,32 @@ public class GameRepositoryImpl implements GameRepository {
 
 	@Override
 	public Game getCreatedGame(User creator) {
-		//Query query = sessionFactory.getCurrentSession().createSQLQuery(GET_CREATED_GAME_SQL);
 		
-		Query query = sessionFactory.getCurrentSession().getNamedQuery("getCreatedGameSQL");
+		Query query = sessionFactory.getCurrentSession().createQuery(GET_CREATED_GAME);
+		
+		query.setParameter("creator", creator);
+		GameState gs = getGameState(GameState.CREATED);
+		query.setParameter("gameState", gs);
+		Game game = (Game)query.uniqueResult();
+		System.out.println(game);
+		return game;
+		
+		/*Query query = sessionFactory.getCurrentSession().getNamedQuery("getCreatedGameSQL");
 		query.setParameter("state", GameState.CREATED);
 		query.setParameter("userId", creator.getId());
 		Game game = (Game)query.uniqueResult();
 		System.out.println(game);
-		return game;
+		return game;*/
+		
 	}
+
+	@Override
+	public GameState getGameState(String state) {
+		Query query = sessionFactory.getCurrentSession().createQuery(GET_GAME_STATE);
+		query.setParameter("state", state);
+		GameState gameState = (GameState)query.uniqueResult();
+		return gameState;
+	}
+
 
 }
