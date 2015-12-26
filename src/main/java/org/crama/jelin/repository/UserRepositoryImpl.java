@@ -4,7 +4,6 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
-import org.crama.jelin.model.GameState;
 import org.crama.jelin.model.ProcessStatus;
 import org.crama.jelin.model.User;
 import org.crama.jelin.model.UserInterests;
@@ -209,5 +208,7 @@ public class UserRepositoryImpl implements UserRepository {
 		ProcessStatus processStatus = (ProcessStatus)query.uniqueResult();
 		return processStatus;
 	}
+	
+	
 
 }

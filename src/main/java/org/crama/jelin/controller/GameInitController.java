@@ -171,37 +171,43 @@ public class GameInitController {
 	}
 	
 	@RequestMapping(value = "/api/game/invite", method = RequestMethod.POST, params={"user"})
-	public void inviteUser(@RequestParam int user) {
+	public @ResponseBody String inviteUser(@RequestParam int user) {
 		User creator = userDetailsService.getPrincipal();
 		//1. check if user have created game
 		Game game = gameInitService.getCreatedGame(creator);
 		if (game == null) {
-			return;
+			return null;
 		}
 		//2. check if user set difficulty to the game
 		if (game.getDifficulty() == null) {
-			return;
+			return null;
 		}
 		//3. check if game is not random
 		if (game.getRandom()) {
-			return;
+			return null;
 		}
 		//4. check if user state is calling
-		if (creator.getProcessStatus().getStatus().equals(ProcessStatus.CALLING)) {
-			return;
+		if (!creator.getProcessStatus().getStatus().equals(ProcessStatus.CALLING)) {
+			return null;
 		}
 		User opponent = userService.getUser(user);
 		//5. check opponent net status is online or shadow
 		if (opponent.getNetStatus().getStatus().equals(NetStatus.OFFLINE)) {
-			return;
+			return null;
 		}
 		//6. check opponent process status is free
 		if (!opponent.getProcessStatus().getStatus().equals(ProcessStatus.FREE)) {
 			System.out.println("Opponent is not free");
-			return;
+			return null;
+		}
+		//7 check if user already inviting someone
+		if (gameInitService.checkInviteStatus(game)) {
+			System.out.println("User already inviting opponent");
+			return null;
 		}
 		//invite user
-		gameInitService.inviteUser(game, creator, opponent);
+		String inviteStatus = gameInitService.inviteUser(game, creator, opponent);
+		return inviteStatus;
 	}
 	
 	

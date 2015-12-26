@@ -5,7 +5,6 @@ import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 
 import org.crama.jelin.model.Category;
 import org.crama.jelin.model.Difficulty;
@@ -31,8 +30,10 @@ public class GameInitServiceImpl implements GameInitService {
 	private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 	private ScheduledFuture<?> inviteTimer;
 	
-	//TODO get it out from here
-	public static final int TIMEOUT = 8;
+	//TODO get it out from here and change to 8 and 2
+	public static final int TIMEOUT = 20;
+	public static final int CHECK_TIMEOUT = 5;
+	
 	
 	@Override
 	public boolean initGame(User creator, Category theme, boolean random) {
@@ -93,7 +94,7 @@ public class GameInitServiceImpl implements GameInitService {
 	}
 
 	@Override
-	public void inviteUser(Game game, User creator, User opponent) {
+	public String inviteUser(Game game, User creator, User opponent) {
 		ProcessStatus status = userRepository.getProcessStatus(ProcessStatus.INVITING);
 		opponent.setProcessStatus(status);
 		userRepository.updateUser(opponent);
@@ -102,12 +103,94 @@ public class GameInitServiceImpl implements GameInitService {
 		InviteStatus inviteStatus = gameInitRepository.getInviteStatus(InviteStatus.OPEN);
 		System.out.println(inviteStatus.getStatus());
 		GameOpponent newOpponent = new GameOpponent(opponent, game, inviteStatus);
-		opponents.add(newOpponent);
-		game.setGameOpponents(opponents);
+		
+		boolean isNewOpponent = true;
+		for (GameOpponent o: opponents) {
+			 
+			 if (o.getUser().equals(opponent)) {
+				 
+				 System.out.println("User was already invited to the game. Update invitatioon with OPEN status");
+				 o.setInviteStatus(inviteStatus);
+				 isNewOpponent = false;
+				 break;
+			 }
+		}
+		if (isNewOpponent) {
+			 opponents.add(newOpponent);
+			game.setGameOpponents(opponents);
+		}
 		gameInitRepository.updateGame(game);
 		
+		Game updatedGame = null;
+		
+		boolean invitationHandled = false;
+		int numOfChecks = TIMEOUT / CHECK_TIMEOUT;
+		for (int i = 0; i < numOfChecks; i++) {
+			// check status every CHECK_TIMEOUT seconds
+			try {
+				//1000 milliseconds is one second
+			    Thread.sleep(1000 * CHECK_TIMEOUT);                 
+			} catch(InterruptedException ex) {
+				System.out.println("Interrupted Exception");
+			    Thread.currentThread().interrupt();
+			}
+			
+			System.out.println("Check invitation: " + i);
+			
+			gameInitRepository.clearSession();
+			
+			updatedGame = getCreatedGame(creator);
+			
+			if (!checkInviteStatus(updatedGame)) {
+				System.out.println("Invitation handled. Return from the method");
+				invitationHandled = true;
+				
+				GameOpponent go = gameInitRepository.getGameOpponent(updatedGame, opponent);
+				return go.getInviteStatus().getStatus(); 
+				
+			}
+		}
+		
+		
+		
+		//after TIMEOUT
+		if (!invitationHandled) {
+			System.out.println("Invitation expired!");
+			InviteStatus statusExpired = gameInitRepository.getInviteStatus(InviteStatus.EXPIRED);
+			 System.out.println("Invite Status: " + statusExpired);
+			 //Set<GameOpponent> opponents = game.getGameOpponents();
+			 //System.out.println("Opponents: " + opponents);
+			 
+			 gameInitRepository.clearSession();
+			 updatedGame = getCreatedGame(creator);
+			 
+			 
+			 for (GameOpponent o: updatedGame.getGameOpponents()) {
+				 System.out.println("inside a loop: " + o);
+				 if (o.getUser().equals(opponent)) {
+					 
+					 System.out.println("Update status: " + statusExpired);
+					 o.setInviteStatus(statusExpired);
+					 
+					 gameInitRepository.updateGame(updatedGame);
+					 
+					 User op = o.getUser();
+					 
+					 //change opponent status to free
+					 ProcessStatus freeStatus = userRepository.getProcessStatus(ProcessStatus.FREE);
+					 op.setProcessStatus(freeStatus);
+					 userRepository.updateUser(op);
+					 
+					 return statusExpired.getStatus();
+					 
+				 }
+			}
+		}
+		
+		return null;
+		
 		//TODO fix it!
-		Runnable inviteExpireProcess = new Runnable() {
+		/*Runnable inviteExpireProcess = new Runnable() {
 			 public void run() {
 				 System.out.println("Invitation expired!");
 				 
@@ -127,10 +210,10 @@ public class GameInitServiceImpl implements GameInitService {
 						 }
 					}
 					
-					/*System.out.println("Update user process status");
+					System.out.println("Update user process status");
 					ProcessStatus status = userRepository.getProcessStatus(ProcessStatus.CALLING);
 					creator.setProcessStatus(status);
-					userRepository.updateUser(creator);*/
+					userRepository.updateUser(creator);
 				}
 				 catch (Exception e) {
 					 System.out.println(e.getMessage());
@@ -138,7 +221,7 @@ public class GameInitServiceImpl implements GameInitService {
 				 }
 			 }
 	    };
-	    this.inviteTimer = this.scheduler.schedule(inviteExpireProcess, TIMEOUT, TimeUnit.SECONDS);
+	    this.inviteTimer = this.scheduler.schedule(inviteExpireProcess, TIMEOUT, TimeUnit.SECONDS);*/
 	}
 
 	@Override
@@ -153,7 +236,12 @@ public class GameInitServiceImpl implements GameInitService {
 		InviteStatus statusAccepted = gameInitRepository.getInviteStatus(InviteStatus.ACCEPTED);
 		Set<GameOpponent> opponents = game.getGameOpponents();
 		 
+	
+		
 		 for (GameOpponent o: opponents) {
+			 
+			 System.out.println("Confirm invite: " + o.getUser().getUsername() + ", " + o.getInviteStatus().getStatus());
+			 
 			 if (o.getUser().equals(user)) {
 				 
 				 //accept invitation
@@ -200,9 +288,11 @@ public class GameInitServiceImpl implements GameInitService {
 		for (GameOpponent o: opponents) {
 			if (o.getInviteStatus().getStatus().equals(InviteStatus.OPEN)) {
 				//there is open invite status
+				System.out.println("OPEN invitation: " + o.getUser().getUsername() + ", " + o.getInviteStatus().getStatus());
 				return true;
 			}
 		}
+		
 		return false;
 	}
 
