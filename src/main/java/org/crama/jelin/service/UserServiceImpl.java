@@ -1,5 +1,7 @@
 package org.crama.jelin.service;
 
+import java.util.List;
+
 import org.crama.jelin.model.NetStatus;
 import org.crama.jelin.model.ProcessStatus;
 import org.crama.jelin.model.User;
@@ -87,5 +89,30 @@ public class UserServiceImpl implements UserService {
 		creator.setProcessStatus(processStatus);
 		userRepository.updateUser(creator);
 	}
+
+	@Override
+	public List<Integer> getUserIdsShadowAndFree() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<Integer> getUserIdsOnlineAndFree() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<Integer> getUserIdsOnlineAndFreeNotRecentlyInvolved() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public User getUserById(int id) {
+		return userRepository.getUserById(id);
+	}
+
+	
 
 }

@@ -2,8 +2,10 @@
 package org.crama.jelin.model;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+import java.time.*;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -17,6 +19,8 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -62,6 +66,11 @@ public class User implements Serializable {
 	@ManyToOne(cascade=CascadeType.ALL, fetch = FetchType.EAGER) 
 	@JoinColumn(name = "CHARACTER_ID", nullable = true)
 	private Character choosenCharacter;
+	
+	@JsonIgnore
+	@Column(name = "LAST_GAME_TIME", columnDefinition="DATETIME")
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date lastGameTime;
 	
 	/*@JsonIgnore
 	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade=CascadeType.ALL)
@@ -132,6 +141,14 @@ public class User implements Serializable {
 
 	public void setProcessStatus(ProcessStatus processStatus) {
 		this.processStatus = processStatus;
+	}
+
+	public Date getLastGameTime() {
+		return lastGameTime;
+	}
+
+	public void setLastGameTime(Date lastGameTime) {
+		this.lastGameTime = lastGameTime;
 	}
 
 	/*public Set<GameUser> getGamePlayerSet() {

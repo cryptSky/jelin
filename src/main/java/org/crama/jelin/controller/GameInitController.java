@@ -6,11 +6,13 @@ import java.util.Set;
 import org.crama.jelin.model.Category;
 import org.crama.jelin.model.Difficulty;
 import org.crama.jelin.model.Game;
+import org.crama.jelin.model.GameBot;
 import org.crama.jelin.model.ProcessStatus;
 import org.crama.jelin.model.User;
 import org.crama.jelin.service.CategoryService;
 import org.crama.jelin.service.DifficultyService;
 import org.crama.jelin.service.GameInitService;
+import org.crama.jelin.service.OpponentSearchService;
 import org.crama.jelin.service.UserDetailsServiceImpl;
 import org.crama.jelin.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +41,8 @@ public class GameInitController {
 	private UserService userService;
 	@Autowired
 	private UserDetailsServiceImpl userDetailsService;
+	@Autowired
+	private OpponentSearchService opponentSearchService;
 	
 	@RequestMapping(value="/api/game", method=RequestMethod.PUT, params={"theme", "random"})
 	@ResponseStatus(HttpStatus.CREATED)
@@ -163,4 +167,39 @@ public class GameInitController {
 		User creator = userDetailsService.getPrincipal();
 		return creator.getProcessStatus().getStatus();
 	}
+	
+	@RequestMapping(value="/api/game/invite", method=RequestMethod.POST)
+	@ResponseStatus(HttpStatus.OK)
+    public void inviteRandomUser() {
+		User creator = userDetailsService.getPrincipal();
+		
+		//1. check if user have created game
+		Game game = gameInitService.getCreatedGame(creator);
+		
+		//2. check if user set difficulty to the game
+		if (game.getDifficulty() == null) {
+			return;
+		}
+		
+		//3. check if game is random
+		if (!game.getRandom()) {
+			return;
+		}
+				
+		//4. check if user state is calling
+		if (creator.getProcessStatus().getStatus() != ProcessStatus.CALLING) {
+			return;
+		}
+		
+		GameBot botOpponent = null;
+		User opponent = opponentSearchService.findOppenent(creator, game);
+		if (opponent == null)
+		{
+			botOpponent = opponentSearchService.getBot(game);
+		}
+		
+		return;
+		
+	}
+	
 }

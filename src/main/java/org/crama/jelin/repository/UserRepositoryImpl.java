@@ -1,15 +1,26 @@
 package org.crama.jelin.repository;
 
+import java.util.List;
+
 import javax.transaction.Transactional;
 
 import org.crama.jelin.model.User;
+import org.crama.jelin.model.UserInterests;
 import org.crama.jelin.model.UserModel;
 import org.crama.jelin.model.UserRole;
+import org.crama.jelin.model.Constants;
+import org.crama.jelin.model.Constants.NetStatus;
+import org.crama.jelin.model.Constants.ProcessStatus;
+import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
+import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -142,6 +153,50 @@ public class UserRepositoryImpl implements UserRepository {
 		Session session = sessionFactory.getCurrentSession();	
 		session.update(user);
 		
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Integer> getUserIdsShadowAndFree() {
+		
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(User.class);
+		Criterion isShadow = Restrictions.eq("NET_STATUS_ID", NetStatus.SHADOW);
+		Criterion isFree = Restrictions.eq("PROCESS_STATUS_ID", ProcessStatus.FREE);
+		criteria.add(Restrictions.or(isShadow, isFree));
+		
+		return criteria.list();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Integer> getUserIdsOnlineAndFree() {
+		
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(User.class);
+		Criterion isOnline = Restrictions.eq("NET_STATUS_ID", NetStatus.ONLINE);
+		Criterion isFree = Restrictions.eq("NET_STATUS_ID", ProcessStatus.FREE);
+		criteria.add(Restrictions.or(isOnline, isFree));
+		
+		return criteria.list();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Integer> getUserIdsOnlineAndFreeNotRecentlyInvolved() {
+		
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(User.class);
+		Criterion isOnline = Restrictions.eq("NET_STATUS_ID", NetStatus.ONLINE);
+		Criterion isFree = Restrictions.eq("NET_STATUS_ID", ProcessStatus.FREE);
+		criteria.add(Restrictions.or(isOnline, isFree)).addOrder(Order.asc("LAST_GAME_TIME"));
+		
+		return criteria.list();
+	}
+
+	@Override
+	public User getUserById(int id) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(User.class);
+		criteria.add(Restrictions.eq("user_id", id));
+		
+		return (User) criteria.uniqueResult();
 	}
 
 }

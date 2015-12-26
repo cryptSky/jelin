@@ -13,7 +13,7 @@ public class NetStatus {
 	public static final String OFFLINE = "offline";
 	public static final String SHADOW = "shadow";
 	public static final String ONLINE = "online";
-	
+		
 	@Id
 	@GeneratedValue
 	@Column(name="ID", nullable=false)
