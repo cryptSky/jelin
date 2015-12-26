@@ -1,21 +1,26 @@
-/*package org.crama.jelin.model;
+package org.crama.jelin.model;
+
+import java.io.Serializable;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "GameUser")
-public class GameUser {
+@Table(name = "GameOpponent")
+public class GameOpponent implements Serializable {
 	
+	private static final long serialVersionUID = 1107942852683349457L;
+
 	@Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "ID")
     private int id;
 	
@@ -27,26 +32,30 @@ public class GameUser {
     @JoinColumn(name = "GAME_ID")
 	private Game game;
 	
-	@Column(name = "CREATOR", nullable = false)
-	private boolean creator;
+	/*@Column(name = "CREATOR", nullable = false)
+	private boolean creator;*/
 
-	public GameUser() {
+	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JoinColumn(name = "STATUS_ID")
+	private InviteStatus inviteStatus;
+	
+	public GameOpponent() {
 		
 	}
 	
-	public GameUser(User user, Game game, boolean creator) {
+	public GameOpponent(User user, Game game, InviteStatus status) {
 		super();
 		this.user = user;
 		this.game = game;
-		this.creator = creator;
+		this.inviteStatus = status;
 	}
 
-	public GameUser(int id, User user, Game game, boolean creator) {
+	public GameOpponent(int id, User user, Game game, InviteStatus status) {
 		super();
 		this.id = id;
 		this.user = user;
 		this.game = game;
-		this.creator = creator;
+		this.inviteStatus = status;
 	}
 
 	public int getId() {
@@ -73,14 +82,22 @@ public class GameUser {
 		this.game = game;
 	}
 
-	public boolean isCreator() {
+	public InviteStatus getInviteStatus() {
+		return inviteStatus;
+	}
+
+	public void setInviteStatus(InviteStatus inviteStatus) {
+		this.inviteStatus = inviteStatus;
+	}
+
+	/*public boolean isCreator() {
 		return creator;
 	}
 
 	public void setCreator(boolean creator) {
 		this.creator = creator;
-	}
+	}*/
 
 	
+	
 }
-*/

@@ -17,8 +17,6 @@ public interface UserService {
 
 	User getUserByUsername(String username);
 	
-	User getUserById(int id);
-	
 	List<Integer> getUserIdsShadowAndFree();
 	
 	List<Integer> getUserIdsOnlineAndFree();
@@ -26,5 +24,7 @@ public interface UserService {
 	List<Integer> getUserIdsOnlineAndFreeNotRecentlyInvolved();
 
 	void updateUserProcessStatus(User creator, String processStatus);
+
+	User getUser(int userId);
 
 }

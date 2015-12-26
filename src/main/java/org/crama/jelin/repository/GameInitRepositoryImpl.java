@@ -1,11 +1,10 @@
 package org.crama.jelin.repository;
 
-import java.util.List;
-
 import javax.transaction.Transactional;
 
 import org.crama.jelin.model.Game;
 import org.crama.jelin.model.GameState;
+import org.crama.jelin.model.InviteStatus;
 import org.crama.jelin.model.User;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -33,7 +32,19 @@ public class GameInitRepositoryImpl implements GameInitRepository {
 	
 	public static final String GET_GAME_STATE = "FROM GameState " +
 			"WHERE state = :state ";
-			
+	
+	public static final String GET_INVITE_STATUS = "FROM InviteStatus " +
+			"WHERE status = :status ";
+	
+	//user_id
+	//inviteStatus = open
+	//ex. select p from Parent p join p.childList c
+    //where p.name = 'John' and c.favoriteColor = 'blue'
+	public static final String GET_INVITE_GAME = "SELECT g FROM Game g JOIN g.gameOpponents o " +
+			"WHERE g.gameState = :gameState " +
+			"AND o.user = :user " +
+			"AND o.inviteStatus = :inviteStatus";
+	
 	@Override
 	@Transactional
 	public boolean saveGame(Game game) {
@@ -67,7 +78,7 @@ public class GameInitRepositoryImpl implements GameInitRepository {
 		Session session = sessionFactory.getCurrentSession();		
 		
 		if (game == null) return false;
-		
+		System.out.println(game);
 		session.update(game);
 		return true;
 	}
@@ -129,6 +140,29 @@ public class GameInitRepositoryImpl implements GameInitRepository {
 		query.setParameter("state", state);
 		GameState gameState = (GameState)query.uniqueResult();
 		return gameState;
+	}
+
+	@Override
+	public InviteStatus getInviteStatus(String status) {
+		Query query = sessionFactory.getCurrentSession().createQuery(GET_INVITE_STATUS);
+		query.setParameter("status", status);
+		InviteStatus inviteStatus = (InviteStatus)query.uniqueResult();
+		return inviteStatus;
+	}
+
+	@Override
+	public Game getInviteGame(User user) {
+		GameState gameState = getGameState(GameState.CREATED);
+		InviteStatus inviteStatus = getInviteStatus(InviteStatus.OPEN);
+		Query query = sessionFactory.getCurrentSession().createQuery(GET_INVITE_GAME);
+		query.setParameter("gameState", gameState);
+		query.setParameter("user", user);
+		query.setParameter("inviteStatus", inviteStatus);
+		Game inviteGame = (Game)query.uniqueResult();
+		System.out.println(inviteGame);
+		return inviteGame;
+		
+		
 	}
 
 

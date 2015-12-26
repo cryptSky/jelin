@@ -12,9 +12,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -64,7 +63,7 @@ public class Game implements Serializable {
 	@JoinColumn(name="CREATOR_ID", nullable = false)
 	private User creator;
 	
-	@JsonIgnore
+	/*@JsonIgnore
 	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JoinTable(name = "GameOpponent", 
     joinColumns = { 
@@ -74,6 +73,12 @@ public class Game implements Serializable {
            @JoinColumn(name = "USER_ID")
     })
 	private Set<User> gameOpponents = new HashSet<User>(); 
+	*/
+	
+	@JsonIgnore
+	@OneToMany(mappedBy = "game", fetch = FetchType.LAZY, cascade=CascadeType.ALL)
+	private Set<GameOpponent> gameOpponents = new HashSet<GameOpponent>();
+	
 	
 	/*@JsonIgnore
 	@OneToMany(mappedBy = "game", fetch = FetchType.LAZY, cascade=CascadeType.ALL)
@@ -143,11 +148,21 @@ public class Game implements Serializable {
 		this.creator = creator;
 	}
 
-	public Set<User> getGameOpponents() {
+	
+	
+	/*public Set<User> getGameOpponents() {
 		return gameOpponents;
 	}
 
 	public void setGameOpponents(Set<User> gameOpponents) {
+		this.gameOpponents = gameOpponents;
+	}*/
+
+	public Set<GameOpponent> getGameOpponents() {
+		return gameOpponents;
+	}
+
+	public void setGameOpponents(Set<GameOpponent> gameOpponents) {
 		this.gameOpponents = gameOpponents;
 	}
 

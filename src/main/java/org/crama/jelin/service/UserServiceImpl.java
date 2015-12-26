@@ -92,27 +92,23 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public List<Integer> getUserIdsShadowAndFree() {
-		// TODO Auto-generated method stub
-		return null;
+		return userRepository.getUserIdsShadowAndFree();
 	}
 
 	@Override
 	public List<Integer> getUserIdsOnlineAndFree() {
-		// TODO Auto-generated method stub
-		return null;
+		return userRepository.getUserIdsOnlineAndFree();
 	}
 
 	@Override
 	public List<Integer> getUserIdsOnlineAndFreeNotRecentlyInvolved() {
-		// TODO Auto-generated method stub
-		return null;
+		return userRepository.getUserIdsOnlineAndFreeNotRecentlyInvolved();
 	}
 
 	@Override
-	public User getUserById(int id) {
-		return userRepository.getUserById(id);
+	public User getUser(int userId) {
+		
+		return userRepository.getUser(userId);
 	}
-
-	
 
 }

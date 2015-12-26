@@ -4,13 +4,14 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
+import org.crama.jelin.model.GameState;
+import org.crama.jelin.model.ProcessStatus;
 import org.crama.jelin.model.User;
 import org.crama.jelin.model.UserInterests;
 import org.crama.jelin.model.UserModel;
 import org.crama.jelin.model.UserRole;
 import org.crama.jelin.model.Constants;
 import org.crama.jelin.model.Constants.NetStatus;
-import org.crama.jelin.model.Constants.ProcessStatus;
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
@@ -44,6 +45,9 @@ public class UserRepositoryImpl implements UserRepository {
 	
 	/*private static final String SAVE_USER_ROLE = "INSERT INTO user_role(USERNAME, ROLE_ID) "
 										+ "VALUES (?,?)";*/
+	
+	public static final String GET_PROCESS_STATUS = "FROM ProcessStatus " +
+			"WHERE status = :status ";
 	
 	@Override
 	public UserModel getUserModel(String username) {
@@ -191,12 +195,19 @@ public class UserRepositoryImpl implements UserRepository {
 		return criteria.list();
 	}
 
+	
 	@Override
-	public User getUserById(int id) {
-		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(User.class);
-		criteria.add(Restrictions.eq("user_id", id));
+	public User getUser(int userId) {
 		
-		return (User) criteria.uniqueResult();
+		return (User)sessionFactory.getCurrentSession().get(User.class, userId);
+	}
+
+	@Override
+	public ProcessStatus getProcessStatus(String status) {
+		Query query = sessionFactory.getCurrentSession().createQuery(GET_PROCESS_STATUS);
+		query.setParameter("status", status);
+		ProcessStatus processStatus = (ProcessStatus)query.uniqueResult();
+		return processStatus;
 	}
 
 }

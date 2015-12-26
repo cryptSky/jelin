@@ -23,9 +23,11 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
 @Table(name = "User")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class User implements Serializable {
 	
 	private static final long serialVersionUID = -3214924530355260911L;
@@ -52,7 +54,7 @@ public class User implements Serializable {
 	private ProcessStatus processStatus;
 	
 	@JsonIgnore
-	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JoinTable(name = "UserCharacter", 
     joinColumns = { 
            @JoinColumn(name = "USER_ID")
@@ -150,15 +152,27 @@ public class User implements Serializable {
 	public void setLastGameTime(Date lastGameTime) {
 		this.lastGameTime = lastGameTime;
 	}
-
-	/*public Set<GameUser> getGamePlayerSet() {
-		return gamePlayerSet;
+	
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + id;
+		return result;
 	}
 
-	public void setGamePlayerSet(Set<GameUser> gamePlayerSet) {
-		this.gamePlayerSet = gamePlayerSet;
-	}*/
-	
-	
-	
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		User other = (User) obj;
+		if (id != other.id)
+			return false;
+		return true;
+	}
+
 }
