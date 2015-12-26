@@ -18,7 +18,7 @@ public interface GameInitService {
 
 	Set<User> getGameOpponents(Game game);
 
-	void inviteUser(Game game, User creator, User opponent);
+	String inviteUser(Game game, User creator, User opponent);
 
 	Game getInviteGame(User user);
 

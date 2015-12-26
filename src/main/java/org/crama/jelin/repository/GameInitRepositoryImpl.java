@@ -3,6 +3,7 @@ package org.crama.jelin.repository;
 import javax.transaction.Transactional;
 
 import org.crama.jelin.model.Game;
+import org.crama.jelin.model.GameOpponent;
 import org.crama.jelin.model.GameState;
 import org.crama.jelin.model.InviteStatus;
 import org.crama.jelin.model.User;
@@ -44,6 +45,10 @@ public class GameInitRepositoryImpl implements GameInitRepository {
 			"WHERE g.gameState = :gameState " +
 			"AND o.user = :user " +
 			"AND o.inviteStatus = :inviteStatus";
+	
+	public static final String GET_GAME_OPPONENT = "FROM GameOpponent " +
+			"WHERE game = :game "
+			+ "AND user = :user";
 	
 	@Override
 	@Transactional
@@ -165,5 +170,18 @@ public class GameInitRepositoryImpl implements GameInitRepository {
 		
 	}
 
+	@Override
+	public GameOpponent getGameOpponent(Game game, User opponent) {
+		Query query = sessionFactory.getCurrentSession().createQuery(GET_GAME_OPPONENT);
+		query.setParameter("game", game);
+		query.setParameter("user", opponent);
+		GameOpponent go = (GameOpponent)query.uniqueResult();
+		return go;
+	}
+	
+	@Override
+	public void clearSession() {
+		sessionFactory.getCurrentSession().clear();
+	}
 
 }
