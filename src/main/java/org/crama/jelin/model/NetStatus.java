@@ -10,9 +10,9 @@ import javax.persistence.Table;
 @Table(name = "NetStatus")
 public class NetStatus {
 	
-	public static final String OFFLINE = "offline";
-	public static final String SHADOW = "shadow";
-	public static final String ONLINE = "online";
+	public static final String OFFLINE = "OFFLINE";
+	public static final String SHADOW = "SHADOW";
+	public static final String ONLINE = "ONLINE";
 		
 	@Id
 	@GeneratedValue

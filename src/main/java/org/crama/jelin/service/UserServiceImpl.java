@@ -54,8 +54,8 @@ public class UserServiceImpl implements UserService {
 			userRepository.saveUserModel(model);
 			//userRepository.saveUserRoles(model);
 			User newUser = new User(model.getUsername(), model.getEmail());
-			NetStatus netStatus = new NetStatus(NetStatus.ONLINE);
-			ProcessStatus processStatus = new ProcessStatus(ProcessStatus.FREE);
+			NetStatus netStatus = userRepository.getNetStatus(NetStatus.ONLINE);
+			ProcessStatus processStatus = userRepository.getProcessStatus(ProcessStatus.FREE);
 			newUser.setNetStatus(netStatus);
 			newUser.setProcessStatus(processStatus);
 			userRepository.saveUser(newUser);
@@ -85,7 +85,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public void updateUserProcessStatus(User creator, String status) {
-		ProcessStatus processStatus = new ProcessStatus(status);
+		ProcessStatus processStatus = userRepository.getProcessStatus(status);
 		creator.setProcessStatus(processStatus);
 		userRepository.updateUser(creator);
 	}

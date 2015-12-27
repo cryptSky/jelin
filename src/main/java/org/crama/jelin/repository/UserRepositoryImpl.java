@@ -4,13 +4,11 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
+import org.crama.jelin.model.NetStatus;
 import org.crama.jelin.model.ProcessStatus;
 import org.crama.jelin.model.User;
-import org.crama.jelin.model.UserInterests;
 import org.crama.jelin.model.UserModel;
 import org.crama.jelin.model.UserRole;
-import org.crama.jelin.model.Constants;
-import org.crama.jelin.model.Constants.NetStatus;
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
@@ -19,7 +17,6 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -46,6 +43,9 @@ public class UserRepositoryImpl implements UserRepository {
 										+ "VALUES (?,?)";*/
 	
 	public static final String GET_PROCESS_STATUS = "FROM ProcessStatus " +
+			"WHERE status = :status ";
+	
+	public static final String GET_NET_STATUS = "FROM NetStatus " +
 			"WHERE status = :status ";
 	
 	@Override
@@ -208,7 +208,13 @@ public class UserRepositoryImpl implements UserRepository {
 		ProcessStatus processStatus = (ProcessStatus)query.uniqueResult();
 		return processStatus;
 	}
-	
-	
+
+	@Override
+	public NetStatus getNetStatus(String status) {
+		Query query = sessionFactory.getCurrentSession().createQuery(GET_NET_STATUS);
+		query.setParameter("status", status);
+		NetStatus netStatus = (NetStatus)query.uniqueResult();
+		return netStatus;
+	}
 
 }
