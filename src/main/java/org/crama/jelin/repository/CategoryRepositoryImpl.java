@@ -26,6 +26,9 @@ public class CategoryRepositoryImpl implements CategoryRepository {
 	private static final String GET_ALL_CATEGORIES_FROM_THEMES = "FROM Category "
 			+ "WHERE is_category = TRUE AND parent_id = :themeId";
 	
+	private static final String GET_CHILD_THEMES_BY_PARENT_ID = "FROM Category "
+			+ "WHERE is_category = FALSE AND parent_id = :themeId";
+	
 	@Override
 	public List<Group> getAllGroups() {
 		Query query = sessionFactory.getCurrentSession().createQuery(GET_ALL_GROUPS);
@@ -64,6 +67,17 @@ public class CategoryRepositoryImpl implements CategoryRepository {
 		Category theme = (Category)query.uniqueResult();
 	    	
 		return theme;
+	}
+
+	@Override
+	public List<Category> getChildThemesByParentId(int parentID) {
+		Query query = sessionFactory.getCurrentSession().createQuery(GET_CHILD_THEMES_BY_PARENT_ID);
+		query.setParameter("themeId", parentID);
+		
+		@SuppressWarnings("unchecked")
+		List<Category> themes = query.list();
+	    	
+		return themes;
 	}
 
 }

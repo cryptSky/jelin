@@ -3,6 +3,7 @@ package org.crama.jelin.service;
 import java.util.Set;
 
 import org.crama.jelin.model.Category;
+import org.crama.jelin.model.Constants.InviteStatus;
 import org.crama.jelin.model.Difficulty;
 import org.crama.jelin.model.Game;
 import org.crama.jelin.model.User;
@@ -18,7 +19,7 @@ public interface GameInitService {
 
 	Set<User> getGameOpponents(Game game);
 
-	String inviteUser(Game game, User creator, User opponent);
+	InviteStatus inviteUser(Game game, User creator, User opponent);
 
 	Game getInviteGame(User user);
 

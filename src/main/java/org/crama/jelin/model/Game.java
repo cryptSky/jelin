@@ -3,6 +3,7 @@ package org.crama.jelin.model;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
+import org.crama.jelin.model.Constants.GameState;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -51,8 +52,7 @@ public class Game implements Serializable {
 	private boolean random;
 	
 	@JsonIgnore
-	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@JoinColumn(name = "STATE_ID")
+	@Column(name = "STATE")
 	private GameState gameState;
 	
 	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)

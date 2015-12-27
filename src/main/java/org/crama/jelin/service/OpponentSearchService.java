@@ -6,7 +6,7 @@ import org.crama.jelin.model.User;
 
 public interface OpponentSearchService {
 	
-	User findOppenent(User user, Game game);
+	User findOppenent(Game game);
 	
 	GameBot getBot(Game game);
 }

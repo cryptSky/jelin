@@ -3,11 +3,10 @@ package org.crama.jelin.repository;
 
 import java.util.List;
 
-import org.crama.jelin.model.NetStatus;
-import org.crama.jelin.model.ProcessStatus;
 import org.crama.jelin.model.User;
 import org.crama.jelin.model.UserModel;
 import org.crama.jelin.model.UserRole;
+
 
 public interface UserRepository {
 
@@ -25,18 +24,14 @@ public interface UserRepository {
 
 	User getUserByUsername(String username);
 	
-	List<Integer> getUserIdsShadowAndFree();
+	List<User> getUsersShadowAndFree();
 	
-	List<Integer> getUserIdsOnlineAndFree();
+	List<User> getUsersOnlineAndFree();
 	
-	List<Integer> getUserIdsOnlineAndFreeNotRecentlyInvolved();
+	List<User> getUsersOnlineAndFreeNotRecentlyInvolved();
 
 	void updateUser(User user);
 
 	User getUser(int userId);
-
-	ProcessStatus getProcessStatus(String inviting);
-
-	NetStatus getNetStatus(String online);
 
 }

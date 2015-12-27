@@ -11,8 +11,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 public class GameBot implements Serializable{
 	
 	private static final long serialVersionUID = 954949067847532111L;

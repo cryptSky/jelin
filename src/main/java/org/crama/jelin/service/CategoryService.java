@@ -13,4 +13,6 @@ public interface CategoryService {
 	List<Category> getAllCategoriesFromThemes(int themeID);
 	
 	Category getThemeById(int themeID);
+	
+	List<Category> getChildThemesByParent(Category parent);
 }

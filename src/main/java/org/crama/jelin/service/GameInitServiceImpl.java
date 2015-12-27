@@ -7,9 +7,9 @@ import org.crama.jelin.model.Category;
 import org.crama.jelin.model.Difficulty;
 import org.crama.jelin.model.Game;
 import org.crama.jelin.model.GameOpponent;
-import org.crama.jelin.model.GameState;
-import org.crama.jelin.model.InviteStatus;
-import org.crama.jelin.model.ProcessStatus;
+import org.crama.jelin.model.Constants.GameState;
+import org.crama.jelin.model.Constants.InviteStatus;
+import org.crama.jelin.model.Constants.ProcessStatus;
 import org.crama.jelin.model.User;
 import org.crama.jelin.repository.GameInitRepository;
 import org.crama.jelin.repository.UserRepository;
@@ -36,8 +36,7 @@ public class GameInitServiceImpl implements GameInitService {
 	public boolean initGame(User creator, Category theme, boolean random) {
 		
 		Game game = new Game(theme, random);
-		GameState state = gameInitRepository.getGameState(GameState.CREATED);
-		game.setGameState(state);
+		game.setGameState(GameState.CREATED);
 		//Set<GameUser> gameUserSet = new HashSet<GameUser>();
 		//GameUser gameUser = new GameUser(creator, game, true);
 		//gameUserSet.add(gameUser);
@@ -65,8 +64,7 @@ public class GameInitServiceImpl implements GameInitService {
 		System.out.println("inside remove opponent method:");
 		// update user status to free
 		User user = userRepository.getUser(userId);
-		ProcessStatus ps = userRepository.getProcessStatus(ProcessStatus.FREE);
-		user.setProcessStatus(ps);
+		user.setProcessStatus(ProcessStatus.FREE);
 		userRepository.updateUser(user);
 		
 		gameInitRepository.removeGameOpponent(game, user);
@@ -93,7 +91,7 @@ public class GameInitServiceImpl implements GameInitService {
 		Set<GameOpponent> opponents = game.getGameOpponents();
 		Set<User> acceptedOpponents = new HashSet<User>();
 		for (GameOpponent o: opponents) {
-			if (o.getInviteStatus().getStatus().equals(InviteStatus.ACCEPTED)) {
+			if (o.getInviteStatus().equals(InviteStatus.ACCEPTED)) {
 				acceptedOpponents.add(o.getUser());
 			}
 		}
@@ -101,14 +99,13 @@ public class GameInitServiceImpl implements GameInitService {
 	}
 
 	@Override
-	public String inviteUser(Game game, User creator, User opponent) {
-		ProcessStatus status = userRepository.getProcessStatus(ProcessStatus.INVITING);
-		opponent.setProcessStatus(status);
+	public InviteStatus inviteUser(Game game, User creator, User opponent) {
+		opponent.setProcessStatus(ProcessStatus.INVITING);
 		userRepository.updateUser(opponent);
 		
 		Set<GameOpponent> opponents = game.getGameOpponents();
-		InviteStatus inviteStatus = gameInitRepository.getInviteStatus(InviteStatus.OPEN);
-		System.out.println(inviteStatus.getStatus());
+		InviteStatus inviteStatus = InviteStatus.OPEN;
+		System.out.println(inviteStatus);
 		GameOpponent newOpponent = new GameOpponent(opponent, game, inviteStatus);
 		
 		boolean isNewOpponent = true;
@@ -153,7 +150,7 @@ public class GameInitServiceImpl implements GameInitService {
 				invitationHandled = true;
 				
 				GameOpponent go = gameInitRepository.getGameOpponent(updatedGame, opponent);
-				return go.getInviteStatus().getStatus(); 
+				return go.getInviteStatus(); 
 				
 			}
 		}
@@ -163,7 +160,7 @@ public class GameInitServiceImpl implements GameInitService {
 		//after TIMEOUT
 		if (!invitationHandled) {
 			System.out.println("Invitation expired!");
-			InviteStatus statusExpired = gameInitRepository.getInviteStatus(InviteStatus.EXPIRED);
+			InviteStatus statusExpired = InviteStatus.EXPIRED;
 			 System.out.println("Invite Status: " + statusExpired);
 			 //Set<GameOpponent> opponents = game.getGameOpponents();
 			 //System.out.println("Opponents: " + opponents);
@@ -183,12 +180,10 @@ public class GameInitServiceImpl implements GameInitService {
 					 
 					 User op = o.getUser();
 					 
-					 //change opponent status to free
-					 ProcessStatus freeStatus = userRepository.getProcessStatus(ProcessStatus.FREE);
-					 op.setProcessStatus(freeStatus);
+					 op.setProcessStatus(ProcessStatus.FREE);
 					 userRepository.updateUser(op);
 					 
-					 return statusExpired.getStatus();
+					 return statusExpired;
 					 
 				 }
 			}
@@ -240,14 +235,14 @@ public class GameInitServiceImpl implements GameInitService {
 	@Override
 	public void confirmInvite(Game game, User user) {
 	
-		InviteStatus statusAccepted = gameInitRepository.getInviteStatus(InviteStatus.ACCEPTED);
+		InviteStatus statusAccepted = InviteStatus.ACCEPTED;
 		Set<GameOpponent> opponents = game.getGameOpponents();
 		 
 	
 		
 		 for (GameOpponent o: opponents) {
 			 
-			 System.out.println("Confirm invite: " + o.getUser().getUsername() + ", " + o.getInviteStatus().getStatus());
+			 System.out.println("Confirm invite: " + o.getUser().getUsername() + ", " + o.getInviteStatus());
 			 
 			 if (o.getUser().equals(user)) {
 				 
@@ -255,9 +250,7 @@ public class GameInitServiceImpl implements GameInitService {
 				 o.setInviteStatus(statusAccepted);
 				 gameInitRepository.updateGame(game);
 				 
-				 //set user to WAITING status
-				 ProcessStatus ps = userRepository.getProcessStatus(ProcessStatus.WAITING);
-				 user.setProcessStatus(ps);
+				 user.setProcessStatus(ProcessStatus.WAITING);
 				 userRepository.updateUser(user);
 				 
 				 break;
@@ -268,7 +261,7 @@ public class GameInitServiceImpl implements GameInitService {
 
 	@Override
 	public void refuseInvite(Game game, User user) {
-		InviteStatus statusRejected = gameInitRepository.getInviteStatus(InviteStatus.REJECTED);
+		InviteStatus statusRejected = InviteStatus.REJECTED;
 		Set<GameOpponent> opponents = game.getGameOpponents();
 		 
 		 for (GameOpponent o: opponents) {
@@ -278,9 +271,7 @@ public class GameInitServiceImpl implements GameInitService {
 				 o.setInviteStatus(statusRejected);
 				 gameInitRepository.updateGame(game);
 				 
-				 //set user to FREE status
-				 ProcessStatus ps = userRepository.getProcessStatus(ProcessStatus.FREE);
-				 user.setProcessStatus(ps);
+				 user.setProcessStatus(ProcessStatus.FREE);
 				 userRepository.updateUser(user);
 				 
 				 break;
@@ -293,9 +284,9 @@ public class GameInitServiceImpl implements GameInitService {
 	public boolean checkInviteStatus(Game game) {
 		Set<GameOpponent> opponents = game.getGameOpponents();
 		for (GameOpponent o: opponents) {
-			if (o.getInviteStatus().getStatus().equals(InviteStatus.OPEN)) {
+			if (o.getInviteStatus().equals(InviteStatus.OPEN)) {
 				//there is open invite status
-				System.out.println("OPEN invitation: " + o.getUser().getUsername() + ", " + o.getInviteStatus().getStatus());
+				System.out.println("OPEN invitation: " + o.getUser().getUsername() + ", " + o.getInviteStatus());
 				return true;
 			}
 		}

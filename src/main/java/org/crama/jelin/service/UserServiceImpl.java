@@ -2,8 +2,8 @@ package org.crama.jelin.service;
 
 import java.util.List;
 
-import org.crama.jelin.model.NetStatus;
-import org.crama.jelin.model.ProcessStatus;
+import org.crama.jelin.model.Constants.NetStatus;
+import org.crama.jelin.model.Constants.ProcessStatus;
 import org.crama.jelin.model.User;
 import org.crama.jelin.model.UserModel;
 import org.crama.jelin.model.UserRole;
@@ -54,10 +54,8 @@ public class UserServiceImpl implements UserService {
 			userRepository.saveUserModel(model);
 			//userRepository.saveUserRoles(model);
 			User newUser = new User(model.getUsername(), model.getEmail());
-			NetStatus netStatus = userRepository.getNetStatus(NetStatus.ONLINE);
-			ProcessStatus processStatus = userRepository.getProcessStatus(ProcessStatus.FREE);
-			newUser.setNetStatus(netStatus);
-			newUser.setProcessStatus(processStatus);
+			newUser.setNetStatus(NetStatus.ONLINE);
+			newUser.setProcessStatus(ProcessStatus.FREE);
 			userRepository.saveUser(newUser);
 			return true;
 		}
@@ -84,25 +82,24 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public void updateUserProcessStatus(User creator, String status) {
-		ProcessStatus processStatus = userRepository.getProcessStatus(status);
-		creator.setProcessStatus(processStatus);
+	public void updateUserProcessStatus(User creator, ProcessStatus status) {
+		creator.setProcessStatus(status);
 		userRepository.updateUser(creator);
 	}
 
 	@Override
-	public List<Integer> getUserIdsShadowAndFree() {
-		return userRepository.getUserIdsShadowAndFree();
+	public List<User> getUsersShadowAndFree() {
+		return userRepository.getUsersShadowAndFree();
 	}
 
 	@Override
-	public List<Integer> getUserIdsOnlineAndFree() {
-		return userRepository.getUserIdsOnlineAndFree();
+	public List<User> getUsersOnlineAndFree() {
+		return userRepository.getUsersOnlineAndFree();
 	}
 
 	@Override
-	public List<Integer> getUserIdsOnlineAndFreeNotRecentlyInvolved() {
-		return userRepository.getUserIdsOnlineAndFreeNotRecentlyInvolved();
+	public List<User> getUsersOnlineAndFreeNotRecentlyInvolved() {
+		return userRepository.getUsersOnlineAndFreeNotRecentlyInvolved();
 	}
 
 	@Override
