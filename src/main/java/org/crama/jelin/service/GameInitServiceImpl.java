@@ -64,6 +64,7 @@ public class GameInitServiceImpl implements GameInitService {
 
 	@Override
 	public void removeOpponent(Game game, int userId) {
+		System.out.println("inside remove opponent method:");
 		// update user status to free
 		User user = userRepository.getUser(userId);
 		user.setProcessStatus(ProcessStatus.FREE);
@@ -71,11 +72,18 @@ public class GameInitServiceImpl implements GameInitService {
 		
 		Set<GameOpponent> opponents = game.getGameOpponents();
 		for (GameOpponent o:new HashSet<GameOpponent>(opponents)) {
+			System.out.println(o);
 			if (o.getUser().getId() == userId) {
+				System.out.println("remove opponent: " + userId);
 				opponents.remove(o);
 				
 			}
 		}
+		System.out.println("Opponents after removal:");
+		for (GameOpponent o: opponents) {
+			System.out.println(o);
+		}
+		game.setGameOpponents(opponents);
 		gameInitRepository.updateGame(game);
 	}
 

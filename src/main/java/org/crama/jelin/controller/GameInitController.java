@@ -139,7 +139,7 @@ public class GameInitController {
 	}
 	
 	@RequestMapping(value = "/api/game/opponents/kick", method = RequestMethod.POST)
-	public void removetOpponent(@RequestParam int user) {
+	public void removeOpponent(@RequestParam int user) {
 		User creator = userDetailsService.getPrincipal();
 		//1. check if user have created game
 		System.out.println(creator);

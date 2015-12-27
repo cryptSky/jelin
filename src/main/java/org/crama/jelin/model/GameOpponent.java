@@ -90,6 +90,11 @@ public class GameOpponent implements Serializable {
 		this.inviteStatus = inviteStatus;
 	}
 
+	@Override
+	public String toString() {
+		return "GameOpponent [id=" + id + ", user=" + user + ", game=" + game + ", inviteStatus=" + inviteStatus + "]";
+	}
+
 	/*public boolean isCreator() {
 		return creator;
 	}
