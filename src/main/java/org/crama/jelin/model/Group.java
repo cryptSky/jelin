@@ -9,8 +9,11 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 @Entity
 @Table(name = "QuestionGroup")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Group  implements Serializable {
 	
 	private static final long serialVersionUID = -854087289258279L;

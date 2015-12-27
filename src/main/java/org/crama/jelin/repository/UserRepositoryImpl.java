@@ -153,6 +153,7 @@ public class UserRepositoryImpl implements UserRepository {
 	@Override
 	@Transactional
 	public void updateUser(User user) {
+		System.out.println("update user");
 		Session session = sessionFactory.getCurrentSession();	
 		session.update(user);
 		
