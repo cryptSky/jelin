@@ -25,4 +25,6 @@ public interface GameInitRepository {
 	GameOpponent getGameOpponent(Game game, User opponent);
 	
 	void clearSession();
+
+	void removeGameOpponent(Game game, User user);
 }

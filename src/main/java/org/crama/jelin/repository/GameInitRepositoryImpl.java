@@ -50,6 +50,10 @@ public class GameInitRepositoryImpl implements GameInitRepository {
 			"WHERE game = :game "
 			+ "AND user = :user";
 	
+	public static final String DELETE_GAME_OPPONENT = "DELETE GameOpponent " +
+			"WHERE game = :game "
+			+ "AND user = :user";
+	
 	@Override
 	@Transactional
 	public boolean saveGame(Game game) {
@@ -182,6 +186,15 @@ public class GameInitRepositoryImpl implements GameInitRepository {
 	@Override
 	public void clearSession() {
 		sessionFactory.getCurrentSession().clear();
+	}
+
+	@Transactional
+	@Override
+	public void removeGameOpponent(Game game, User user) {
+		Query query = sessionFactory.getCurrentSession().createQuery(DELETE_GAME_OPPONENT);
+		query.setParameter("game", game);
+		query.setParameter("user", user);
+		query.executeUpdate();
 	}
 
 }

@@ -2,9 +2,6 @@ package org.crama.jelin.service;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
 
 import org.crama.jelin.model.Category;
 import org.crama.jelin.model.Difficulty;
@@ -27,8 +24,8 @@ public class GameInitServiceImpl implements GameInitService {
 	@Autowired
 	private UserRepository userRepository;
 	
-	private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-	private ScheduledFuture<?> inviteTimer;
+	//private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+	//private ScheduledFuture<?> inviteTimer;
 	
 	//TODO get it out from here and change to 8 and 2
 	public static final int TIMEOUT = 20;
@@ -72,7 +69,9 @@ public class GameInitServiceImpl implements GameInitService {
 		user.setProcessStatus(ps);
 		userRepository.updateUser(user);
 		
-		Set<GameOpponent> opponents = game.getGameOpponents();
+		gameInitRepository.removeGameOpponent(game, user);
+		
+		/*Set<GameOpponent> opponents = game.getGameOpponents();
 		for (GameOpponent o:new HashSet<GameOpponent>(opponents)) {
 			System.out.println(o);
 			if (o.getUser().getId() == userId) {
@@ -86,7 +85,7 @@ public class GameInitServiceImpl implements GameInitService {
 			System.out.println(o);
 		}
 		game.setGameOpponents(opponents);
-		gameInitRepository.updateGame(game);
+		gameInitRepository.updateGame(game);*/
 	}
 
 	@Override
