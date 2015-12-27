@@ -4,12 +4,12 @@ package org.crama.jelin.controller;
 import java.util.Set;
 
 import org.crama.jelin.model.Category;
+import org.crama.jelin.model.Constants;
 import org.crama.jelin.model.Difficulty;
 import org.crama.jelin.model.Game;
 import org.crama.jelin.model.GameBot;
-import org.crama.jelin.model.GameState;
-import org.crama.jelin.model.NetStatus;
-import org.crama.jelin.model.ProcessStatus;
+import org.crama.jelin.model.Constants.GameState;
+import org.crama.jelin.model.Constants.*;
 import org.crama.jelin.model.User;
 import org.crama.jelin.service.CategoryService;
 import org.crama.jelin.service.DifficultyService;
@@ -59,8 +59,8 @@ public class GameInitController {
 		        if (creator == null || category == null) {
 		        	return false;
 		        }
-		        else if (!creator.getProcessStatus().getStatus().equals(ProcessStatus.FREE)) {
-		        	System.out.println("User is in status: " + creator.getProcessStatus().getStatus());
+		        else if (!creator.getProcessStatus().equals(ProcessStatus.FREE)) {
+		        	System.out.println("User is in status: " + creator.getProcessStatus());
 		        	return false;
 		        	
 		        }
@@ -96,8 +96,8 @@ public class GameInitController {
 		        if (creator == null) {
 		        	return false;
 		        }
-		        else if (!creator.getProcessStatus().getStatus().equals(ProcessStatus.CALLING)) {
-		        	System.out.println("User is in status: " + creator.getProcessStatus().getStatus() + ". User should be in status calling.");
+		        else if (!creator.getProcessStatus().equals(ProcessStatus.CALLING)) {
+		        	System.out.println("User is in status: " + creator.getProcessStatus() + ". User should be in status calling.");
 		        	return false;
 		        	
 		        }
@@ -131,7 +131,7 @@ public class GameInitController {
 			return null;
 		}
 		//4. check if user state is calling
-		if (creator.getProcessStatus().getStatus() == ProcessStatus.CALLING) {
+		if (creator.getProcessStatus() == ProcessStatus.CALLING) {
 			return null;
 		}
 		Set<User> opponents = gameInitService.getGameOpponents(game);
@@ -157,7 +157,7 @@ public class GameInitController {
 			return;
 		}
 		//4. check if user state is calling
-		if (creator.getProcessStatus().getStatus() == ProcessStatus.CALLING) {
+		if (creator.getProcessStatus() == ProcessStatus.CALLING) {
 			return;
 		}
 		//5. check if user is in opponent set and remove it
@@ -167,7 +167,7 @@ public class GameInitController {
 	@RequestMapping(value = "/api/game/userGameState", method = RequestMethod.GET)
 	public @ResponseBody String getUserGameStatus() {
 		User creator = userDetailsService.getPrincipal();
-		return creator.getProcessStatus().getStatus();
+		return Constants.ProcessStatusString[creator.getProcessStatus().getValue()];
 	}
 	
 	@RequestMapping(value = "/api/game/invite", method = RequestMethod.POST, params={"user"})
@@ -187,16 +187,16 @@ public class GameInitController {
 			return null;
 		}
 		//4. check if user state is calling
-		if (!creator.getProcessStatus().getStatus().equals(ProcessStatus.CALLING)) {
+		if (!creator.getProcessStatus().equals(ProcessStatus.CALLING)) {
 			return null;
 		}
 		User opponent = userService.getUser(user);
 		//5. check opponent net status is online or shadow
-		if (opponent.getNetStatus().getStatus().equals(NetStatus.OFFLINE)) {
+		if (opponent.getNetStatus().equals(NetStatus.OFFLINE)) {
 			return null;
 		}
 		//6. check opponent process status is free
-		if (!opponent.getProcessStatus().getStatus().equals(ProcessStatus.FREE)) {
+		if (!opponent.getProcessStatus().equals(ProcessStatus.FREE)) {
 			System.out.println("Opponent is not free");
 			return null;
 		}
@@ -206,8 +206,8 @@ public class GameInitController {
 			return null;
 		}
 		//invite user
-		String inviteStatus = gameInitService.inviteUser(game, creator, opponent);
-		return inviteStatus;
+		InviteStatus inviteStatus = gameInitService.inviteUser(game, creator, opponent);
+		return Constants.InviteStatusString[inviteStatus.getValue()];
 	}
 	
 	
@@ -234,8 +234,8 @@ public class GameInitController {
 		User user = userDetailsService.getPrincipal();
 		System.out.println(user.getUsername());
 		//1. check if user state is inviting
-		if (!user.getProcessStatus().getStatus().equals(ProcessStatus.INVITING)) {
-			System.out.println("User is not in state INVITING. State: " + user.getProcessStatus().getStatus());
+		if (!user.getProcessStatus().equals(ProcessStatus.INVITING)) {
+			System.out.println("User is not in state INVITING. State: " + user.getProcessStatus());
 			return null;
 			
 		}
@@ -250,8 +250,8 @@ public class GameInitController {
 		User user = userDetailsService.getPrincipal();
 		
 		//1. check if user state is inviting
-		if (!user.getProcessStatus().getStatus().equals(ProcessStatus.INVITING)) {
-			System.out.println("User is not in state INVITING. State: " + user.getProcessStatus().getStatus());
+		if (!user.getProcessStatus().equals(ProcessStatus.INVITING)) {
+			System.out.println("User is not in state INVITING. State: " + user.getProcessStatus());
 			return;
 			
 		}
@@ -270,7 +270,7 @@ public class GameInitController {
 			return;
 		}
 		//4. check if game state is created
-		if (!game.getGameState().getState().equals(GameState.CREATED)) {
+		if (!game.getGameState().equals(GameState.CREATED)) {
 			return;
 		}
 		gameInitService.confirmInvite(game, user);
@@ -283,8 +283,8 @@ public class GameInitController {
 		User user = userDetailsService.getPrincipal();
 		
 		//1. check if user state is inviting
-		if (!user.getProcessStatus().getStatus().equals(ProcessStatus.INVITING)) {
-			System.out.println("User is not in state INVITING. State: " + user.getProcessStatus().getStatus());
+		if (!user.getProcessStatus().equals(ProcessStatus.INVITING)) {
+			System.out.println("User is not in state INVITING. State: " + user.getProcessStatus());
 			return;
 			
 		}
@@ -303,7 +303,7 @@ public class GameInitController {
 			return;
 		}
 		//4. check if game state is created
-		if (!game.getGameState().getState().equals(GameState.CREATED)) {
+		if (!game.getGameState().equals(GameState.CREATED)) {
 			return;
 		}
 		gameInitService.refuseInvite(game, user);
@@ -325,12 +325,12 @@ public class GameInitController {
 		}
 				
 		//4. check if user state is calling
-		if (creator.getProcessStatus().getStatus() != ProcessStatus.CALLING) {
+		if (creator.getProcessStatus() != ProcessStatus.CALLING) {
 			return;
 		}
 		
 		GameBot botOpponent = null;
-		User opponent = opponentSearchService.findOppenent(creator, game);
+		User opponent = opponentSearchService.findOppenent(game);
 		if (opponent == null)
 		{
 			botOpponent = opponentSearchService.getBot(game);

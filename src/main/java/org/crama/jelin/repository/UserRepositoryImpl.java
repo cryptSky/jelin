@@ -4,8 +4,8 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
-import org.crama.jelin.model.NetStatus;
-import org.crama.jelin.model.ProcessStatus;
+import org.crama.jelin.model.Constants.NetStatus;
+import org.crama.jelin.model.Constants.ProcessStatus;
 import org.crama.jelin.model.User;
 import org.crama.jelin.model.UserModel;
 import org.crama.jelin.model.UserRole;
@@ -39,15 +39,7 @@ public class UserRepositoryImpl implements UserRepository {
 	private static final String GET_USER_ROLE = "FROM UserRole "
 										+ "WHERE role = :role";
 	
-	/*private static final String SAVE_USER_ROLE = "INSERT INTO user_role(USERNAME, ROLE_ID) "
-										+ "VALUES (?,?)";*/
-	
-	public static final String GET_PROCESS_STATUS = "FROM ProcessStatus " +
-			"WHERE status = :status ";
-	
-	public static final String GET_NET_STATUS = "FROM NetStatus " +
-			"WHERE status = :status ";
-	
+		
 	@Override
 	public UserModel getUserModel(String username) {
 		Query query = sessionFactory.getCurrentSession().createQuery(GET_USER_MODEL);
@@ -160,36 +152,36 @@ public class UserRepositoryImpl implements UserRepository {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<Integer> getUserIdsShadowAndFree() {
+	public List<User> getUsersShadowAndFree() {
 		
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(User.class);
-		Criterion isShadow = Restrictions.eq("NET_STATUS_ID", NetStatus.SHADOW);
-		Criterion isFree = Restrictions.eq("PROCESS_STATUS_ID", ProcessStatus.FREE);
-		criteria.add(Restrictions.or(isShadow, isFree));
+		Criterion isShadow = Restrictions.eq("netStatus", NetStatus.SHADOW);
+		Criterion isFree = Restrictions.eq("processStatus", ProcessStatus.FREE);
+		criteria.add(Restrictions.and(isShadow, isFree));
 		
 		return criteria.list();
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<Integer> getUserIdsOnlineAndFree() {
+	public List<User> getUsersOnlineAndFree() {
 		
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(User.class);
-		Criterion isOnline = Restrictions.eq("NET_STATUS_ID", NetStatus.ONLINE);
-		Criterion isFree = Restrictions.eq("NET_STATUS_ID", ProcessStatus.FREE);
-		criteria.add(Restrictions.or(isOnline, isFree));
+		Criterion isOnline = Restrictions.eq("netStatus", NetStatus.ONLINE);
+		Criterion isFree = Restrictions.eq("processStatus", ProcessStatus.FREE);
+		criteria.add(Restrictions.and(isOnline, isFree));
 		
 		return criteria.list();
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<Integer> getUserIdsOnlineAndFreeNotRecentlyInvolved() {
+	public List<User> getUsersOnlineAndFreeNotRecentlyInvolved() {
 		
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(User.class);
-		Criterion isOnline = Restrictions.eq("NET_STATUS_ID", NetStatus.ONLINE);
-		Criterion isFree = Restrictions.eq("NET_STATUS_ID", ProcessStatus.FREE);
-		criteria.add(Restrictions.or(isOnline, isFree)).addOrder(Order.asc("LAST_GAME_TIME"));
+		Criterion isOnline = Restrictions.eq("netStatus", NetStatus.ONLINE);
+		Criterion isFree = Restrictions.eq("processStatus", ProcessStatus.FREE);
+		criteria.add(Restrictions.and(isOnline, isFree)).addOrder(Order.asc("lastGameTime"));
 		
 		return criteria.list();
 	}
@@ -201,20 +193,5 @@ public class UserRepositoryImpl implements UserRepository {
 		return (User)sessionFactory.getCurrentSession().get(User.class, userId);
 	}
 
-	@Override
-	public ProcessStatus getProcessStatus(String status) {
-		Query query = sessionFactory.getCurrentSession().createQuery(GET_PROCESS_STATUS);
-		query.setParameter("status", status);
-		ProcessStatus processStatus = (ProcessStatus)query.uniqueResult();
-		return processStatus;
-	}
-
-	@Override
-	public NetStatus getNetStatus(String status) {
-		Query query = sessionFactory.getCurrentSession().createQuery(GET_NET_STATUS);
-		query.setParameter("status", status);
-		NetStatus netStatus = (NetStatus)query.uniqueResult();
-		return netStatus;
-	}
-
+	
 }

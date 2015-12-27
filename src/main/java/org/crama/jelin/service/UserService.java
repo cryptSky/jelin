@@ -2,6 +2,7 @@ package org.crama.jelin.service;
 
 import java.util.List;
 
+import org.crama.jelin.model.Constants.ProcessStatus;
 import org.crama.jelin.model.User;
 import org.crama.jelin.model.UserModel;
 
@@ -17,13 +18,13 @@ public interface UserService {
 
 	User getUserByUsername(String username);
 	
-	List<Integer> getUserIdsShadowAndFree();
+	List<User> getUsersShadowAndFree();
 	
-	List<Integer> getUserIdsOnlineAndFree();
+	List<User> getUsersOnlineAndFree();
 	
-	List<Integer> getUserIdsOnlineAndFreeNotRecentlyInvolved();
+	List<User> getUsersOnlineAndFreeNotRecentlyInvolved();
 
-	void updateUserProcessStatus(User creator, String processStatus);
+	void updateUserProcessStatus(User creator, ProcessStatus processStatus);
 
 	User getUser(int userId);
 

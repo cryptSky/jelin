@@ -5,7 +5,8 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
-import java.time.*;
+import org.crama.jelin.model.Constants.NetStatus;
+import org.crama.jelin.model.Constants.ProcessStatus;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -44,13 +45,11 @@ public class User implements Serializable {
 	private String email;
 	
 	@JsonIgnore
-	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@JoinColumn(name = "NET_STATUS_ID")
+	@Column(name = "NET_STATUS")
 	private NetStatus netStatus;
 	
 	@JsonIgnore
-	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@JoinColumn(name = "PROCESS_STATUS_ID")
+	@Column(name = "PROCESS_STATUS")
 	private ProcessStatus processStatus;
 	
 	@JsonIgnore

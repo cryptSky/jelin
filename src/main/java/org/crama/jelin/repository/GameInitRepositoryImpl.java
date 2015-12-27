@@ -4,8 +4,8 @@ import javax.transaction.Transactional;
 
 import org.crama.jelin.model.Game;
 import org.crama.jelin.model.GameOpponent;
-import org.crama.jelin.model.GameState;
-import org.crama.jelin.model.InviteStatus;
+import org.crama.jelin.model.Constants.GameState;
+import org.crama.jelin.model.Constants.InviteStatus;
 import org.crama.jelin.model.User;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -124,8 +124,7 @@ public class GameInitRepositoryImpl implements GameInitRepository {
 		Query query = sessionFactory.getCurrentSession().createQuery(GET_CREATED_GAME);
 		
 		query.setParameter("creator", creator);
-		GameState gs = getGameState(GameState.CREATED);
-		query.setParameter("gameState", gs);
+		query.setParameter("gameState", GameState.CREATED);
 		Game game = (Game)query.uniqueResult();
 		System.out.println(game);
 		return game;
@@ -140,29 +139,11 @@ public class GameInitRepositoryImpl implements GameInitRepository {
 	}
 
 	@Override
-	public GameState getGameState(String state) {
-		Query query = sessionFactory.getCurrentSession().createQuery(GET_GAME_STATE);
-		query.setParameter("state", state);
-		GameState gameState = (GameState)query.uniqueResult();
-		return gameState;
-	}
-
-	@Override
-	public InviteStatus getInviteStatus(String status) {
-		Query query = sessionFactory.getCurrentSession().createQuery(GET_INVITE_STATUS);
-		query.setParameter("status", status);
-		InviteStatus inviteStatus = (InviteStatus)query.uniqueResult();
-		return inviteStatus;
-	}
-
-	@Override
 	public Game getInviteGame(User user) {
-		GameState gameState = getGameState(GameState.CREATED);
-		InviteStatus inviteStatus = getInviteStatus(InviteStatus.OPEN);
 		Query query = sessionFactory.getCurrentSession().createQuery(GET_INVITE_GAME);
-		query.setParameter("gameState", gameState);
+		query.setParameter("gameState", GameState.CREATED);
 		query.setParameter("user", user);
-		query.setParameter("inviteStatus", inviteStatus);
+		query.setParameter("inviteStatus", InviteStatus.OPEN);
 		Game inviteGame = (Game)query.uniqueResult();
 		System.out.println(inviteGame);
 		return inviteGame;

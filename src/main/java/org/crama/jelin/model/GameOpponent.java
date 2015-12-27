@@ -1,6 +1,7 @@
 package org.crama.jelin.model;
 
 import java.io.Serializable;
+import org.crama.jelin.model.Constants.InviteStatus;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -35,8 +36,7 @@ public class GameOpponent implements Serializable {
 	/*@Column(name = "CREATOR", nullable = false)
 	private boolean creator;*/
 
-	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@JoinColumn(name = "STATUS_ID")
+	@JoinColumn(name = "STATUS")
 	private InviteStatus inviteStatus;
 	
 	public GameOpponent() {

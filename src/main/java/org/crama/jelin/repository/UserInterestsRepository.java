@@ -2,14 +2,18 @@ package org.crama.jelin.repository;
 
 import java.util.List;
 
+import org.crama.jelin.model.Category;
+import org.crama.jelin.model.Difficulty;
+import org.crama.jelin.model.User;
+
 public interface UserInterestsRepository {
-	List<Integer> getUserIdsByTheme(int themeID);
+	List<User> getUsersByTheme(int themeID);
 	
-	List<Integer> getUserIdsByThemeFromUsers(List<Integer> users, int themeID);
+	List<User> getUsersByThemeFromUsers(List<User> users, int themeID);
 	
-	List<Integer> getUserIdsByThemeAndDifficulty(int themeID, int difficultyID);
+	List<User> getUsersByThemeAndDifficulty(int themeID, int difficultyID);
 	
-	List<Integer> getUserIdsByThemeAndDifficultyFromUsers(List<Integer> users, int themeID, int difficultyID);
+	List<User> getUsersByThemeAndDifficultyFromUsers(List<User> users, Category themeID, Difficulty difficultyID);
 	
 	
 }
