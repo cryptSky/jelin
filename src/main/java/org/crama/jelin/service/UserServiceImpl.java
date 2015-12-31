@@ -98,8 +98,8 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public List<User> getUsersOnlineAndFreeNotRecentlyInvolved() {
-		return userRepository.getUsersOnlineAndFreeNotRecentlyInvolved();
+	public List<User> getUsersOnlineAndCalling() {
+		return userRepository.getUsersOnlineAndCalling();
 	}
 
 	@Override

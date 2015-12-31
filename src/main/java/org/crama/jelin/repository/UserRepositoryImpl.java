@@ -165,11 +165,11 @@ public class UserRepositoryImpl implements UserRepository {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<User> getUsersOnlineAndFree() {
+	public List<User> getUsersOnlineAndCalling() {
 		
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(User.class);
 		Criterion isOnline = Restrictions.eq("netStatus", NetStatus.ONLINE);
-		Criterion isFree = Restrictions.eq("processStatus", ProcessStatus.FREE);
+		Criterion isFree = Restrictions.eq("processStatus", ProcessStatus.CALLING);
 		criteria.add(Restrictions.and(isOnline, isFree));
 		
 		return criteria.list();
@@ -177,12 +177,12 @@ public class UserRepositoryImpl implements UserRepository {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<User> getUsersOnlineAndFreeNotRecentlyInvolved() {
+	public List<User> getUsersOnlineAndFree() {
 		
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(User.class);
 		Criterion isOnline = Restrictions.eq("netStatus", NetStatus.ONLINE);
 		Criterion isFree = Restrictions.eq("processStatus", ProcessStatus.FREE);
-		criteria.add(Restrictions.and(isOnline, isFree)).addOrder(Order.asc("lastGameTime"));
+		criteria.add(Restrictions.and(isOnline, isFree));
 		
 		return criteria.list();
 	}

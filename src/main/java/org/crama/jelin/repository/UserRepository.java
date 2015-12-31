@@ -28,7 +28,7 @@ public interface UserRepository {
 	
 	List<User> getUsersOnlineAndFree();
 	
-	List<User> getUsersOnlineAndFreeNotRecentlyInvolved();
+	List<User> getUsersOnlineAndCalling();
 
 	void updateUser(User user);
 

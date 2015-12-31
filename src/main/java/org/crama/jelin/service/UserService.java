@@ -22,7 +22,7 @@ public interface UserService {
 	
 	List<User> getUsersOnlineAndFree();
 	
-	List<User> getUsersOnlineAndFreeNotRecentlyInvolved();
+	List<User> getUsersOnlineAndCalling();
 
 	void updateUserProcessStatus(User creator, ProcessStatus processStatus);
 

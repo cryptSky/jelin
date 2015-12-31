@@ -1,6 +1,7 @@
 package org.crama.jelin.controller;
 
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.Set;
 
 import org.crama.jelin.model.Category;
@@ -33,6 +34,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class GameInitController {
 
+	private static final Logger logger = LoggerFactory.getLogger(GameInitController.class);
+	
 	@Autowired
 	private GameInitService gameInitService;
 	@Autowired
@@ -67,6 +70,7 @@ public class GameInitController {
 		        else {
 		        	if (gameInitService.initGame(creator, category, random)) {
 		        		userService.updateUserProcessStatus(creator, ProcessStatus.CALLING);
+		        		logger.info("Game created: ");
 		        		return true;
 		        	}
 		        	else {
