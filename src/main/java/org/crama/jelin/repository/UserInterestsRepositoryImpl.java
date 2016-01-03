@@ -16,17 +16,17 @@ public class UserInterestsRepositoryImpl implements UserInterestsRepository {
 	
 	private static final String GET_USERS_BY_THEME = "FROM User u "
 			+ "WHERE u.id IN (SELECT user FROM UserInterests "
-			+ "WHERE theme = :theme)";
+			+ "WHERE theme.id = :themeID)";
 	
 	private static final String GET_USERS_BY_THEME_DIFF = "FROM User u "
 			+ "WHERE u.id IN (SELECT user FROM UserInterests "
-			+ "WHERE theme = :theme "
-			+ "AND difficulty = :difficulty)";
+			+ "WHERE theme.id = :themeID "
+			+ "AND difficulty.id = :difficultyID)";
 	
 	private static final String GET_USERS_BY_THEME_FROM_USERS = "FROM User u "
 			+ "WHERE u.id IN (SELECT user FROM UserInterests "
 			+ "WHERE user IN (:users) "
-			+ "AND theme = :theme)";
+			+ "AND theme.id = :themeID)";
 	
 	private static final String GET_USERS_BY_THEME_DIFF_USERS = "FROM User u "
 			+ "WHERE u.id IN (SELECT user FROM UserInterests "
