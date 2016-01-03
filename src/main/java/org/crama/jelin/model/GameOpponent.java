@@ -36,7 +36,7 @@ public class GameOpponent implements Serializable {
 	/*@Column(name = "CREATOR", nullable = false)
 	private boolean creator;*/
 
-	@JoinColumn(name = "STATUS")
+	@Column(name = "STATUS")
 	private InviteStatus inviteStatus;
 	
 	public GameOpponent() {
