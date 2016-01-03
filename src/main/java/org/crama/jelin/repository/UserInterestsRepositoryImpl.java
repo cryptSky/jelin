@@ -2,8 +2,6 @@ package org.crama.jelin.repository;
 
 import java.util.List;
 
-import org.crama.jelin.model.Category;
-import org.crama.jelin.model.Difficulty;
 import org.crama.jelin.model.User;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
@@ -33,8 +31,8 @@ public class UserInterestsRepositoryImpl implements UserInterestsRepository {
 	private static final String GET_USERS_BY_THEME_DIFF_USERS = "FROM User u "
 			+ "WHERE u.id IN (SELECT user FROM UserInterests "
 			+ "WHERE user IN (:users) "
-			+ "AND theme = :theme "
-			+ "AND difficulty = :difficulty)";
+			+ "AND theme.id = :themeID "
+			+ "AND difficulty.id = :difficultyID)";
 	
 	@SuppressWarnings("unchecked")
 	@Override
@@ -70,11 +68,11 @@ public class UserInterestsRepositoryImpl implements UserInterestsRepository {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<User> getUsersByThemeAndDifficultyFromUsers(List<User> users, Category theme, Difficulty difficulty) {
+	public List<User> getUsersByThemeAndDifficultyFromUsers(List<User> users, int themeID, int difficultyID) {
 		Query query = sessionFactory.getCurrentSession().createQuery(GET_USERS_BY_THEME_DIFF_USERS);
 		query.setParameterList("users", users);
-		query.setParameter("theme", theme);
-		query.setParameter("difficulty", difficulty);
+		query.setParameter("themeID", themeID);
+		query.setParameter("difficultyID", difficultyID);
 		List<User> usr = query.list();
 	    		
 		return usr;

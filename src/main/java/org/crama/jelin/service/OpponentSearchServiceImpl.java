@@ -28,25 +28,26 @@ public class OpponentSearchServiceImpl implements OpponentSearchService {
 	
 	
 	@Override
-	public User findOppenent(Game game) {
+	public User findOpponent(Game game) {
 		
 		// stage 1: search users who are shadow and free
 		List<User> shadowAndFree = userService.getUsersShadowAndFree(); 
-		User opponent = this.findUser(shadowAndFree, game.getTheme(), game.getDifficulty(), true);
+		User opponent = findUser(shadowAndFree, game.getTheme(), game.getDifficulty(), true);
 		if (opponent != null){
 			return opponent;
 		}		
 		
 		// stage2: search users who are online and free, and haven't played a lot
 		List<User> onlineAndFree = userService.getUsersOnlineAndFree();
-		opponent = this.findUser(onlineAndFree, game.getTheme(), game.getDifficulty(), false);
+		opponent = findUser(onlineAndFree, game.getTheme(), game.getDifficulty(), false);
 		if (opponent != null){
 			return opponent;
 		}
 		
-		// stage3: search users who are online and calling
-		List<User> onlineAndCalling = userService.getUsersOnlineAndCalling(); 
-		opponent = this.findUser(onlineAndCalling, game.getTheme(), game.getDifficulty(), true);
+		// stage3: search users who are online and calling, except game creator itself
+		User exceptPlayer = game.getCreator();
+		List<User> onlineAndCalling = userService.getUsersOnlineAndCalling(exceptPlayer); 
+		opponent = findUser(onlineAndCalling, game.getTheme(), game.getDifficulty(), true);
 		if (opponent != null){
 			return opponent;
 		}
@@ -184,21 +185,25 @@ public class OpponentSearchServiceImpl implements OpponentSearchService {
 	
 	private List<Category> getListOfAllSubThemes(Category theme)
 	{
+		List<Category> result = new ArrayList<Category>(); 
 		List<Category> childThemes = categoryService.getChildThemesByParent(theme);
+				
 		if (childThemes == null || childThemes.size() == 0)
 		{
-			return new ArrayList<Category>();
+			return result;
 		}
+		
+		result.addAll(childThemes);
 		
 		for (Category childTheme: childThemes)
 		{
 			if (!childTheme.isCategory())
 			{
-				childThemes.addAll(getListOfAllSubThemes(childTheme));
+				result.addAll(getListOfAllSubThemes(childTheme));
 			}
 		}
 			
-		return childThemes;
+		return result;
 				
 	}
 	

@@ -98,8 +98,8 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public List<User> getUsersOnlineAndCalling() {
-		return userRepository.getUsersOnlineAndCalling();
+	public List<User> getUsersOnlineAndCalling(User exceptUser) {
+		return userRepository.getUsersOnlineAndCalling(exceptUser.getId());
 	}
 
 	@Override

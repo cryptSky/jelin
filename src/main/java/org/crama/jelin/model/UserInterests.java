@@ -29,9 +29,6 @@ public class UserInterests implements Serializable {
 	@JoinColumn(name="USER_ID", nullable=false)
 	private User user;
 	
-	@Column(name="USER_ID", updatable=false, insertable=false)
-	private Long user_fk;
-	
 	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JoinColumn(name="CATEGORY_ID", nullable=false)
 	private Category theme;

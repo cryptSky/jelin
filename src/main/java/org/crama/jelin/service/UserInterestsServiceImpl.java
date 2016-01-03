@@ -33,7 +33,7 @@ public class UserInterestsServiceImpl implements UserInterestsService {
 	@Override
 	public List<User> getUsersByThemeAndDifficultyFromUsers(List<User> users, Category theme,
 			Difficulty difficulty) {
-		return userInterestRepository.getUsersByThemeAndDifficultyFromUsers(users, theme, difficulty);
+		return userInterestRepository.getUsersByThemeAndDifficultyFromUsers(users, theme.getId(), difficulty.getId());
 	}
 
 }

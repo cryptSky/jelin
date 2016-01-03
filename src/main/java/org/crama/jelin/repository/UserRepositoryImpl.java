@@ -16,7 +16,6 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Criterion;
-import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -165,12 +164,13 @@ public class UserRepositoryImpl implements UserRepository {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<User> getUsersOnlineAndCalling() {
+	public List<User> getUsersOnlineAndCalling(int exceptUserID) {
 		
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(User.class);
 		Criterion isOnline = Restrictions.eq("netStatus", NetStatus.ONLINE);
-		Criterion isFree = Restrictions.eq("processStatus", ProcessStatus.CALLING);
-		criteria.add(Restrictions.and(isOnline, isFree));
+		Criterion isCalling = Restrictions.eq("processStatus", ProcessStatus.CALLING);
+		criteria.add(Restrictions.and(isOnline, isCalling))
+				.add(Restrictions.ne("id", exceptUserID));
 		
 		return criteria.list();
 	}

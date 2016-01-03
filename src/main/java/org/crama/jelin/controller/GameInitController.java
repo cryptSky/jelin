@@ -317,7 +317,7 @@ public class GameInitController {
 
 	@RequestMapping(value="/api/game/invite", method=RequestMethod.POST)
 	@ResponseStatus(HttpStatus.OK)
-	public void inviteRandomUser() {
+	public User inviteRandomUser() {
 		User creator = userDetailsService.getPrincipal();
 	
 		//1. check if user have created game
@@ -325,22 +325,25 @@ public class GameInitController {
 		
 		//3. check if game is random
 		if (!game.getRandom()) {
-			return;
+			return null;
 		}
 				
 		//4. check if user state is calling
 		if (creator.getProcessStatus() != ProcessStatus.CALLING) {
-			return;
+			return null;
 		}
 		
 		GameBot botOpponent = null;
-		User opponent = opponentSearchService.findOppenent(game);
+		User opponent = opponentSearchService.findOpponent(game);
 		if (opponent == null)
 		{
 			botOpponent = opponentSearchService.getBot(game);
+			return null;
 		}
-		
-		return;
-		
+		else
+		{
+			return opponent;
+		}
+				
 	}
 }
