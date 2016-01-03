@@ -317,7 +317,7 @@ public class GameInitController {
 
 	@RequestMapping(value="/api/game/invite", method=RequestMethod.POST)
 	@ResponseStatus(HttpStatus.OK)
-	public User inviteRandomUser() {
+	public String inviteRandomUser() {
 		User creator = userDetailsService.getPrincipal();
 	
 		//1. check if user have created game
@@ -342,8 +342,9 @@ public class GameInitController {
 		}
 		else
 		{
-			return opponent;
-		}
-				
+			//invite user
+			InviteStatus inviteStatus = gameInitService.inviteUser(game, creator, opponent);
+			return Constants.InviteStatusString[inviteStatus.getValue()];
+		}				
 	}
 }
