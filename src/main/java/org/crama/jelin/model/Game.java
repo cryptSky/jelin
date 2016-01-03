@@ -1,6 +1,7 @@
 package org.crama.jelin.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 import org.crama.jelin.model.Constants.GameState;
@@ -63,6 +64,33 @@ public class Game implements Serializable {
 	@JoinColumn(name="CREATOR_ID", nullable = false)
 	private User creator;
 	
+	@JsonIgnore
+	@Column(name = "PLAYER1_POINTS", nullable = false)
+	private int player1Points;
+	
+	@JsonIgnore
+	@Column(name = "PLAYER2_POINTS", nullable = false)
+	private int player2Points;
+	
+	@JsonIgnore
+	@Column(name = "PLAYER3_POINTS", nullable = false)
+	private int player3Points;
+	
+	@JsonIgnore
+	@Column(name = "PLAYER4_POINTS")
+	private int player4Points;
+	
+	@JsonIgnore
+	@Column(name = "HOST")
+	private int host;
+	
+	@JsonIgnore
+	@Column(name = "ROUND")
+	private int round;
+	
+	@JsonIgnore
+	private ArrayList<Integer> hostOrder;
+	
 	/*@JsonIgnore
 	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JoinTable(name = "GameOpponent", 
@@ -123,14 +151,6 @@ public class Game implements Serializable {
 	public void setDifficulty(Difficulty difficulty) {
 		this.difficulty = difficulty;
 	}
-/*
-	public Set<GameUser> getGamePlayerSet() {
-		return gamePlayerSet;
-	}
-
-	public void setGamePlayerSet(Set<GameUser> gamePlayerSet) {
-		this.gamePlayerSet = gamePlayerSet;
-	}*/
 
 	public GameState getGameState() {
 		return gameState;
@@ -149,21 +169,68 @@ public class Game implements Serializable {
 	}
 
 	
-	
-	/*public Set<User> getGameOpponents() {
-		return gameOpponents;
-	}
-
-	public void setGameOpponents(Set<User> gameOpponents) {
-		this.gameOpponents = gameOpponents;
-	}*/
-
 	public Set<GameOpponent> getGameOpponents() {
 		return gameOpponents;
 	}
 
 	public void setGameOpponents(Set<GameOpponent> gameOpponents) {
 		this.gameOpponents = gameOpponents;
+	}
+
+	public int getPlayer1Points() {
+		return player1Points;
+	}
+
+	public void setPlayer1Points(int player1Points) {
+		this.player1Points = player1Points;
+	}
+
+	public int getPlayer2Points() {
+		return player2Points;
+	}
+
+	public void setPlayer2Points(int player2Points) {
+		this.player2Points = player2Points;
+	}
+
+	public int getPlayer3Points() {
+		return player3Points;
+	}
+
+	public void setPlayer3Points(int player3Points) {
+		this.player3Points = player3Points;
+	}
+
+	public int getPlayer4Points() {
+		return player4Points;
+	}
+
+	public void setPlayer4Points(int player4Points) {
+		this.player4Points = player4Points;
+	}
+
+	public int getHost() {
+		return host;
+	}
+
+	public void setHost(int host) {
+		this.host = host;
+	}
+
+	public int getRound() {
+		return round;
+	}
+
+	public void setRound(int round) {
+		this.round = round;
+	}
+
+	public ArrayList<Integer> getHostOrder() {
+		return hostOrder;
+	}
+
+	public void setHostOrder(ArrayList<Integer> hostOrder) {
+		this.hostOrder = hostOrder;
 	}
 
 	@Override
