@@ -63,6 +63,11 @@ public class Question implements Serializable {
 	@JoinColumn(name="CATEGORY_ID")
 	private Category category;
 
+	public Question()
+	{
+		
+	}
+	
 	public Question(String question, String var1, String var2, String var3, String var4, int answer, int time,
 			int timeB, int timeC, Difficulty difficulty, Category category) {
 		super();

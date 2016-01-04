@@ -42,7 +42,7 @@ public class GameController {
 	private UserService userService;
 		
 	@RequestMapping(value="/api/game/start", method=RequestMethod.POST)
-	@ResponseStatus(HttpStatus.CREATED)
+	@ResponseStatus(HttpStatus.OK)
     public boolean startGame() {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		if (!(auth instanceof AnonymousAuthenticationToken)) {
@@ -56,7 +56,23 @@ public class GameController {
 		        	return false;
 		        }
 		        
+		        gameService.startGame(game);
+		        
 		        return true;
+		}       
+		
+		return false;
+	}		
+	
+	@RequestMapping(value="/api/game/host", method=RequestMethod.POST)
+	@ResponseStatus(HttpStatus.OK)
+    public boolean checkHost() {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		if (!(auth instanceof AnonymousAuthenticationToken)) {
+		        UserDetails userDetails = (UserDetails)auth.getPrincipal();
+		        User player = userService.getUserByUsername(userDetails.getUsername());
+		        
+		       return false;
 		}       
 		
 		return false;

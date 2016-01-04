@@ -7,6 +7,9 @@ import java.util.List;
 import java.util.Random;
 
 import org.crama.jelin.model.Category;
+import org.crama.jelin.model.Character;
+import org.crama.jelin.model.Constants.UserType;
+import org.crama.jelin.repository.UserRepository;
 import org.crama.jelin.model.Difficulty;
 import org.crama.jelin.model.Game;
 import org.crama.jelin.model.GameBot;
@@ -26,7 +29,9 @@ public class OpponentSearchServiceImpl implements OpponentSearchService {
 	@Autowired
 	private CategoryService categoryService;
 	
-	
+	@Autowired
+	private UserRepository userRepository;
+		
 	@Override
 	public User findOpponent(Game game) {
 		
@@ -56,9 +61,21 @@ public class OpponentSearchServiceImpl implements OpponentSearchService {
 	}
 	
 	@Override
-	public GameBot getBot(Game game) {
-		// TODO Auto-generated method stub
-		return null;
+	public User createBot(Game game) {
+		User userBot = new User("username", "email");
+		userBot.setType(UserType.BOT);
+		userRepository.saveUser(userBot);
+		
+		Category theme = game.getTheme();
+		Difficulty diff = game.getDifficulty();
+		Character character = new Character();
+		
+		GameBot bot = new GameBot("nickname","avatar", character, diff, 
+											theme, 10, "enhacements", 0.5, 0.5);
+				
+		userBot.setBot(bot);
+		
+		return userBot;
 	}
 	
 	private User findUser(List<User> users, Category category, Difficulty difficulty, boolean random)

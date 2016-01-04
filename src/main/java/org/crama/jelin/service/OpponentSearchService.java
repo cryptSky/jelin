@@ -8,5 +8,5 @@ public interface OpponentSearchService {
 	
 	User findOpponent(Game game);
 	
-	GameBot getBot(Game game);
+	User createBot(Game game);
 }

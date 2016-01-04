@@ -333,11 +333,10 @@ public class GameInitController {
 			return null;
 		}
 		
-		GameBot botOpponent = null;
 		User opponent = opponentSearchService.findOpponent(game);
 		if (opponent == null)
 		{
-			botOpponent = opponentSearchService.getBot(game);
+			opponent = opponentSearchService.createBot(game);
 			return null;
 		}
 		else

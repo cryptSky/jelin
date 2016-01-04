@@ -1,10 +1,10 @@
 package org.crama.jelin.model;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 import org.crama.jelin.model.Constants.GameState;
+import org.crama.jelin.model.Constants.UserType;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -16,6 +16,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -52,7 +53,6 @@ public class Game implements Serializable {
 	@Column(name="IS_RANDOM", nullable=false)
 	private boolean random;
 	
-	@JsonIgnore
 	@Column(name = "STATE")
 	private GameState gameState;
 	
@@ -64,32 +64,26 @@ public class Game implements Serializable {
 	@JoinColumn(name="CREATOR_ID", nullable = false)
 	private User creator;
 	
-	@JsonIgnore
-	@Column(name = "PLAYER1_POINTS", nullable = false)
-	private int player1Points;
+	@Column(name = "CREATOR_POINTS", nullable = false)
+	private int creatorPoints;
 	
-	@JsonIgnore
 	@Column(name = "PLAYER2_POINTS", nullable = false)
 	private int player2Points;
 	
-	@JsonIgnore
 	@Column(name = "PLAYER3_POINTS", nullable = false)
 	private int player3Points;
 	
-	@JsonIgnore
 	@Column(name = "PLAYER4_POINTS")
 	private int player4Points;
 	
-	@JsonIgnore
-	@Column(name = "HOST")
-	private int host;
+	@OneToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "HOST_ID")
+	private User host;
 	
 	@JsonIgnore
-	@Column(name = "ROUND")
-	private int round;
-	
-	@JsonIgnore
-	private ArrayList<Integer> hostOrder;
+	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JoinColumn(name = "ROUND")
+	private GameRound round;
 	
 	/*@JsonIgnore
 	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -108,10 +102,6 @@ public class Game implements Serializable {
 	private Set<GameOpponent> gameOpponents = new HashSet<GameOpponent>();
 	
 	
-	/*@JsonIgnore
-	@OneToMany(mappedBy = "game", fetch = FetchType.LAZY, cascade=CascadeType.ALL)
-    private Set<GameUser> gamePlayerSet = new HashSet<GameUser>(); 
-	*/
 	public Game() {}
 
 	public Game(Category theme, boolean isRandom) {
@@ -177,12 +167,12 @@ public class Game implements Serializable {
 		this.gameOpponents = gameOpponents;
 	}
 
-	public int getPlayer1Points() {
-		return player1Points;
+	public int getCreatorPoints() {
+		return creatorPoints;
 	}
 
-	public void setPlayer1Points(int player1Points) {
-		this.player1Points = player1Points;
+	public void setCreatorPoints(int creatorPoints) {
+		this.creatorPoints = creatorPoints;
 	}
 
 	public int getPlayer2Points() {
@@ -209,30 +199,23 @@ public class Game implements Serializable {
 		this.player4Points = player4Points;
 	}
 
-	public int getHost() {
+	public User getHost() {
 		return host;
 	}
 
-	public void setHost(int host) {
+	public void setHost(User host) {
 		this.host = host;
 	}
 
-	public int getRound() {
+	public GameRound getRound() {
 		return round;
 	}
 
-	public void setRound(int round) {
+	public void setRound(GameRound round) {
 		this.round = round;
 	}
 
-	public ArrayList<Integer> getHostOrder() {
-		return hostOrder;
-	}
-
-	public void setHostOrder(ArrayList<Integer> hostOrder) {
-		this.hostOrder = hostOrder;
-	}
-
+	
 	@Override
 	public String toString() {
 		return "Game [id=" + id + ", theme=" + theme + ", isRandom=" + random + ", gameState=" + gameState

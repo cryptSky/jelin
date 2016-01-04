@@ -2,6 +2,20 @@ package org.crama.jelin.model;
 
 public class Constants {
 	
+	public enum UserType {
+		HUMAN(0),
+		BOT(1);
+				
+		private final int value;
+	    private UserType(int value) {
+	        this.value = value;
+	    }
+
+	    public int getValue() {
+	        return value;
+	    }
+	}
+	
 	public enum NetStatus {
 		ONLINE(0),
 		SHADOW(1),

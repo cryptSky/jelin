@@ -6,65 +6,78 @@ import java.util.Random;
 
 import org.crama.jelin.model.Game;
 import org.crama.jelin.model.GameOpponent;
+import org.crama.jelin.model.GameRound;
 import org.crama.jelin.model.User;
+import org.crama.jelin.repository.GameRepository;
+import org.crama.jelin.repository.GameRoundRepository;
+import org.crama.jelin.repository.UserRepository;
 import org.crama.jelin.model.Constants.ProcessStatus;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service("gameService")
 public class GameServiceImpl implements GameService {
 
+	@Autowired
+	private GameRepository gameRepository;
+	
+	@Autowired
+	private UserRepository userRepository;
+	
+	@Autowired
+	private GameRoundRepository gameRoundRepository;
+	
+	private ArrayList<GameRound> gameRounds;
+	
 	@Override
-	public boolean startGame(Game game) {
-		ArrayList<Integer> hostOrder = setUpHosts(game);
-		game.setHostOrder(hostOrder);
+	public void startGame(Game game) {
+		ArrayList<User> hosts = setUpHosts(game);
 		
-		game.setHost(game.getHostOrder().get(0));
-		game.setRound(0);
+		gameRounds = new ArrayList<GameRound>();
+		for (int round = 0; round < 4; round++)
+		{
+			GameRound gameRound = new GameRound(game, round, hosts.get(round));
+			gameRounds.add(gameRound);
+		}
 		
+		gameRoundRepository.saveOrUpdateRounds(gameRounds);
+		
+		game.setHost(hosts.get(0));
+		game.setRound(gameRounds.get(0));
+		gameRepository.updateGame(game);
+						
 		User creator = game.getCreator();
 		creator.setProcessStatus(ProcessStatus.INGAME);
+		userRepository.updateUser(creator);
 		
 		for (GameOpponent opponent: game.getGameOpponents())
 		{
 			User player = opponent.getUser();
 			player.setProcessStatus(ProcessStatus.INGAME);
+			userRepository.updateUser(player);
 		}
-		
-		return true;
 		
 	}
 
-	private ArrayList<Integer> setUpHosts(Game game)
+	private ArrayList<User> setUpHosts(Game game)
 	{
 		int playersCount = game.getGameOpponents().size() + 1;
-		ArrayList<Integer> hostOrder = new ArrayList<Integer>();
-		hostOrder.add(0);
-		hostOrder.add(1);
-		hostOrder.add(2);
-		if (playersCount == 4)
+		ArrayList<User> hostOrder = new ArrayList<User>();
+		hostOrder.add(game.getCreator());
+		for (GameOpponent opponent: game.getGameOpponents())
 		{
-			hostOrder.add(3);
+			hostOrder.add(opponent.getUser());
 		}
-		else
+		
+		if (playersCount == 3)
 		{
 			Random r = new Random();
-			hostOrder.add(r.nextInt(3));
+			hostOrder.add(hostOrder.get(r.nextInt(3)));
 		}
 		
 		Collections.shuffle(hostOrder);
-		return hostOrder;
-		
+						
+		return hostOrder;		
 	}
 
-	@Override
-	public boolean nextRound(Game game) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean finishGame(Game game) {
-		// TODO Auto-generated method stub
-		return false;
-	}
 }

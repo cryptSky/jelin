@@ -4,16 +4,20 @@ import java.io.Serializable;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
+@Entity
+@Table(name = "GameBot")
 public class GameBot implements Serializable{
 	
-	private static final long serialVersionUID = 954949067847532111L;
+	private static final long serialVersionUID = 4455599900000532111L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
