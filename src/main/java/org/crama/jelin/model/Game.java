@@ -1,10 +1,10 @@
 package org.crama.jelin.model;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
-import org.crama.jelin.model.Constants.GameState;
-import org.crama.jelin.model.Constants.UserType;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -16,8 +16,9 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
+
+import org.crama.jelin.model.Constants.GameState;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -64,6 +65,8 @@ public class Game implements Serializable {
 	@JoinColumn(name="CREATOR_ID", nullable = false)
 	private User creator;
 	
+	@Column(name = "INIT_DATE")
+	private Date initDate;
 	
 	@JsonIgnore
 	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -165,7 +168,14 @@ public class Game implements Serializable {
 		this.round = round;
 	}
 
-	
+	public Date getInitDate() {
+		return initDate;
+	}
+
+	public void setInitDate(Date initDate) {
+		this.initDate = initDate;
+	}
+
 	@Override
 	public String toString() {
 		return "Game [id=" + id + ", theme=" + theme + ", isRandom=" + random + ", gameState=" + gameState
