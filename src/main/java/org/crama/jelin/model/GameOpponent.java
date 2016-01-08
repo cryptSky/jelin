@@ -32,12 +32,12 @@ public class GameOpponent implements Serializable {
 	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "GAME_ID")
 	private Game game;
-	
-	@Column(name = "POINTS")
-	private int points;
 
 	@Column(name = "STATUS")
 	private InviteStatus inviteStatus;
+	
+	@Column(name= "PLAYER_NUM")
+	private int playerNum = 0;
 	
 	public GameOpponent() {
 		
@@ -91,12 +91,13 @@ public class GameOpponent implements Serializable {
 		this.inviteStatus = inviteStatus;
 	}
 
-	public int getPoints() {
-		return points;
+	
+	public int getPlayerNum() {
+		return playerNum;
 	}
 
-	public void setPoints(int points) {
-		this.points = points;
+	public void setPlayerNum(int playerNum) {
+		this.playerNum = playerNum;
 	}
 
 	@Override

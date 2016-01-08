@@ -222,39 +222,6 @@ public class GameInitServiceImpl implements GameInitService {
 		
 		return null;
 		
-		//TODO fix it!
-		/*Runnable inviteExpireProcess = new Runnable() {
-			 public void run() {
-				 System.out.println("Invitation expired!");
-				 
-				 try {
-					 InviteStatus statusExpired = gameInitRepository.getInviteStatus(InviteStatus.EXPIRED);
-					 System.out.println("Invite Status: " + statusExpired);
-					 Set<GameOpponent> opponents = game.getGameOpponents();
-					 System.out.println("Opponents: " + opponents);
-					 for (GameOpponent o: opponents) {
-						 System.out.println("inside a loop: " + o);
-						 if (o.getUser().equals(opponent)) {
-							 
-							 System.out.println("Update status: " + statusExpired);
-							 o.setInviteStatus(statusExpired);
-							 gameInitRepository.updateGame(game);
-							 break;
-						 }
-					}
-					
-					System.out.println("Update user process status");
-					ProcessStatus status = userRepository.getProcessStatus(ProcessStatus.CALLING);
-					creator.setProcessStatus(status);
-					userRepository.updateUser(creator);
-				}
-				 catch (Exception e) {
-					 System.out.println(e.getMessage());
-					 e.printStackTrace();
-				 }
-			 }
-	    };
-	    this.inviteTimer = this.scheduler.schedule(inviteExpireProcess, TIMEOUT, TimeUnit.SECONDS);*/
 	}
 
 	@Override
@@ -266,19 +233,47 @@ public class GameInitServiceImpl implements GameInitService {
 	@Override
 	public void confirmInvite(Game game, User user) {
 	
+		boolean is2Free = true;
+		boolean is3Free = true;
+		boolean is4Free = true;
+		
 		InviteStatus statusAccepted = InviteStatus.ACCEPTED;
 		Set<GameOpponent> opponents = game.getGameOpponents();
-		 
-	
+		
+		//check free player numbers
+		for (GameOpponent o: opponents) {
+			if (o.getInviteStatus().equals(InviteStatus.ACCEPTED)) {
+				int playerNum = o.getPlayerNum();
+				if (playerNum == 2) {
+					is2Free = false;
+				}
+				else if (playerNum == 3) {
+					is3Free = false;
+				}
+				else if (playerNum == 4) {
+					is4Free = false;
+				}
+			}
+		}
 		
 		 for (GameOpponent o: opponents) {
 			 
 			 System.out.println("Confirm invite: " + o.getUser().getUsername() + ", " + o.getInviteStatus());
 			 
-			 if (o.getUser().equals(user)) {
+			 if (o.getUser().getId() == user.getId()) {
+			 //if (o.getUser().equals(user)) {
 				 
 				 //accept invitation
 				 o.setInviteStatus(statusAccepted);
+				 if (is2Free) {
+					 o.setPlayerNum(2);
+				 }
+				 else if (is3Free) {
+					 o.setPlayerNum(3);
+				 }
+				 else if (is4Free) {
+					 o.setPlayerNum(4);
+				 }
 				 gameInitRepository.updateGame(game);
 				 
 				 user.setProcessStatus(ProcessStatus.WAITING);
