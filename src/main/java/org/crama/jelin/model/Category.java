@@ -1,8 +1,6 @@
 package org.crama.jelin.model;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -13,10 +11,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 
@@ -45,10 +41,6 @@ public class Category implements Serializable {
     @JoinColumn(name="PARENT_ID")
 	private Category parent;
 	
-	@JsonIgnore
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    public List<Category> childCategories = new ArrayList<Category>();
-		
 	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name="GROUP_ID", nullable=false)
 	private Group group;
@@ -114,14 +106,6 @@ public class Category implements Serializable {
 
 	public void setGroup(Group group) {
 		this.group = group;
-	}
-
-	public List<Category> getChildCategories() {
-		return childCategories;
-	}
-
-	public void setChildCategories(List<Category> childCategories) {
-		this.childCategories = childCategories;
 	}
 
 	@Override

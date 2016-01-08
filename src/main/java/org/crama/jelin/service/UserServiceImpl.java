@@ -7,6 +7,7 @@ import org.crama.jelin.exception.GameException;
 import org.crama.jelin.model.Constants;
 import org.crama.jelin.model.Constants.NetStatus;
 import org.crama.jelin.model.Constants.ProcessStatus;
+import org.crama.jelin.model.Constants.UserType;
 import org.crama.jelin.model.User;
 import org.crama.jelin.model.UserModel;
 import org.crama.jelin.model.UserRole;
@@ -57,6 +58,7 @@ public class UserServiceImpl implements UserService {
 			userRepository.saveUserModel(model);
 			//userRepository.saveUserRoles(model);
 			User newUser = new User(model.getUsername(), model.getEmail());
+			newUser.setType(UserType.HUMAN);
 			newUser.setNetStatus(NetStatus.ONLINE);
 			newUser.setProcessStatus(ProcessStatus.FREE);
 			userRepository.saveUser(newUser);
@@ -101,8 +103,8 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public List<User> getUsersOnlineAndFreeNotRecentlyInvolved() {
-		return userRepository.getUsersOnlineAndFreeNotRecentlyInvolved();
+	public List<User> getUsersOnlineAndCalling(User exceptUser) {
+		return userRepository.getUsersOnlineAndCalling(exceptUser.getId());
 	}
 
 	@Override

@@ -33,8 +33,8 @@ public class GameOpponent implements Serializable {
     @JoinColumn(name = "GAME_ID")
 	private Game game;
 	
-	/*@Column(name = "CREATOR", nullable = false)
-	private boolean creator;*/
+	@Column(name = "POINTS")
+	private int points;
 
 	@Column(name = "STATUS")
 	private InviteStatus inviteStatus;
@@ -74,6 +74,7 @@ public class GameOpponent implements Serializable {
 		this.user = user;
 	}
 
+	
 	public Game getGame() {
 		return game;
 	}
@@ -90,19 +91,18 @@ public class GameOpponent implements Serializable {
 		this.inviteStatus = inviteStatus;
 	}
 
+	public int getPoints() {
+		return points;
+	}
+
+	public void setPoints(int points) {
+		this.points = points;
+	}
+
 	@Override
 	public String toString() {
 		return "GameOpponent [id=" + id + ", user=" + user + ", game=" + game + ", inviteStatus=" + inviteStatus + "]";
 	}
 
-	/*public boolean isCreator() {
-		return creator;
-	}
-
-	public void setCreator(boolean creator) {
-		this.creator = creator;
-	}*/
-
-	
 	
 }

@@ -1,6 +1,5 @@
 package org.crama.jelin.controller;
 
-
 import java.util.Set;
 
 import org.crama.jelin.exception.GameException;
@@ -13,7 +12,6 @@ import org.crama.jelin.model.Constants.NetStatus;
 import org.crama.jelin.model.Constants.ProcessStatus;
 import org.crama.jelin.model.Difficulty;
 import org.crama.jelin.model.Game;
-import org.crama.jelin.model.GameBot;
 import org.crama.jelin.model.User;
 import org.crama.jelin.service.CategoryService;
 import org.crama.jelin.service.DifficultyService;
@@ -21,6 +19,8 @@ import org.crama.jelin.service.GameInitService;
 import org.crama.jelin.service.OpponentSearchService;
 import org.crama.jelin.service.UserDetailsServiceImpl;
 import org.crama.jelin.service.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -34,6 +34,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class GameInitController {
 
+	private static final Logger logger = LoggerFactory.getLogger(GameInitController.class);
+	
 	@Autowired
 	private GameInitService gameInitService;
 	@Autowired
@@ -83,8 +85,6 @@ public class GameInitController {
         	return true;
         }
         
-    	       
-		
 	}		
 
 	@RequestMapping(value="/api/game", method=RequestMethod.POST, params={"difficulty"})
@@ -319,7 +319,9 @@ public class GameInitController {
 
 	@RequestMapping(value="/api/game/invite", method=RequestMethod.POST)
 	@ResponseStatus(HttpStatus.OK)
-	public @ResponseBody User inviteRandomUser() throws GameException {
+
+	public @ResponseBody String inviteRandomUser() throws GameException {
+
 		User creator = userDetailsService.getPrincipal();
 		Game game = gameInitService.getCreatedGame(creator);
 		
@@ -343,15 +345,17 @@ public class GameInitController {
 		    			+ "Current status: " + creator.getProcessStatus());
 		}
 		
-		GameBot botOpponent = null;
-		User opponent = opponentSearchService.findOppenent(game);
-		if (opponent == null)
-		{
-			botOpponent = opponentSearchService.getBot(game);
+		User opponent = opponentSearchService.findOpponent(game);
+		if (opponent == null) {
+			opponent = opponentSearchService.createBot(game);
+			return null;
 		}
-		
-		return opponent;
-		
+
+		else {
+			//invite user
+			InviteStatus inviteStatus = gameInitService.inviteUser(game, creator, opponent);
+			return Constants.InviteStatusString[inviteStatus.getValue()];
+		}				
 	}
 	
 	@RequestMapping(value="/api/game/close", method=RequestMethod.POST)

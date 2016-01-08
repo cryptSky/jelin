@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.Set;
 import org.crama.jelin.model.Constants.NetStatus;
 import org.crama.jelin.model.Constants.ProcessStatus;
+import org.crama.jelin.model.Constants.UserType;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -45,12 +46,20 @@ public class User implements Serializable {
 	private String email;
 	
 	@JsonIgnore
+	@Column(name = "TYPE", nullable = false)
+	private UserType type;
+	
+	@JsonIgnore
 	@Column(name = "NET_STATUS")
 	private NetStatus netStatus;
-	
+		
 	@JsonIgnore
 	@Column(name = "PROCESS_STATUS")
 	private ProcessStatus processStatus;
+	
+	@JsonIgnore
+	@JoinColumn(name = "BOT_ID")
+	private GameBot bot;
 	
 	@JsonIgnore
 	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -142,6 +151,22 @@ public class User implements Serializable {
 
 	public void setProcessStatus(ProcessStatus processStatus) {
 		this.processStatus = processStatus;
+	}
+
+	public GameBot getBot() {
+		return bot;
+	}
+
+	public void setBot(GameBot bot) {
+		this.bot = bot;
+	}
+
+	public UserType getType() {
+		return type;
+	}
+
+	public void setType(UserType type) {
+		this.type = type;
 	}
 
 	public Date getLastGameTime() {

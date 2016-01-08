@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 import org.crama.jelin.model.Constants.GameState;
+import org.crama.jelin.model.Constants.UserType;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -15,6 +16,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -51,7 +53,6 @@ public class Game implements Serializable {
 	@Column(name="IS_RANDOM", nullable=false)
 	private boolean random;
 	
-	@JsonIgnore
 	@Column(name = "STATE")
 	private GameState gameState;
 	
@@ -62,6 +63,27 @@ public class Game implements Serializable {
 	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JoinColumn(name="CREATOR_ID", nullable = false)
 	private User creator;
+	
+	@Column(name = "CREATOR_POINTS", nullable = false)
+	private int creatorPoints;
+	
+	@Column(name = "PLAYER2_POINTS", nullable = false)
+	private int player2Points;
+	
+	@Column(name = "PLAYER3_POINTS", nullable = false)
+	private int player3Points;
+	
+	@Column(name = "PLAYER4_POINTS")
+	private int player4Points;
+	
+	@OneToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "HOST_ID")
+	private User host;
+	
+	@JsonIgnore
+	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JoinColumn(name = "ROUND")
+	private GameRound round;
 	
 	/*@JsonIgnore
 	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -80,10 +102,6 @@ public class Game implements Serializable {
 	private Set<GameOpponent> gameOpponents = new HashSet<GameOpponent>();
 	
 	
-	/*@JsonIgnore
-	@OneToMany(mappedBy = "game", fetch = FetchType.LAZY, cascade=CascadeType.ALL)
-    private Set<GameUser> gamePlayerSet = new HashSet<GameUser>(); 
-	*/
 	public Game() {}
 
 	public Game(Category theme, boolean isRandom) {
@@ -128,14 +146,6 @@ public class Game implements Serializable {
 	public void setDifficulty(Difficulty difficulty) {
 		this.difficulty = difficulty;
 	}
-/*
-	public Set<GameUser> getGamePlayerSet() {
-		return gamePlayerSet;
-	}
-
-	public void setGamePlayerSet(Set<GameUser> gamePlayerSet) {
-		this.gamePlayerSet = gamePlayerSet;
-	}*/
 
 	public GameState getGameState() {
 		return gameState;
@@ -154,15 +164,6 @@ public class Game implements Serializable {
 	}
 
 	
-	
-	/*public Set<User> getGameOpponents() {
-		return gameOpponents;
-	}
-
-	public void setGameOpponents(Set<User> gameOpponents) {
-		this.gameOpponents = gameOpponents;
-	}*/
-
 	public Set<GameOpponent> getGameOpponents() {
 		return gameOpponents;
 	}
@@ -171,6 +172,55 @@ public class Game implements Serializable {
 		this.gameOpponents = gameOpponents;
 	}
 
+	public int getCreatorPoints() {
+		return creatorPoints;
+	}
+
+	public void setCreatorPoints(int creatorPoints) {
+		this.creatorPoints = creatorPoints;
+	}
+
+	public int getPlayer2Points() {
+		return player2Points;
+	}
+
+	public void setPlayer2Points(int player2Points) {
+		this.player2Points = player2Points;
+	}
+
+	public int getPlayer3Points() {
+		return player3Points;
+	}
+
+	public void setPlayer3Points(int player3Points) {
+		this.player3Points = player3Points;
+	}
+
+	public int getPlayer4Points() {
+		return player4Points;
+	}
+
+	public void setPlayer4Points(int player4Points) {
+		this.player4Points = player4Points;
+	}
+
+	public User getHost() {
+		return host;
+	}
+
+	public void setHost(User host) {
+		this.host = host;
+	}
+
+	public GameRound getRound() {
+		return round;
+	}
+
+	public void setRound(GameRound round) {
+		this.round = round;
+	}
+
+	
 	@Override
 	public String toString() {
 		return "Game [id=" + id + ", theme=" + theme + ", isRandom=" + random + ", gameState=" + gameState
