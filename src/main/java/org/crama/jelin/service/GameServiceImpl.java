@@ -14,6 +14,7 @@ import org.crama.jelin.repository.UserRepository;
 import org.crama.jelin.model.Constants.ProcessStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service("gameService")
 public class GameServiceImpl implements GameService {
@@ -30,6 +31,7 @@ public class GameServiceImpl implements GameService {
 	private ArrayList<GameRound> gameRounds;
 	
 	@Override
+	@Transactional
 	public void startGame(Game game) {
 		ArrayList<User> hosts = setUpHosts(game);
 		

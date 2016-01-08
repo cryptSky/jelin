@@ -21,4 +21,5 @@ public interface GameInitRepository {
 	void clearSession();
 
 	boolean removeGameOpponent(Game game, User user);
+		
 }

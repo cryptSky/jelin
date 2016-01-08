@@ -54,6 +54,10 @@ public class GameInitRepositoryImpl implements GameInitRepository {
 			"WHERE game = :game "
 			+ "AND user = :user";
 	
+	public static final String DELETE_NOT_READY_OPPONENTS = "DELETE GameOpponent " +
+			"WHERE game = :game "
+			+ "AND NOT inviteStatus = :acceptedInviteStatus";
+	
 	@Override
 	@Transactional
 	public boolean saveGame(Game game) {

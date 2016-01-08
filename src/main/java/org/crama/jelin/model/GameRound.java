@@ -32,7 +32,7 @@ public class GameRound implements Serializable {
 	private int roundNumber;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
-	@Column(name = "HOST")
+	@JoinColumn(name = "HOST")
 	private User host;
 
 	public GameRound(Game game, int roundNumber, User host) {
