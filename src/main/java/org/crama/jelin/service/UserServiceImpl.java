@@ -2,6 +2,9 @@ package org.crama.jelin.service;
 
 import java.util.List;
 
+import org.crama.jelin.exception.ErrorMessagesStorage;
+import org.crama.jelin.exception.GameException;
+import org.crama.jelin.model.Constants;
 import org.crama.jelin.model.Constants.NetStatus;
 import org.crama.jelin.model.Constants.ProcessStatus;
 import org.crama.jelin.model.User;
@@ -107,5 +110,32 @@ public class UserServiceImpl implements UserService {
 		
 		return userRepository.getUser(userId);
 	}
+
+	@Override
+	public void checkUserAuthorized(User creator) throws GameException {
+		if (creator == null) {
+        	throw new GameException(101, ErrorMessagesStorage.ERROR_101.getMessage());
+        	
+        }
+	}
+
+	@Override
+	public boolean checkUserStatusIsEquals(User creator, ProcessStatus ps) throws GameException {
+		if (!creator.getProcessStatus().equals(ps)) {
+        	System.out.println("User is in status: " + creator.getProcessStatus());
+        	return false; 
+        
+		}
+		return true;
+	}
+
+	@Override
+	public List<User> getAllUsers(User user) {
+		List<User> all = userRepository.getAllUsers();
+		all.remove(user);
+		
+		return all;
+	}
+	
 
 }

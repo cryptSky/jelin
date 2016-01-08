@@ -171,11 +171,12 @@ public class GameInitRepositoryImpl implements GameInitRepository {
 
 	@Transactional
 	@Override
-	public void removeGameOpponent(Game game, User user) {
+	public boolean removeGameOpponent(Game game, User user) {
 		Query query = sessionFactory.getCurrentSession().createQuery(DELETE_GAME_OPPONENT);
 		query.setParameter("game", game);
 		query.setParameter("user", user);
-		query.executeUpdate();
+		int rowsUpdated = query.executeUpdate();
+		return rowsUpdated == 0? false: true; 
 	}
 
 }

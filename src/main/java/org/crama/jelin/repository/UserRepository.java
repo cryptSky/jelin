@@ -34,4 +34,6 @@ public interface UserRepository {
 
 	User getUser(int userId);
 
+	List<User> getAllUsers();
+
 }

@@ -2,6 +2,7 @@ package org.crama.jelin.service;
 
 import java.util.List;
 
+import org.crama.jelin.exception.GameException;
 import org.crama.jelin.model.Category;
 import org.crama.jelin.model.Group;
 
@@ -15,4 +16,6 @@ public interface CategoryService {
 	Category getThemeById(int themeID);
 	
 	List<Category> getChildThemesByParent(Category parent);
+
+	void checkCategoryNotNull(Category category) throws GameException;
 }

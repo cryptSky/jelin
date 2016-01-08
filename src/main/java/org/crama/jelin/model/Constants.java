@@ -32,6 +32,8 @@ public class Constants {
 	    public int getValue() {
 	        return value;
 	    }
+	    
+	    
 	}
 	
 	public enum GameState {

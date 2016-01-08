@@ -45,7 +45,7 @@ public class Game implements Serializable {
 	private int id;
 	
 	@ManyToOne
-	@JoinColumn(name="THEME_ID", nullable=false)
+	@JoinColumn(name="THEME_ID")
 	private Category theme;
 	
 	@Column(name="IS_RANDOM", nullable=false)
@@ -90,6 +90,11 @@ public class Game implements Serializable {
 		super();
 		this.theme = theme;
 		this.random = isRandom;		
+	}
+
+	public Game(Difficulty difficulty) {
+		super();
+		this.difficulty = difficulty;
 	}
 
 	public int getId() {

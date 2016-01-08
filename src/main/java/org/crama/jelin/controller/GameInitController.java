@@ -3,13 +3,17 @@ package org.crama.jelin.controller;
 
 import java.util.Set;
 
+import org.crama.jelin.exception.GameException;
+import org.crama.jelin.exception.RestError;
 import org.crama.jelin.model.Category;
 import org.crama.jelin.model.Constants;
+import org.crama.jelin.model.Constants.GameState;
+import org.crama.jelin.model.Constants.InviteStatus;
+import org.crama.jelin.model.Constants.NetStatus;
+import org.crama.jelin.model.Constants.ProcessStatus;
 import org.crama.jelin.model.Difficulty;
 import org.crama.jelin.model.Game;
 import org.crama.jelin.model.GameBot;
-import org.crama.jelin.model.Constants.GameState;
-import org.crama.jelin.model.Constants.*;
 import org.crama.jelin.model.User;
 import org.crama.jelin.service.CategoryService;
 import org.crama.jelin.service.DifficultyService;
@@ -19,10 +23,7 @@ import org.crama.jelin.service.UserDetailsServiceImpl;
 import org.crama.jelin.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -48,119 +49,135 @@ public class GameInitController {
 	
 	@RequestMapping(value="/api/game", method=RequestMethod.PUT, params={"theme", "random"})
 	@ResponseStatus(HttpStatus.CREATED)
-    public boolean initGame(@RequestParam int theme, @RequestParam boolean random) {
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		if (!(auth instanceof AnonymousAuthenticationToken)) {
-		        UserDetails userDetails = (UserDetails)auth.getPrincipal();
-		        User creator = userService.getUserByUsername(userDetails.getUsername());
-		        
-		        
-		        Category category = categoryService.getThemeById(theme);
-		        if (creator == null || category == null) {
-		        	return false;
-		        }
-		        else if (!creator.getProcessStatus().equals(ProcessStatus.FREE)) {
-		        	System.out.println("User is in status: " + creator.getProcessStatus());
-		        	return false;
-		        	
-		        }
-		        else {
-		        	if (gameInitService.initGame(creator, category, random)) {
-		        		userService.updateUserProcessStatus(creator, ProcessStatus.CALLING);
-		        		return true;
-		        	}
-		        	else {
-		        		return false;
-		        	}
-		        }
-		}
-		else {
-			return false;
-		}
+    public boolean setTheme(@RequestParam int theme, @RequestParam(required = false) boolean random) throws GameException {
+		   
+        User creator = userDetailsService.getPrincipal();
+        
+        Category category = categoryService.getThemeById(theme);
+        
+        //user is not null
+        userService.checkUserAuthorized(creator);
+        //category is not null
+        categoryService.checkCategoryNotNull(category);
+        if (!userService.checkUserStatusIsEquals(creator, ProcessStatus.FREE) && 
+        		!creator.getProcessStatus().equals(ProcessStatus.CALLING)) {
+        	//user is in process status free 
+	        throw new GameException(102, "User should be in status " + ProcessStatus.FREE + " or in status " + ProcessStatus.CALLING 
+	        		+ " to call this method. Current status: " + creator.getProcessStatus().getValue());
+        }
+        
+        Game game = gameInitService.getCreatedGame(creator);
+        if (game == null) {
+        	// new game
+        	if (gameInitService.initGame(creator, category, random)) {
+        		userService.updateUserProcessStatus(creator, ProcessStatus.CALLING);
+        		return true;
+        	}
+        	else {
+        		return false;
+           	}	
+        }
+        else {
+        	//game already exists
+        	gameInitService.updateCategory(game, category, random);
+        	return true;
+        }
+        
+    	       
 		
 	}		
 
 	@RequestMapping(value="/api/game", method=RequestMethod.POST, params={"difficulty"})
 	@ResponseStatus(HttpStatus.OK)
-    public boolean updateDifficulty(@RequestParam int difficulty) {
+    public boolean updateDifficulty(@RequestParam int difficulty) throws GameException {
 		Difficulty diff = difficultyService.getDifficultyById(difficulty);
-		if (diff == null) {
-			return false;
-		}
-		
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		if (!(auth instanceof AnonymousAuthenticationToken)) {
-		        UserDetails userDetails = (UserDetails)auth.getPrincipal();
-		        User creator = userService.getUserByUsername(userDetails.getUsername());
-		        
-		        if (creator == null) {
-		        	return false;
-		        }
-		        else if (!creator.getProcessStatus().equals(ProcessStatus.CALLING)) {
-		        	System.out.println("User is in status: " + creator.getProcessStatus() + ". User should be in status calling.");
-		        	return false;
-		        	
-		        }
-		        else {
-		        	Game game = gameInitService.getCreatedGame(creator);
-		        	return gameInitService.updateDifficulty(game, diff);
-		        }
-		}
-		else {
-			return false;
-		}
-		
+		User creator = userDetailsService.getPrincipal();
+		    
+        //user is not null
+        userService.checkUserAuthorized(creator);
+        //difficulty is not null
+        difficultyService.checkDifficultyNotNull(diff);
+        //user is in process status free 
+        if (!userService.checkUserStatusIsEquals(creator, ProcessStatus.FREE) && 
+        		!creator.getProcessStatus().equals(ProcessStatus.CALLING)) {
+        	//user is in process status free 
+	        throw new GameException(102, "User should be in status " + ProcessStatus.FREE + " or in status " + ProcessStatus.CALLING 
+	        		+ " to call this method. Current status: " + creator.getProcessStatus().getValue());
+        }
+        
+        /*else if (!creator.getProcessStatus().equals(ProcessStatus.CALLING)) {
+        	System.out.println("User is in status: " + creator.getProcessStatus() + ". User should be in status calling.");
+        	return false;
+        	
+        }*/
+        
+        Game game = gameInitService.getCreatedGame(creator);
+        
+        if (game == null) {
+        	gameInitService.initGame(creator, diff);
+        	userService.updateUserProcessStatus(creator, ProcessStatus.CALLING);
+        	return true;
+        }
+        else {
+        	return gameInitService.updateDifficulty(game, diff);
+	        
+        }
 	}
 	
 	@RequestMapping(value = "/api/game/opponents", method = RequestMethod.GET)
-	public Set<User> getOpponents() {
+	public Set<User> getOpponents() throws GameException {
+		
 		User creator = userDetailsService.getPrincipal();
-		//1. check if user have created game
-		System.out.println(creator);
 		Game game = gameInitService.getCreatedGame(creator);
+		
 		System.out.println(game);
-		if (game == null) {
-			return null;
+		System.out.println(creator);
+		
+		if (creator.getChoosenCharacter() == null) {
+			throw new GameException(501, "Character is not set");
 		}
-		//2. check if user set difficulty to the game
-		if (game.getDifficulty() == null) {
-			return null;
+		if (game.getTheme() == null) {
+			throw new GameException(406, "Game theme is not set" );
 		}
-		//3. check if game is not random
-		if (game.getRandom()) {
-			return null;
-		}
-		//4. check if user state is calling
-		if (creator.getProcessStatus() == ProcessStatus.CALLING) {
-			return null;
-		}
+		gameInitService.checkGameCreated(game);
+		difficultyService.checkDifficultyNotNull(game.getDifficulty());
+		gameInitService.checkGameRandom(game);
+		
+		
+		if (!userService.checkUserStatusIsEquals(creator, ProcessStatus.CALLING)) {
+        	//user is in process status free 
+	        throw new GameException(102, "User should be in status " + ProcessStatus.CALLING + " to get opponents. "
+	    			+ "User is in status: " + creator.getProcessStatus());
+        }
+		
 		Set<User> opponents = gameInitService.getGameOpponents(game);
 		return opponents;
 	}
 	
 	@RequestMapping(value = "/api/game/opponents/kick", method = RequestMethod.POST)
-	public void removeOpponent(@RequestParam int user) {
+	public void removeOpponent(@RequestParam int user) throws GameException {
+		
 		User creator = userDetailsService.getPrincipal();
-		//1. check if user have created game
-		System.out.println(creator);
 		Game game = gameInitService.getCreatedGame(creator);
+		
+		System.out.println(creator);
 		System.out.println(game);
-		if (game == null) {
-			return;
+		
+		if (creator.getChoosenCharacter() == null) {
+			throw new GameException(501, "Character is not set");
 		}
-		//2. check if user set difficulty to the game
-		if (game.getDifficulty() == null) {
-			return;
+		gameInitService.checkGameCreated(game);
+		difficultyService.checkDifficultyNotNull(game.getDifficulty());
+		gameInitService.checkGameRandom(game);
+		if (game.getTheme() == null) {
+			throw new GameException(406, "Game theme is not set" );
 		}
-		//3. check if game is not random
-		if (game.getRandom()) {
-			return;
-		}
-		//4. check if user state is calling
-		if (creator.getProcessStatus() == ProcessStatus.CALLING) {
-			return;
-		}
-		//5. check if user is in opponent set and remove it
+		if (!userService.checkUserStatusIsEquals(creator, ProcessStatus.CALLING)) {
+        	//user is in process status free 
+	        throw new GameException(102, "User should be in status " + ProcessStatus.CALLING + " to kick opponent. "
+	    			+ "User is in status: " + creator.getProcessStatus());
+        }
+		//check if user is in opponent set and remove it
 		gameInitService.removeOpponent(game, user);
 		
 	}
@@ -171,40 +188,44 @@ public class GameInitController {
 	}
 	
 	@RequestMapping(value = "/api/game/invite", method = RequestMethod.POST, params={"user"})
-	public @ResponseBody String inviteUser(@RequestParam int user) {
+	public @ResponseBody String inviteUser(@RequestParam int user) throws GameException {
+		
 		User creator = userDetailsService.getPrincipal();
-		//1. check if user have created game
 		Game game = gameInitService.getCreatedGame(creator);
-		if (game == null) {
-			return null;
+		
+		if (creator.getChoosenCharacter() == null) {
+			throw new GameException(501, "Character is not set");
 		}
-		//2. check if user set difficulty to the game
-		if (game.getDifficulty() == null) {
-			return null;
+		gameInitService.checkGameCreated(game);
+		difficultyService.checkDifficultyNotNull(game.getDifficulty());
+		gameInitService.checkGameRandom(game);
+		if (game.getTheme() == null) {
+			throw new GameException(406, "Game theme is not set" );
 		}
-		//3. check if game is not random
-		if (game.getRandom()) {
-			return null;
-		}
-		//4. check if user state is calling
-		if (!creator.getProcessStatus().equals(ProcessStatus.CALLING)) {
-			return null;
-		}
+		if (!userService.checkUserStatusIsEquals(creator, ProcessStatus.CALLING)) {
+        	//user is in process status free 
+	        throw new GameException(102, "User should be in status " + ProcessStatus.CALLING + " to get invite opponents. "
+	    			+ "User is in status: " + creator.getProcessStatus());
+        }
+		
+		gameInitService.checkNumOfOpponents(game);
+		
 		User opponent = userService.getUser(user);
 		//5. check opponent net status is online or shadow
 		if (opponent.getNetStatus().equals(NetStatus.OFFLINE)) {
-			return null;
+			throw new GameException(103, "Opponent is OFFLINE");
+
 		}
 		//6. check opponent process status is free
 		if (!opponent.getProcessStatus().equals(ProcessStatus.FREE)) {
-			System.out.println("Opponent is not free");
-			return null;
+			throw new GameException(104, "Opponent should be in status " + ProcessStatus.FREE 
+	    			+ "Current status: " + opponent.getProcessStatus());
 		}
 		//7 check if user already inviting someone
-		if (gameInitService.checkInviteStatus(game)) {
+		/*if (gameInitService.checkInviteStatus(game)) {
 			System.out.println("User already inviting opponent");
 			return null;
-		}
+		}*/
 		//invite user
 		InviteStatus inviteStatus = gameInitService.inviteUser(game, creator, opponent);
 		return Constants.InviteStatusString[inviteStatus.getValue()];
@@ -212,31 +233,26 @@ public class GameInitController {
 	
 	
 	@RequestMapping(value = "/api/game/invite/wait", method = RequestMethod.GET)
-	public boolean checkInviteStatus() {
+	public boolean checkInviteStatus() throws GameException {
 		User user = userDetailsService.getPrincipal();
-		
 		Game game = gameInitService.getCreatedGame(user);
-		if (game == null) {
-			//TODO throw Exception
-			System.out.println("game is null");
-			return true;
-		}
+		
+		gameInitService.checkGameCreated(game);
 		
 		return gameInitService.checkInviteStatus(game);
-		
 		
 	}
 	
 	
 	
 	@RequestMapping(value = "/api/game/invite", method = RequestMethod.GET)
-	public @ResponseBody Game getInvite() {
+	public @ResponseBody Game getInvite() throws GameException {
 		User user = userDetailsService.getPrincipal();
 		System.out.println(user.getUsername());
 		//1. check if user state is inviting
 		if (!user.getProcessStatus().equals(ProcessStatus.INVITING)) {
-			System.out.println("User is not in state INVITING. State: " + user.getProcessStatus());
-			return null;
+			throw new GameException(102, "User should be in status " + ProcessStatus.INVITING + " to get invitation. "
+	    			+ "User is in status: " + user.getProcessStatus());
 			
 		}
 		
@@ -246,65 +262,55 @@ public class GameInitController {
 	}
 	
 	@RequestMapping(value = "/api/game/invite/confirm", method = RequestMethod.POST)
-	public void confirmInvite() {
+	public void confirmInvite() throws GameException {
 		User user = userDetailsService.getPrincipal();
-		
-		//1. check if user state is inviting
-		if (!user.getProcessStatus().equals(ProcessStatus.INVITING)) {
-			System.out.println("User is not in state INVITING. State: " + user.getProcessStatus());
-			return;
-			
-		}
-		
-		//get invite game
 		Game game = gameInitService.getInviteGame(user);
-		if (game == null) {
-			return;
+	
+		
+		if (!user.getProcessStatus().equals(ProcessStatus.INVITING)) {
+			throw new GameException(102, "User should be in status " + ProcessStatus.INVITING + " to accept invitation. "
+    			+ "User is in status: " + user.getProcessStatus());
 		}
-		//2. check if user set difficulty to the game
-		if (game.getDifficulty() == null) {
-			return;
+		
+		gameInitService.checkGameCreated(game);
+		difficultyService.checkDifficultyNotNull(game.getDifficulty());
+		gameInitService.checkGameRandom(game);
+		if (game.getTheme() == null) {
+			throw new GameException(406, "Game theme is not set" );
 		}
-		//3. check if game is not random
-		if (game.getRandom()) {
-			return;
-		}
+	
 		//4. check if game state is created
 		if (!game.getGameState().equals(GameState.CREATED)) {
-			return;
+			throw new GameException(403, "Game is not in state CREATED");
 		}
+		gameInitService.checkNumOfOpponents(game);
+		
 		gameInitService.confirmInvite(game, user);
 		
 	}
 	
 	
 	@RequestMapping(value = "/api/game/invite/refuse", method = RequestMethod.POST)
-	public void refuseInvite() {
+	public void refuseInvite() throws GameException {
 		User user = userDetailsService.getPrincipal();
+		Game game = gameInitService.getInviteGame(user);
 		
 		//1. check if user state is inviting
 		if (!user.getProcessStatus().equals(ProcessStatus.INVITING)) {
-			System.out.println("User is not in state INVITING. State: " + user.getProcessStatus());
-			return;
+			throw new GameException(102, "User should be in status " + ProcessStatus.INVITING + " to refuse invitation. "
+	    			+ "User is in status: " + user.getProcessStatus());
 			
 		}
 		
-		//get invite game
-		Game game = gameInitService.getInviteGame(user);
-		if (game == null) {
-			return;
+		gameInitService.checkGameCreated(game);
+		difficultyService.checkDifficultyNotNull(game.getDifficulty());
+		gameInitService.checkGameRandom(game);
+		if (game.getTheme() == null) {
+			throw new GameException(406, "Game theme is not set" );
 		}
-		//2. check if user set difficulty to the game
-		if (game.getDifficulty() == null) {
-			return;
-		}
-		//3. check if game is not random
-		if (game.getRandom()) {
-			return;
-		}
-		//4. check if game state is created
+		//check if game state is created
 		if (!game.getGameState().equals(GameState.CREATED)) {
-			return;
+			throw new GameException(403, "Game is not in state CREATED");
 		}
 		gameInitService.refuseInvite(game, user);
 		
@@ -313,20 +319,28 @@ public class GameInitController {
 
 	@RequestMapping(value="/api/game/invite", method=RequestMethod.POST)
 	@ResponseStatus(HttpStatus.OK)
-	public void inviteRandomUser() {
+	public @ResponseBody User inviteRandomUser() throws GameException {
 		User creator = userDetailsService.getPrincipal();
-	
-		//1. check if user have created game
 		Game game = gameInitService.getCreatedGame(creator);
 		
+		if (creator.getChoosenCharacter() == null) {
+			throw new GameException(501, "Character is not set");
+		}
+		
+		gameInitService.checkGameCreated(game);
+		difficultyService.checkDifficultyNotNull(game.getDifficulty());
+		if (game.getTheme() == null) {
+			throw new GameException(406, "Game theme is not set" );
+		}
 		//3. check if game is random
 		if (!game.getRandom()) {
-			return;
+			throw new GameException(404, "Game is not random");
 		}
 				
 		//4. check if user state is calling
-		if (creator.getProcessStatus() != ProcessStatus.CALLING) {
-			return;
+		if (!creator.getProcessStatus().equals(ProcessStatus.CALLING)) {
+			 throw new GameException(102, "User should be in status " + ProcessStatus.CALLING
+		    			+ "Current status: " + creator.getProcessStatus());
 		}
 		
 		GameBot botOpponent = null;
@@ -336,7 +350,32 @@ public class GameInitController {
 			botOpponent = opponentSearchService.getBot(game);
 		}
 		
-		return;
+		return opponent;
 		
 	}
+	
+	@RequestMapping(value="/api/game/close", method=RequestMethod.POST)
+	public void closeGame() throws GameException {
+		User creator = userDetailsService.getPrincipal();
+		Game game = gameInitService.getCreatedGame(creator);
+		
+		gameInitService.checkGameCreated(game);
+		
+		gameInitService.closeGame(game);
+	}
+	
+	//EXCEPTION HANLER
+	
+	@ExceptionHandler
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+	public @ResponseBody RestError handleException(GameException ge) {
+		System.out.println("Game Init Controller: Game Exception");
+		
+		RestError re = new RestError(HttpStatus.BAD_REQUEST, ge.getCode(), ge.getMessage());	
+        return re;
+    }
+	
+	
+	
+	
 }

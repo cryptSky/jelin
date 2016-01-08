@@ -50,6 +50,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
       Authentication authentication = 
         SecurityContextHolder.getContext().getAuthentication();
       if ((authentication == null) || (!authentication.isAuthenticated())) {
+    	  
         return null;
       }
       

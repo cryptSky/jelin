@@ -2,7 +2,8 @@ package org.crama.jelin.controller;
 
 import java.util.List;
 
-
+import org.crama.jelin.exception.GameException;
+import org.crama.jelin.exception.RestError;
 import org.crama.jelin.model.Country;
 import org.crama.jelin.model.Region;
 import org.crama.jelin.model.Locality;
@@ -62,8 +63,10 @@ public class LocalityController {
 	
 	@ExceptionHandler
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
-	public @ResponseBody String handleException(MethodArgumentNotValidException exception) {
-		System.out.println("Validation Exception");
-        return exception.getMessage();
+	public @ResponseBody RestError handleException(GameException ge) {
+		System.out.println("Locality Controller: Game Exception");
+		
+		RestError re = new RestError(HttpStatus.BAD_REQUEST, ge.getCode(), ge.getMessage());	
+        return re;
     }
 }

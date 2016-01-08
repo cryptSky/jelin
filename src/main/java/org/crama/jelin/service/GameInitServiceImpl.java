@@ -3,6 +3,7 @@ package org.crama.jelin.service;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.crama.jelin.exception.GameException;
 import org.crama.jelin.model.Category;
 import org.crama.jelin.model.Difficulty;
 import org.crama.jelin.model.Game;
@@ -23,6 +24,8 @@ public class GameInitServiceImpl implements GameInitService {
 	private GameInitRepository gameInitRepository;
 	@Autowired
 	private UserRepository userRepository;
+	@Autowired
+	private UserService userService;
 	
 	//private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 	//private ScheduledFuture<?> inviteTimer;
@@ -46,6 +49,16 @@ public class GameInitServiceImpl implements GameInitService {
 		
 		return gameInitRepository.saveGame(game);
 	}
+	
+	@Override
+	public void initGame(User creator, Difficulty difficulty) {
+		Game game = new Game(difficulty);
+		game.setGameState(GameState.CREATED);
+		game.setCreator(creator);
+		
+		gameInitRepository.saveGame(game);
+	}
+
 
 	@Override
 	public boolean updateDifficulty(Game game, Difficulty difficulty) {
@@ -54,20 +67,29 @@ public class GameInitServiceImpl implements GameInitService {
 	}
 
 	@Override
+	public void updateCategory(Game game, Category category, boolean random) {
+		game.setTheme(category);
+		game.setRandom(random);
+		gameInitRepository.updateGame(game);
+	}
+	
+	@Override
 	public Game getCreatedGame(User creator) {
 		Game game = gameInitRepository.getCreatedGame(creator);
 		return game;
 	}
 
 	@Override
-	public void removeOpponent(Game game, int userId) {
+	public void removeOpponent(Game game, int userId) throws GameException {
 		System.out.println("inside remove opponent method:");
 		// update user status to free
 		User user = userRepository.getUser(userId);
+		userService.checkUserAuthorized(user);
 		user.setProcessStatus(ProcessStatus.FREE);
 		userRepository.updateUser(user);
 		
 		gameInitRepository.removeGameOpponent(game, user);
+		
 		
 		/*Set<GameOpponent> opponents = game.getGameOpponents();
 		for (GameOpponent o:new HashSet<GameOpponent>(opponents)) {
@@ -90,8 +112,11 @@ public class GameInitServiceImpl implements GameInitService {
 	public Set<User> getGameOpponents(Game game) {
 		Set<GameOpponent> opponents = game.getGameOpponents();
 		Set<User> acceptedOpponents = new HashSet<User>();
+		System.out.println("Op: " + opponents + ", " + opponents.size());
 		for (GameOpponent o: opponents) {
+			System.out.println("Op: " + o);
 			if (o.getInviteStatus().equals(InviteStatus.ACCEPTED)) {
+				System.out.println("Accepted opponent: " + o);
 				acceptedOpponents.add(o.getUser());
 			}
 		}
@@ -110,8 +135,13 @@ public class GameInitServiceImpl implements GameInitService {
 		
 		boolean isNewOpponent = true;
 		for (GameOpponent o: opponents) {
-			 
-			 if (o.getUser().equals(opponent)) {
+			
+			System.out.println("Game opponent: " + o);
+			System.out.println(o.getUser().getUsername() + ", " + o.getUser().getId() + ", " + 
+					opponent.getUsername() + ", " + opponent.getId());
+			
+			//if (o.getUser().equals(opponent)) {
+			 if (o.getUser().getId() == opponent.getId()) {
 				 
 				 System.out.println("User was already invited to the game. Update invitatioon with OPEN status");
 				 o.setInviteStatus(inviteStatus);
@@ -119,6 +149,7 @@ public class GameInitServiceImpl implements GameInitService {
 				 break;
 			 }
 		}
+		System.out.println("Is new opponent: " + isNewOpponent);
 		if (isNewOpponent) {
 			 opponents.add(newOpponent);
 			game.setGameOpponents(opponents);
@@ -171,7 +202,7 @@ public class GameInitServiceImpl implements GameInitService {
 			 
 			 for (GameOpponent o: updatedGame.getGameOpponents()) {
 				 System.out.println("inside a loop: " + o);
-				 if (o.getUser().equals(opponent)) {
+				 if (o.getUser().getId() == opponent.getId()) {
 					 
 					 System.out.println("Update status: " + statusExpired);
 					 o.setInviteStatus(statusExpired);
@@ -292,6 +323,41 @@ public class GameInitServiceImpl implements GameInitService {
 		}
 		
 		return false;
+	}
+
+	@Override
+	public void checkGameCreated(Game game) throws GameException {
+		if (game == null) {
+			throw new GameException(401, "Game is not created");
+		}
+	}
+
+	@Override
+	public void checkGameRandom(Game game) throws GameException {
+		if (game.getRandom()) {
+			throw new GameException(402, "Game is random");
+		}
+	}
+
+	@Override
+	public void checkNumOfOpponents(Game game) throws GameException {
+		if (getGameOpponents(game).size() >=3) {
+			throw new GameException(701, "There are already 3 opponents that have accepted game offer. Can't invite more opponents");
+		}
+	}
+
+	@Override
+	public void closeGame(Game game) {
+		game.setGameState(GameState.ENDED);
+		game.getCreator().setProcessStatus(ProcessStatus.FREE);
+		
+		gameInitRepository.updateGame(game);
+		Set<GameOpponent> opponents = game.getGameOpponents();
+		for (GameOpponent go: opponents) {
+			User o = go.getUser();
+			o.setProcessStatus(ProcessStatus.FREE);
+			userRepository.updateUser(o);
+		}
 	}
 
 }

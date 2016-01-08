@@ -39,6 +39,8 @@ public class UserRepositoryImpl implements UserRepository {
 	private static final String GET_USER_ROLE = "FROM UserRole "
 										+ "WHERE role = :role";
 	
+	private static final String GET_ALL_USERS = "FROM User ";
+
 		
 	@Override
 	public UserModel getUserModel(String username) {
@@ -192,6 +194,15 @@ public class UserRepositoryImpl implements UserRepository {
 	public User getUser(int userId) {
 		
 		return (User)sessionFactory.getCurrentSession().get(User.class, userId);
+	}
+
+	@Override
+	public List<User> getAllUsers() {
+		Query query = sessionFactory.getCurrentSession().createQuery(GET_ALL_USERS);
+		
+		@SuppressWarnings("unchecked")
+		List<User> user = (List<User>)query.list();
+		return user;
 	}
 
 	

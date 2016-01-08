@@ -39,5 +39,11 @@
 	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver"
 		p:prefix="/WEB-INF/views/" p:suffix=".jsp" p:order="1">
 	</bean>
+	
+	<!-- Register the error-messages.properties -->
+	<bean id="messageSource"
+		class="org.springframework.context.support.ResourceBundleMessageSource">
+		<property name="basename" value="error-messages" />
+	</bean>
 		
 </beans>
