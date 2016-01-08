@@ -44,7 +44,7 @@ public class GameServiceImpl implements GameService {
 		
 		gameRoundRepository.saveOrUpdateRounds(gameRounds);
 		
-		game.setHost(hosts.get(0));
+		//game.setHost(hosts.get(0));
 		game.setRound(gameRounds.get(0));
 		gameRepository.updateGame(game);
 						

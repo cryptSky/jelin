@@ -64,21 +64,6 @@ public class Game implements Serializable {
 	@JoinColumn(name="CREATOR_ID", nullable = false)
 	private User creator;
 	
-	@Column(name = "CREATOR_POINTS", nullable = false)
-	private int creatorPoints;
-	
-	@Column(name = "PLAYER2_POINTS", nullable = false)
-	private int player2Points;
-	
-	@Column(name = "PLAYER3_POINTS", nullable = false)
-	private int player3Points;
-	
-	@Column(name = "PLAYER4_POINTS")
-	private int player4Points;
-	
-	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "HOST_ID")
-	private User host;
 	
 	@JsonIgnore
 	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -170,46 +155,6 @@ public class Game implements Serializable {
 
 	public void setGameOpponents(Set<GameOpponent> gameOpponents) {
 		this.gameOpponents = gameOpponents;
-	}
-
-	public int getCreatorPoints() {
-		return creatorPoints;
-	}
-
-	public void setCreatorPoints(int creatorPoints) {
-		this.creatorPoints = creatorPoints;
-	}
-
-	public int getPlayer2Points() {
-		return player2Points;
-	}
-
-	public void setPlayer2Points(int player2Points) {
-		this.player2Points = player2Points;
-	}
-
-	public int getPlayer3Points() {
-		return player3Points;
-	}
-
-	public void setPlayer3Points(int player3Points) {
-		this.player3Points = player3Points;
-	}
-
-	public int getPlayer4Points() {
-		return player4Points;
-	}
-
-	public void setPlayer4Points(int player4Points) {
-		this.player4Points = player4Points;
-	}
-
-	public User getHost() {
-		return host;
-	}
-
-	public void setHost(User host) {
-		this.host = host;
 	}
 
 	public GameRound getRound() {
