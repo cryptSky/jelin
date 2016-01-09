@@ -1,7 +1,6 @@
 package org.crama.jelin.model;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -19,6 +18,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.crama.jelin.model.Constants.GameState;
+import org.crama.jelin.model.Constants.Readiness;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -67,6 +67,9 @@ public class Game implements Serializable {
 	
 	@Column(name = "INIT_DATE")
 	private Date initDate;
+	
+	@Column(name = "READINESS")
+	private Readiness readiness;
 	
 	@JsonIgnore
 	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -178,6 +181,14 @@ public class Game implements Serializable {
 
 	public void setInitDate(Date initDate) {
 		this.initDate = initDate;
+	}
+
+	public Readiness getReadiness() {
+		return readiness;
+	}
+
+	public void setReadiness(Readiness readiness) {
+		this.readiness = readiness;
 	}
 
 	@Override
