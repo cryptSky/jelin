@@ -1,16 +1,18 @@
 package org.crama.jelin.service;
 
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.crama.jelin.exception.GameException;
 import org.crama.jelin.model.Category;
-import org.crama.jelin.model.Difficulty;
-import org.crama.jelin.model.Game;
-import org.crama.jelin.model.GameOpponent;
 import org.crama.jelin.model.Constants.GameState;
 import org.crama.jelin.model.Constants.InviteStatus;
 import org.crama.jelin.model.Constants.ProcessStatus;
+import org.crama.jelin.model.Difficulty;
+import org.crama.jelin.model.Game;
+import org.crama.jelin.model.GameOpponent;
 import org.crama.jelin.model.User;
 import org.crama.jelin.repository.GameInitRepository;
 import org.crama.jelin.repository.GameOpponentRepository;
@@ -43,12 +45,14 @@ public class GameInitServiceImpl implements GameInitService {
 		
 		Game game = new Game(theme, random);
 		game.setGameState(GameState.CREATED);
+		
 		//Set<GameUser> gameUserSet = new HashSet<GameUser>();
 		//GameUser gameUser = new GameUser(creator, game, true);
 		//gameUserSet.add(gameUser);
 		//game.setGamePlayerSet(gameUserSet);
 		
 		game.setCreator(creator);
+		game.setInitDate(new Date());
 		
 		return gameInitRepository.saveGame(game);
 	}
@@ -58,6 +62,7 @@ public class GameInitServiceImpl implements GameInitService {
 		Game game = new Game(difficulty);
 		game.setGameState(GameState.CREATED);
 		game.setCreator(creator);
+		game.setInitDate(new Date());
 		
 		gameInitRepository.saveGame(game);
 	}
