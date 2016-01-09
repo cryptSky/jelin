@@ -1,7 +1,6 @@
 package org.crama.jelin.model;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;

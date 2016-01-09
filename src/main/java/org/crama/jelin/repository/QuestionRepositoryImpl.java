@@ -3,9 +3,6 @@ package org.crama.jelin.repository;
 import java.util.List;
 
 import org.crama.jelin.model.Question;
-import org.crama.jelin.model.User;
-import org.crama.jelin.model.Constants.NetStatus;
-import org.crama.jelin.model.Constants.ProcessStatus;
 import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Criterion;

@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.crama.jelin.exception.ErrorMessagesStorage;
 import org.crama.jelin.exception.GameException;
-import org.crama.jelin.model.Constants;
 import org.crama.jelin.model.Constants.NetStatus;
 import org.crama.jelin.model.Constants.ProcessStatus;
 import org.crama.jelin.model.Constants.UserType;
