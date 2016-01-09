@@ -7,15 +7,9 @@ import java.util.List;
 import java.util.Random;
 
 import org.crama.jelin.model.Category;
-import org.crama.jelin.model.Character;
-import org.crama.jelin.model.Constants.InviteStatus;
-import org.crama.jelin.model.Constants.UserType;
-import org.crama.jelin.repository.GameOpponentRepository;
-import org.crama.jelin.repository.UserRepository;
 import org.crama.jelin.model.Difficulty;
 import org.crama.jelin.model.Game;
 import org.crama.jelin.model.GameBot;
-import org.crama.jelin.model.GameOpponent;
 import org.crama.jelin.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

@@ -17,6 +17,7 @@ import org.crama.jelin.repository.GameOpponentRepository;
 import org.crama.jelin.repository.GameRepository;
 import org.crama.jelin.repository.GameRoundRepository;
 import org.crama.jelin.repository.UserRepository;
+import org.crama.jelin.model.Constants.GameState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,6 +46,7 @@ public class GameServiceImpl implements GameService {
 		List<User> hosts = setUpHosts(game);
 		
 		List<GameRound> gameRounds = new ArrayList<GameRound>();
+
 		for (int round = 0; round < 4; round++)
 		{
 			GameRound gameRound = new GameRound(game, round, hosts.get(round));
@@ -53,9 +55,8 @@ public class GameServiceImpl implements GameService {
 		
 		gameRoundRepository.saveOrUpdateRounds(gameRounds);
 		
-		game.setGameState(GameState.IN_PROGRESS);
-		//game.setHost(hosts.get(0));
 		game.setRound(gameRounds.get(0));
+		game.setGameState(GameState.IN_PROGRESS);
 		gameRepository.updateGame(game);
 						
 		User creator = game.getCreator();
@@ -85,6 +86,12 @@ public class GameServiceImpl implements GameService {
 		{
 			Random r = new Random();
 			hostOrder.add(hostOrder.get(r.nextInt(3)));
+		}
+		
+		if (playersCount == 2)
+		{
+			hostOrder.add(hostOrder.get(0));
+			hostOrder.add(hostOrder.get(1));
 		}
 		
 		Collections.shuffle(hostOrder);
