@@ -13,6 +13,7 @@ import org.crama.jelin.model.Constants.InviteStatus;
 import org.crama.jelin.model.Constants.ProcessStatus;
 import org.crama.jelin.model.User;
 import org.crama.jelin.repository.GameInitRepository;
+import org.crama.jelin.repository.GameOpponentRepository;
 import org.crama.jelin.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,8 @@ public class GameInitServiceImpl implements GameInitService {
 	private GameInitRepository gameInitRepository;
 	@Autowired
 	private UserRepository userRepository;
+	@Autowired
+	private GameOpponentRepository gameOpponentRepository;
 	@Autowired
 	private UserService userService;
 	
@@ -353,6 +356,14 @@ public class GameInitServiceImpl implements GameInitService {
 			o.setProcessStatus(ProcessStatus.FREE);
 			userRepository.updateUser(o);
 		}
+	}
+
+	@Override
+	public void addGameOpponent(Game game, User user) {
+		GameOpponent opponent = new GameOpponent(user, game, InviteStatus.ACCEPTED);
+		game.addGameOpponent(opponent);
+		gameInitRepository.updateGame(game);
+		
 	}
 
 }

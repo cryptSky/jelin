@@ -58,6 +58,10 @@ public class UserInterestsRepositoryImpl implements UserInterestsRepository {
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<User> getUsersByThemeFromUsers(List<User> users, int themeID) {
+		if (users.size() == 0)
+		{
+			return users;
+		}
 		Query query = sessionFactory.getCurrentSession().createQuery(GET_USERS_BY_THEME_FROM_USERS);
 		query.setParameterList("users", users);
 		query.setParameter("themeID", themeID);
@@ -69,6 +73,10 @@ public class UserInterestsRepositoryImpl implements UserInterestsRepository {
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<User> getUsersByThemeAndDifficultyFromUsers(List<User> users, int themeID, int difficultyID) {
+		if (users.size() == 0)
+		{
+			return users;
+		}
 		Query query = sessionFactory.getCurrentSession().createQuery(GET_USERS_BY_THEME_DIFF_USERS);
 		query.setParameterList("users", users);
 		query.setParameter("themeID", themeID);

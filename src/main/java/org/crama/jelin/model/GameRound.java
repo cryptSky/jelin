@@ -34,6 +34,23 @@ public class GameRound implements Serializable {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "HOST")
 	private User host;
+	
+	@Column(name = "PLAYER1_POINTS", nullable = false)
+	private int player1Points;
+	
+	@Column(name = "PLAYER2_POINTS", nullable = false)
+	private int player2Points;
+	
+	@Column(name = "PLAYER3_POINTS", nullable = false)
+	private int player3Points;
+	
+	@Column(name = "PLAYER4_POINTS", nullable = false)
+	private int player4Points;
+	
+	public GameRound()
+	{
+		
+	}
 
 	public GameRound(Game game, int roundNumber, User host) {
 		super();

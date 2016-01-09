@@ -8,6 +8,8 @@ import org.crama.jelin.model.Constants;
 import org.crama.jelin.model.Constants.NetStatus;
 import org.crama.jelin.model.Constants.ProcessStatus;
 import org.crama.jelin.model.Constants.UserType;
+import org.crama.jelin.model.Game;
+import org.crama.jelin.model.GameBot;
 import org.crama.jelin.model.User;
 import org.crama.jelin.model.UserModel;
 import org.crama.jelin.model.UserRole;
@@ -137,6 +139,16 @@ public class UserServiceImpl implements UserService {
 		all.remove(user);
 		
 		return all;
+	}
+
+	@Override
+	public User createBot(Game game, GameBot bot) {
+		User userBot = new User("username", "email");
+		userBot.setType(UserType.BOT);
+		userBot.setBot(bot);
+		userRepository.saveUser(userBot);
+		
+		return userBot;
 	}
 	
 

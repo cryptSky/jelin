@@ -157,6 +157,10 @@ public class Game implements Serializable {
 		this.gameOpponents = gameOpponents;
 	}
 
+	public void addGameOpponent(GameOpponent gameOpponent) {
+		this.gameOpponents.add(gameOpponent);
+	}
+	
 	public GameRound getRound() {
 		return round;
 	}

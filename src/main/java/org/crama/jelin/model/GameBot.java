@@ -54,6 +54,11 @@ public class GameBot implements Serializable{
 	@Column(name="ANSWER_PROBABILITY", nullable=false)
 	private double answerProbability;
 
+	public GameBot()
+	{
+		
+	}
+	
 	public GameBot(String nickname, String avatar, Character character, Difficulty difficulty, Category category,
 			int points, String enhacements, double readingSpeed, double answerProbability) {
 		super();

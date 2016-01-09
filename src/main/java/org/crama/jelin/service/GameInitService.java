@@ -21,6 +21,8 @@ public interface GameInitService {
 	void removeOpponent(Game game, int userId) throws GameException;
 
 	Set<User> getGameOpponents(Game game);
+	
+	void addGameOpponent(Game game, User opponent);
 
 	InviteStatus inviteUser(Game game, User creator, User opponent);
 

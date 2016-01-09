@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.crama.jelin.exception.GameException;
 import org.crama.jelin.model.Constants.ProcessStatus;
+import org.crama.jelin.model.Game;
+import org.crama.jelin.model.GameBot;
 import org.crama.jelin.model.User;
 import org.crama.jelin.model.UserModel;
 
@@ -34,6 +36,8 @@ public interface UserService {
 	boolean checkUserStatusIsEquals(User creator, ProcessStatus ps) throws GameException;
 
 	List<User> getAllUsers(User user);
+	
+	User createBot(Game game, GameBot bot);
 
 
 }

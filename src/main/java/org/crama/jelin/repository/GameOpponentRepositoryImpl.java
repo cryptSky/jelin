@@ -6,11 +6,13 @@ import org.crama.jelin.model.GameOpponent;
 import org.crama.jelin.model.User;
 import org.crama.jelin.model.Constants.InviteStatus;
 import org.hibernate.Criteria;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository("gameOpponentRepository")
 public class GameOpponentRepositoryImpl implements GameOpponentRepository {
@@ -27,10 +29,12 @@ public class GameOpponentRepositoryImpl implements GameOpponentRepository {
 		criteria.add(Restrictions.and(user, isAccepted));
 		
 		GameOpponent opponent = (GameOpponent) criteria.uniqueResult();
+		if (opponent == null)
+		{
+			return null;
+		}
 		
 		return opponent.getGame();
 	}
-	
-	
 
 }

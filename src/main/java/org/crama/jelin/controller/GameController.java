@@ -74,14 +74,17 @@ public class GameController {
 		        UserDetails userDetails = (UserDetails)auth.getPrincipal();
 		        User player = userService.getUserByUsername(userDetails.getUsername());
 		        
-		        Game game = gameOpponentRepository.getGameByPlayer(player);
-		        
+		        Game game = gameInitService.getCreatedGame(player);
 		        if (game == null)
 		        {
-		        	throw new GameException(512, "Game not found! User " + player + " is not playing any game"); 
+		        	game = gameOpponentRepository.getGameByPlayer(player);
+		        	if (game == null)
+			        {
+			        	throw new GameException(512, "Game not found! User " + player + " is not playing any game"); 
+			        }
 		        }
-		        
-		        if (game.getHost().getId() == player.getId())
+		       		        
+		        if (game.getRound().getHost().getId() == player.getId())
 		        {
 		        	return true;
 		        }

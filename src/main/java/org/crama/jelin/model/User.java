@@ -58,6 +58,7 @@ public class User implements Serializable {
 	private ProcessStatus processStatus;
 	
 	@JsonIgnore
+	@ManyToOne(cascade=CascadeType.ALL, fetch = FetchType.LAZY)
 	@JoinColumn(name = "BOT_ID")
 	private GameBot bot;
 	
