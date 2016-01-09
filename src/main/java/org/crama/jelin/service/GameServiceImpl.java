@@ -5,11 +5,14 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
+import org.crama.jelin.model.Category;
+import org.crama.jelin.model.Constants.GameState;
 import org.crama.jelin.model.Constants.ProcessStatus;
 import org.crama.jelin.model.Game;
 import org.crama.jelin.model.GameOpponent;
 import org.crama.jelin.model.GameRound;
 import org.crama.jelin.model.User;
+import org.crama.jelin.repository.GameInitRepository;
 import org.crama.jelin.repository.GameOpponentRepository;
 import org.crama.jelin.repository.GameRepository;
 import org.crama.jelin.repository.GameRoundRepository;
@@ -33,6 +36,9 @@ public class GameServiceImpl implements GameService {
 	@Autowired
 	private GameOpponentRepository gameOpponentRepository;
 	
+	@Autowired
+	private GameInitRepository gameInitRepository;
+	
 	@Override
 	@Transactional
 	public void startGame(Game game) {
@@ -47,6 +53,7 @@ public class GameServiceImpl implements GameService {
 		
 		gameRoundRepository.saveOrUpdateRounds(gameRounds);
 		
+		game.setGameState(GameState.IN_PROGRESS);
 		//game.setHost(hosts.get(0));
 		game.setRound(gameRounds.get(0));
 		gameRepository.updateGame(game);
@@ -89,6 +96,14 @@ public class GameServiceImpl implements GameService {
 	public Game getGameByPlayer(User player) {
 		
 		return gameOpponentRepository.getGameByPlayer(player);
+	}
+
+	@Override
+	public void saveRoundCategory(Game game, Category category) {
+		GameRound gameRound = game.getRound();
+		gameRound.setCategory(category);
+		gameInitRepository.updateGame(game);
+		
 	}
 
 }

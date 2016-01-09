@@ -18,4 +18,6 @@ public interface CategoryService {
 	List<Category> getChildThemesByParent(Category parent);
 
 	void checkCategoryNotNull(Category category) throws GameException;
+
+	Category getCategoryById(int category);
 }

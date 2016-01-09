@@ -47,6 +47,10 @@ public class GameRound implements Serializable {
 	@Column(name = "PLAYER4_POINTS", nullable = false)
 	private int player4Points;
 	
+	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JoinColumn(name = "CATEGORY_ID")
+	private Category category;
+	
 	public GameRound()
 	{
 		
@@ -90,8 +94,13 @@ public class GameRound implements Serializable {
 	public void setHost(User host) {
 		this.host = host;
 	}
-	
-	
-	
+
+	public Category getCategory() {
+		return category;
+	}
+
+	public void setCategory(Category category) {
+		this.category = category;
+	}
 	
 }

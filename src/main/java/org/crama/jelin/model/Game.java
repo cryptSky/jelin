@@ -15,6 +15,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.crama.jelin.model.Constants.GameState;
@@ -72,8 +73,8 @@ public class Game implements Serializable {
 	private Readiness readiness;
 	
 	@JsonIgnore
-	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@JoinColumn(name = "ROUND")
+	@OneToOne
+	@JoinColumn(name = "CURRENT_ROUND")
 	private GameRound round;
 	
 	/*@JsonIgnore

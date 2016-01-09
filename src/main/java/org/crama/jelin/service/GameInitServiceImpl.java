@@ -83,7 +83,7 @@ public class GameInitServiceImpl implements GameInitService {
 	
 	@Override
 	public Game getCreatedGame(User creator) {
-		Game game = gameInitRepository.getCreatedGame(creator);
+		Game game = gameInitRepository.getGame(creator, GameState.CREATED);
 		return game;
 	}
 
@@ -369,6 +369,12 @@ public class GameInitServiceImpl implements GameInitService {
 		game.addGameOpponent(opponent);
 		gameInitRepository.updateGame(game);
 		
+	}
+
+	@Override
+	public Game getGame(User creator, GameState state) {
+		
+		return gameInitRepository.getGame(creator, state);
 	}
 
 }

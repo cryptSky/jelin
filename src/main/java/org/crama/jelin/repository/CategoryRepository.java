@@ -16,5 +16,7 @@ public interface CategoryRepository {
 	Category getThemeById(int themeID);
 	
 	List<Category> getChildThemesByParentId(int parentID);
+
+	Category getCategoryById(int categoryID);
 		
 }

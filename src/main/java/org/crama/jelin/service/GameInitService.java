@@ -4,6 +4,7 @@ import java.util.Set;
 
 import org.crama.jelin.exception.GameException;
 import org.crama.jelin.model.Category;
+import org.crama.jelin.model.Constants.GameState;
 import org.crama.jelin.model.Constants.InviteStatus;
 import org.crama.jelin.model.Difficulty;
 import org.crama.jelin.model.Game;
@@ -43,6 +44,8 @@ public interface GameInitService {
 	void checkNumOfOpponents(Game game) throws GameException;
 
 	void closeGame(Game game);
+
+	Game getGame(User creator, GameState state);
 
 	
 

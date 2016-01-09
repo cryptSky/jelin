@@ -1,5 +1,6 @@
 package org.crama.jelin.repository;
 
+import org.crama.jelin.model.Constants.GameState;
 import org.crama.jelin.model.Game;
 import org.crama.jelin.model.GameOpponent;
 import org.crama.jelin.model.User;
@@ -10,7 +11,7 @@ public interface GameInitRepository {
 	
 	//boolean updateDifficulty(int gameId, Difficulty difficulty);
 
-	Game getCreatedGame(User creator);
+	Game getGame(User creator, GameState state);
 
 	boolean updateGame(Game game);
 

@@ -49,6 +49,11 @@ public class CategoryServiceImpl implements CategoryService {
 		}
 	}
 
+	@Override
+	public Category getCategoryById(int category) {
+		return categoryRepository.getCategoryById(category);
+	}
+
 
 
 }

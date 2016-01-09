@@ -127,12 +127,12 @@ public class GameInitRepositoryImpl implements GameInitRepository {
 	}*/
 
 	@Override
-	public Game getCreatedGame(User creator) {
+	public Game getGame(User creator, GameState state) {
 		
 		Query query = sessionFactory.getCurrentSession().createQuery(GET_CREATED_GAME);
 		
 		query.setParameter("creator", creator);
-		query.setParameter("gameState", GameState.CREATED);
+		query.setParameter("gameState", state);
 		Game game = (Game)query.uniqueResult();
 		System.out.println(game);
 		return game;
