@@ -82,6 +82,25 @@ public class Constants {
 	    }
 	}
 	
+	public enum Readiness
+	{
+		CATEGORY(0),
+		QUESTION(1),
+		ANSWER(2),
+		RESULT(3),
+		SUMMARY(4);
+		
+		private final int value;
+		
+	    private Readiness(int value) {
+	        this.value = value;
+	    }
+
+	    public int getValue() {
+	        return value;
+	    }
+	}
+	
 	
 	public static final String[] NetStatusString = {
 			"OFFLINE",
@@ -98,9 +117,9 @@ public class Constants {
 	};
 	
 	public static final String[] GameStateString = {
-			"Created",
-			"In progress",
-			"Ended"
+			"CREATED",
+			"IN_PROGRESS",
+			"ENDED"
 	};
 	
 	public static final String[] InviteStatusString = {
@@ -108,6 +127,14 @@ public class Constants {
 			"ACCEPTED",
 			"REJECTED",
 			"EXPIRED"
+	};
+	
+	public static final String[] readinessString = {
+			"CATEGORY",
+			"QUESTION",
+			"ANSWER",
+			"RESULT",
+			"SUMMARY"
 	};
 }
 
