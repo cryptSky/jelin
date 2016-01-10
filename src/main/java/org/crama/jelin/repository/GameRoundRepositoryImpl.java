@@ -4,9 +4,14 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
+import org.crama.jelin.model.Game;
 import org.crama.jelin.model.GameRound;
+import org.crama.jelin.model.QuestionResult;
+import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -34,6 +39,24 @@ public class GameRoundRepositoryImpl implements GameRoundRepository {
 		session.update(round);
 		
 	}
+
 	
+	@Override
+	public GameRound getRoundByNumber(int roundNumber)
+	{
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(GameRound.class);
+		criteria.add(Restrictions.eq("roundNumber", roundNumber));
+		
+		return (GameRound) criteria.uniqueResult();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<GameRound> getAllRoundsByGame(Game game) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(GameRound.class);
+		criteria.add(Restrictions.eq("game", game));
+		
+		return criteria.list();
+	}
 
 }

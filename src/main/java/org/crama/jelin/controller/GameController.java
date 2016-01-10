@@ -5,13 +5,24 @@ import java.util.List;
 import org.crama.jelin.exception.GameException;
 import org.crama.jelin.exception.RestError;
 import org.crama.jelin.model.Category;
+import org.crama.jelin.model.Constants;
 import org.crama.jelin.model.Constants.GameState;
 import org.crama.jelin.model.Constants.Readiness;
+import org.crama.jelin.model.Constants.UserType;
+import org.crama.jelin.model.Difficulty;
 import org.crama.jelin.model.Game;
+import org.crama.jelin.model.GameBot;
+import org.crama.jelin.model.GameOpponent;
+import org.crama.jelin.model.GameRound;
+import org.crama.jelin.model.Question;
+import org.crama.jelin.model.QuestionResult;
+import org.crama.jelin.model.ScoreSummary;
 import org.crama.jelin.model.User;
 import org.crama.jelin.service.CategoryService;
+import org.crama.jelin.service.GameBotService;
 import org.crama.jelin.service.GameInitService;
 import org.crama.jelin.service.GameService;
+import org.crama.jelin.service.QuestionService;
 import org.crama.jelin.service.UserDetailsServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,14 +43,16 @@ public class GameController {
 	
 	@Autowired
 	private GameService gameService;
-	@Autowired
-	private GameInitService gameInitService;
-	@Autowired
-	private CategoryService categoryService;
 	
 	@Autowired
+	private GameInitService gameInitService;
+	
+	@Autowired
+	private CategoryService categoryService;
+
+	@Autowired
 	private UserDetailsServiceImpl userDetailsService;
-		
+	
 	@RequestMapping(value="/api/game/start", method=RequestMethod.POST)
 	@ResponseStatus(HttpStatus.OK)
     public boolean startGame() throws GameException {
@@ -66,7 +79,6 @@ public class GameController {
         if (game == null)
         {
         	game = gameService.getGameByPlayer(player);
-        	//game = gameOpponentRepository.getGameByPlayer(player);
         	if (game == null)
 	        {
 	        	throw new GameException(512, "Game not found! User " + player + " is not playing any game"); 
@@ -164,6 +176,10 @@ public class GameController {
         
         gameService.saveRoundCategory(game, categoryObj);
         
+        game.setReadiness(Readiness.QUESTION);
+        
+        gameService.updateGame(game);
+        
 	}
 
 	@ExceptionHandler
@@ -175,4 +191,125 @@ public class GameController {
 		RestError re = new RestError(HttpStatus.BAD_REQUEST, ge.getCode(), ge.getMessage());
 		return re;
    }
+	
+	@RequestMapping(value="/api/game/question", method=RequestMethod.GET)
+	public @ResponseBody Question getNextQuestion() throws GameException {
+		User player = userDetailsService.getPrincipal();
+        
+        Game game = gameInitService.getCreatedGame(player);
+        if (game == null)
+        {
+        	game = gameService.getGameByPlayer(player);
+        	if (game == null)
+	        {
+	        	throw new GameException(516, "Game not found! User " + player + " is not playing any game"); 
+	        }
+        }
+		
+        if (game.getReadiness() != Readiness.QUESTION)
+        {
+        	throw new GameException(516, "Readiness is not equal to QUESTION!");
+        }
+        
+        Question question = gameService.getNextQuestion(game);
+        if (question == null)
+        {
+        	game.setReadiness(Readiness.ANSWER);
+        	gameService.updateGame(game);
+        	
+        	throw new GameException(516, "There is no next question in this round !");
+        }
+        
+        return question;
+	}
+	
+	@RequestMapping(value="/api/game/answer", method=RequestMethod.POST)
+	public void answer(@RequestParam int variant, @RequestParam int time) throws GameException {
+		User player = userDetailsService.getPrincipal();
+        
+        Game game = gameInitService.getCreatedGame(player);
+        if (game == null)
+        {
+        	game = gameService.getGameByPlayer(player);
+        	if (game == null)
+	        {
+	        	throw new GameException(517, "Game not found! User " + player + " is not playing any game"); 
+	        }
+        }
+		
+        if (game.getReadiness() != Readiness.ANSWER)
+        {
+        	throw new GameException(517, "Readiness is not equal to ANSWER!");
+        }
+        
+        gameService.processAnswer(game, player, variant, time);
+        
+        // if all Humans already answered
+        if (game.getHumanPlayersCount() == game.getRound().getAnswerCount())
+        {
+        	gameService.processBotsAnswers(game);
+        	
+        	// end of round
+        	gameService.finishRound(game.getRound());
+        	
+        	game.setReadiness(Readiness.SUMMARY);
+        	gameService.updateGame(game);
+        	
+        	boolean hasNextRound = gameService.nextRound(game);
+        	if (!hasNextRound)
+        	{
+        		gameService.finishGame(game);
+        	}
+        	
+        }
+     	
+	}
+	
+	@RequestMapping(value="/api/game/results", method=RequestMethod.POST)
+	public @ResponseBody List<QuestionResult> getQuestionResult() throws GameException {
+		User player = userDetailsService.getPrincipal();
+        
+        Game game = gameInitService.getCreatedGame(player);
+        if (game == null)
+        {
+        	game = gameService.getGameByPlayer(player);
+        	if (game == null)
+	        {
+	        	throw new GameException(518, "Game not found! User " + player + " is not playing any game"); 
+	        }
+        }
+		
+        if (game.getReadiness() != Readiness.RESULT)
+        {
+        	throw new GameException(518, "Readiness is not equal to RESULT!");
+        }
+		
+        List<QuestionResult> result = gameService.getPersonalRoundResults(game, player);
+        
+        return result;
+	}
+	
+	@RequestMapping(value="/api/game/summary", method=RequestMethod.POST)
+	public @ResponseBody List<ScoreSummary> getScoreSummary() throws GameException {
+		User player = userDetailsService.getPrincipal();
+        
+        Game game = gameInitService.getCreatedGame(player);
+        if (game == null)
+        {
+        	game = gameService.getGameByPlayer(player);
+        	if (game == null)
+	        {
+	        	throw new GameException(519, "Game not found! User " + player + " is not playing any game"); 
+	        }
+        }
+		
+        if (game.getReadiness() != Readiness.SUMMARY)
+        {
+        	throw new GameException(519, "Readiness is not equal to SUMMARY!");
+        }
+        
+        List<ScoreSummary> summaries = gameService.getScoreSummary(game);
+        
+        return summaries;
+	}
 }

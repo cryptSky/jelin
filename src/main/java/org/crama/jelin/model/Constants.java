@@ -2,6 +2,8 @@ package org.crama.jelin.model;
 
 public class Constants {
 	
+	public static int questionsNumber = 3;
+	
 	public enum UserType {
 		HUMAN(0),
 		BOT(1);
