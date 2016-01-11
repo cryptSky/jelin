@@ -55,7 +55,7 @@ public class Question implements Serializable {
 	@Column(name="TIME_C", nullable=false)
 	private int timeC;
 	
-	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JoinColumn(name="DIFFICULTY_ID")
 	private Difficulty difficulty;
 	

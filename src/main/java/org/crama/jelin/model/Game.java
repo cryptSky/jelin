@@ -20,6 +20,7 @@ import javax.persistence.Table;
 
 import org.crama.jelin.model.Constants.GameState;
 import org.crama.jelin.model.Constants.Readiness;
+import org.crama.jelin.model.Constants.UserType;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -48,7 +49,7 @@ public class Game implements Serializable {
 	@Column(name="ID", nullable=false, unique=true)
 	private int id;
 	
-	@ManyToOne
+	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JoinColumn(name="THEME_ID")
 	private Category theme;
 	
@@ -192,6 +193,59 @@ public class Game implements Serializable {
 		this.readiness = readiness;
 	}
 
+	public int getPlayersCount()
+	{
+		return getGameOpponents().size() + 1;
+	}
+	
+	public int getHumanPlayersCount()
+	{
+		int count = 0;
+		for (GameOpponent opponent: getGameOpponents())
+		{
+			if (opponent.getUser().getType() == UserType.HUMAN)
+			{
+				count++;
+			}
+		}
+		
+		return count;		
+	}
+	
+	public User getUserByPlayerNumber(int playerNumber) {
+		if (playerNumber == 1)
+		{
+			return getCreator();
+		}
+		for (GameOpponent opponent: getGameOpponents())
+		{
+			if (opponent.getPlayerNum() == playerNumber)
+			{
+				return opponent.getUser();
+			}
+		}
+		
+		return null;
+	}
+	
+	public int getPlayerNumberByUser(User player)
+	{
+		int result = -1;
+		if (player.getId() == getCreator().getId())
+		{
+			result = 1;
+		}
+		for (GameOpponent opponent: getGameOpponents())
+		{
+			if (opponent.getUser().getId() == player.getId())
+			{
+				result = opponent.getPlayerNum();
+			}
+		}
+		
+		return result;
+	}
+	
 	@Override
 	public String toString() {
 		return "Game [id=" + id + ", theme=" + theme + ", isRandom=" + random + ", gameState=" + gameState
