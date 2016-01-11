@@ -2,12 +2,11 @@
 package org.crama.jelin.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
-import org.crama.jelin.model.Constants.NetStatus;
-import org.crama.jelin.model.Constants.ProcessStatus;
-import org.crama.jelin.model.Constants.UserType;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -20,9 +19,14 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+
+import org.crama.jelin.model.Constants.NetStatus;
+import org.crama.jelin.model.Constants.ProcessStatus;
+import org.crama.jelin.model.Constants.UserType;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -83,6 +87,18 @@ public class User implements Serializable {
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date lastGameTime;
 	
+	@JsonIgnore
+	@Column(name = "ACORNS")
+	private int acorns;
+	
+	@JsonIgnore
+	@Column(name = "GOLD_ACORNS")
+	private int goldAcorns;
+	
+	@JsonIgnore
+	@OneToMany(cascade=CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "user") 
+	private List<UserEnhancer> enhancerList = new ArrayList<UserEnhancer>();
+	
 	/*@JsonIgnore
 	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade=CascadeType.ALL)
     private Set<GameUser> gamePlayerSet = new HashSet<GameUser>();*/
@@ -93,6 +109,8 @@ public class User implements Serializable {
 		super();
 		this.username = username;
 		this.email = email;
+		this.acorns = 0;
+		this.goldAcorns = 0;
 	}
 	
 	public User(int id, String username, String email) {
@@ -100,6 +118,8 @@ public class User implements Serializable {
 		this.id = id;
 		this.username = username;
 		this.email = email;
+		this.acorns = 0;
+		this.goldAcorns = 0;
 	}
 
 	public int getId() {
@@ -178,6 +198,30 @@ public class User implements Serializable {
 		this.lastGameTime = lastGameTime;
 	}
 	
+	public int getAcorns() {
+		return acorns;
+	}
+
+	public void setAcorns(int acorns) {
+		this.acorns = acorns;
+	}
+
+	public int getGoldAcorns() {
+		return goldAcorns;
+	}
+
+	public void setGoldAcorns(int goldAcorns) {
+		this.goldAcorns = goldAcorns;
+	}
+
+	public List<UserEnhancer> getEnhancerList() {
+		return enhancerList;
+	}
+
+	public void setEnhancerList(List<UserEnhancer> enhancerList) {
+		this.enhancerList = enhancerList;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;

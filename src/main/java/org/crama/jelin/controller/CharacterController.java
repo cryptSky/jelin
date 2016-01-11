@@ -1,20 +1,18 @@
 package org.crama.jelin.controller;
 
 import java.util.List;
+import java.util.Set;
 
 import org.crama.jelin.exception.GameException;
 import org.crama.jelin.exception.RestError;
 import org.crama.jelin.model.Character;
+import org.crama.jelin.model.Enhancer;
 import org.crama.jelin.model.User;
 import org.crama.jelin.service.CharacterService;
 import org.crama.jelin.service.UserDetailsServiceImpl;
 import org.crama.jelin.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -57,6 +55,30 @@ public class CharacterController {
 		return characterService.saveCurrentCharacter(character, user);
 		
 	}
+	
+	//get all characters available for money (special = true, not user character) 
+	@RequestMapping(value="/api/character", method=RequestMethod.GET)
+	@ResponseStatus(HttpStatus.OK)
+    public @ResponseBody List<Character> getCharactersForSale() {
+		User user = userDetailsService.getPrincipal();
+		List<Character> characterList = characterService.getCharactersForSale(user);
+        return characterList;
+	}
+	
+	@RequestMapping(value="/api/character/enhancer", method=RequestMethod.GET)
+	@ResponseStatus(HttpStatus.OK)
+    public @ResponseBody List<Enhancer> getAvailableEnhancers() throws GameException {
+		User user = userDetailsService.getPrincipal();
+		Set<Character> userCharacters = user.getCharacterSet();
+		if (userCharacters == null || userCharacters.size() == 0) {
+			throw new GameException(305, "User has no characters. Please choose at least one character first");
+		}
+		List<Enhancer> enhancerList = characterService.getEnhancerList(user);
+		
+        return enhancerList;
+	}
+	
+	
 	
 	@ExceptionHandler
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
