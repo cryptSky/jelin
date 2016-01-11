@@ -1,5 +1,6 @@
 package org.crama.jelin.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.crama.jelin.exception.GameException;
@@ -7,6 +8,7 @@ import org.crama.jelin.exception.RestError;
 import org.crama.jelin.model.Category;
 import org.crama.jelin.model.Constants.GameState;
 import org.crama.jelin.model.Constants.Readiness;
+import org.crama.jelin.model.Constants.UserType;
 import org.crama.jelin.model.Game;
 import org.crama.jelin.model.User;
 import org.crama.jelin.service.CategoryService;
@@ -132,9 +134,19 @@ public class GameController {
         	throw new GameException(514, "Game Readiness is: " + game.getReadiness().toString() + ". Should be: CATEGORY");
         }
         
-        Category theme = game.getTheme();
-        List<Category> categories = categoryService.getAllCategoriesFromThemes(theme.getId());
-        return categories;
+        /*//if player is bot
+        if (player.getType().equals(UserType.BOT)) {
+        	
+        }
+        else {*/
+	        Category theme = game.getTheme();
+	        List<Category> categories = categoryService.getAllCategoriesFromThemes(theme.getId());
+	        if (categories.size() == 1) {
+	        	gameService.saveRoundCategory(game, categories.get(0));
+	        	return new ArrayList<Category>();
+	        }
+	        return categories;
+        //}
 	}
 	
 	@RequestMapping(value="/api/game/category", method=RequestMethod.POST)

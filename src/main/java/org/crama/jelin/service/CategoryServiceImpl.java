@@ -28,7 +28,10 @@ public class CategoryServiceImpl implements CategoryService {
 
 	@Override
 	public List<Category> getAllCategoriesFromThemes(int themeID) {
-		return categoryRepository.getAllCategoriesFromThemes(themeID);
+		List<Category> categories = categoryRepository.getAllCategoriesFromThemes(themeID); 
+		
+		return categories;
+		
 	}
 
 	@Override
