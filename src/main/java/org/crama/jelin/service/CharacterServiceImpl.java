@@ -1,10 +1,13 @@
 package org.crama.jelin.service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+import org.crama.jelin.exception.GameException;
 import org.crama.jelin.model.Character;
+import org.crama.jelin.model.Constants.Status;
 import org.crama.jelin.model.Enhancer;
 import org.crama.jelin.model.User;
 import org.crama.jelin.model.UserEnhancer;
@@ -27,9 +30,11 @@ public class CharacterServiceImpl implements CharacterService {
 	}
 
 	@Override
-	public boolean saveUserCharacter(int character, User user) {
+	public boolean saveUserCharacter(int character, User user) throws GameException {
 		Character userCharacter = characterRepository.getCharacter(character);
-		if (userCharacter == null) return false;
+		if (userCharacter == null) {
+			throw new GameException(302, "There is no character with id: " + character);
+		}
 		System.out.println(userCharacter);
 		Set<Character> userCharacterSet = user.getCharacterSet();
 		userCharacterSet.add(userCharacter);
@@ -96,6 +101,77 @@ public class CharacterServiceImpl implements CharacterService {
 			
 		}
 		return enhancerList;
+	}
+
+	@Override
+	public boolean buyCharacter(int character, User user) throws GameException {
+		Character userCharacter = characterRepository.getCharacter(character);
+		if (userCharacter == null) {
+			throw new GameException(306, "There is no character with id: " + character);
+		}
+		System.out.println(userCharacter);
+		Set<Character> userCharacterSet = user.getCharacterSet();
+		boolean added = userCharacterSet.add(userCharacter);
+		if (!added) {
+			throw new GameException(306, "You already have this character");
+		}
+		int acorns = userCharacter.getAcrons();
+		int goldAcorns = userCharacter.getGoldAcrons();
+		if (acorns != 0) {
+			int acornsLeft = user.getAcorns() - acorns;
+			if (acornsLeft < 0) {
+				throw new GameException(306, "You have not enough acorns to buy character");
+			}
+			user.setAcorns(acornsLeft);
+		}
+		else if (goldAcorns != 0) {
+			int acornsLeft = user.getGoldAcorns() - goldAcorns;
+			if (acornsLeft < 0) {
+				throw new GameException(306, "You have not enough gold acorns to buy character");
+			}
+			user.setGoldAcorns(acornsLeft);
+		}
+		
+		userRepository.updateUser(user);
+		return true;
+	}
+
+	@Override
+	public boolean buyEnhancer(int enhancerId, User user) throws GameException {
+		Enhancer enhancerObj = characterRepository.getEnhancer(enhancerId);
+		if (enhancerObj == null) {
+			throw new GameException(307, "There is no enhancer with id: " + enhancerId);
+		}
+		System.out.println(enhancerObj);
+		
+		List<UserEnhancer> userEnhancerList = user.getEnhancerList(); 
+		for (UserEnhancer ue: userEnhancerList) {
+			if (ue.getEnhancer().equals(enhancerObj)) {
+				throw new GameException(307, "You already have this enhancer");
+			}
+		}
+		int acorns = enhancerObj.getAcorns();
+		int goldAcorns = enhancerObj.getGoldAcorns();
+		if (acorns != 0) {
+			int acornsLeft = user.getAcorns() - acorns;
+			if (acornsLeft < 0) {
+				throw new GameException(307, "You have not enough acorns to buy enhancer");
+			}
+			user.setAcorns(acornsLeft);
+		}
+		else if (goldAcorns != 0) {
+			int acornsLeft = user.getGoldAcorns() - goldAcorns;
+			if (acornsLeft < 0) {
+				throw new GameException(307, "You have not enough gold acorns to buy enhancer");
+			}
+			user.setGoldAcorns(acornsLeft);
+		}
+		UserEnhancer newUserEnhancer = new UserEnhancer(enhancerObj, user, Status.BOUGHT, new Date());
+		userEnhancerList.add(newUserEnhancer);
+		
+		userRepository.updateUser(user);
+		
+		return true;
 	}
 
 }

@@ -41,7 +41,7 @@ public class CharacterController {
 	
 	@RequestMapping(value="/api/character/first", method=RequestMethod.PUT)
 	@ResponseStatus(HttpStatus.OK)
-    public boolean chooseFirstCharacter(@RequestParam int character) {
+    public boolean chooseFirstCharacter(@RequestParam int character) throws GameException {
 		User user = userDetailsService.getPrincipal();
        
         return characterService.saveUserCharacter(character, user);
@@ -78,7 +78,21 @@ public class CharacterController {
         return enhancerList;
 	}
 	
+	@RequestMapping(value="/api/character/buy", method=RequestMethod.POST)
+	@ResponseStatus(HttpStatus.OK)
+    public @ResponseBody boolean buyCharacter(@RequestParam int character) throws GameException {
+		User user = userDetailsService.getPrincipal();
+		return characterService.buyCharacter(character, user);
+		
+	}
 	
+	@RequestMapping(value="/api/character/enhancer/buy", method=RequestMethod.POST)
+	@ResponseStatus(HttpStatus.OK)
+    public @ResponseBody boolean buyEnhancer(@RequestParam int enhancer) throws GameException {
+		User user = userDetailsService.getPrincipal();
+		return characterService.buyEnhancer(enhancer, user);
+		
+	}
 	
 	@ExceptionHandler
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)

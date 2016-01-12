@@ -41,6 +41,16 @@ public class UserEnhancer implements Serializable {
 	@Column(name="RECEIVE_DATE", nullable = true)
 	private Date receiveDate;
 
+	public UserEnhancer() {}
+	
+	public UserEnhancer(Enhancer enhancer, User user, Status status, Date receiveDate) {
+		super();
+		this.enhancer = enhancer;
+		this.user = user;
+		this.status = status;
+		this.receiveDate = receiveDate;
+	}
+
 	public int getId() {
 		return id;
 	}

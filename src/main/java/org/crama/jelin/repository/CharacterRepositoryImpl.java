@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.crama.jelin.model.Character;
 import org.crama.jelin.model.Enhancer;
+import org.crama.jelin.model.User;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,6 +57,11 @@ public class CharacterRepositoryImpl implements CharacterRepository {
 		@SuppressWarnings("unchecked")
 		List<Enhancer> enhancerList = (List<Enhancer>)query.list();
 		return enhancerList;
+	}
+
+	@Override
+	public Enhancer getEnhancer(int enhancer) {
+		return (Enhancer)sessionFactory.getCurrentSession().get(Enhancer.class, enhancer);
 	}
 	
 }

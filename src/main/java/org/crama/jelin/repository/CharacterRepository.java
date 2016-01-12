@@ -15,4 +15,6 @@ public interface CharacterRepository {
 
 	List<Enhancer> getAllEnhancers();
 
+	Enhancer getEnhancer(int enhancer);
+
 }
