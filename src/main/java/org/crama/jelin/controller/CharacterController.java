@@ -1,10 +1,12 @@
 package org.crama.jelin.controller;
 
 import java.util.List;
+import java.util.Set;
 
 import org.crama.jelin.exception.GameException;
 import org.crama.jelin.exception.RestError;
 import org.crama.jelin.model.Character;
+import org.crama.jelin.model.Enhancer;
 import org.crama.jelin.model.User;
 import org.crama.jelin.service.CharacterService;
 import org.crama.jelin.service.UserDetailsServiceImpl;
@@ -36,7 +38,7 @@ public class CharacterController {
 	
 	@RequestMapping(value="/api/character/first", method=RequestMethod.PUT)
 	@ResponseStatus(HttpStatus.OK)
-    public boolean chooseFirstCharacter(@RequestParam int character) {
+    public boolean chooseFirstCharacter(@RequestParam int character) throws GameException {
 		User user = userDetailsService.getPrincipal();
        
         return characterService.saveUserCharacter(character, user);
@@ -48,6 +50,44 @@ public class CharacterController {
     public boolean chooseCurrentCharacter(@RequestParam int character) {
 		User user = userDetailsService.getPrincipal();
 		return characterService.saveCurrentCharacter(character, user);
+		
+	}
+	
+	//get all characters available for money (special = true, not user character) 
+	@RequestMapping(value="/api/character", method=RequestMethod.GET)
+	@ResponseStatus(HttpStatus.OK)
+    public @ResponseBody List<Character> getCharactersForSale() {
+		User user = userDetailsService.getPrincipal();
+		List<Character> characterList = characterService.getCharactersForSale(user);
+        return characterList;
+	}
+	
+	@RequestMapping(value="/api/character/enhancer", method=RequestMethod.GET)
+	@ResponseStatus(HttpStatus.OK)
+    public @ResponseBody List<Enhancer> getAvailableEnhancers() throws GameException {
+		User user = userDetailsService.getPrincipal();
+		Set<Character> userCharacters = user.getCharacterSet();
+		if (userCharacters == null || userCharacters.size() == 0) {
+			throw new GameException(305, "User has no characters. Please choose at least one character first");
+		}
+		List<Enhancer> enhancerList = characterService.getEnhancerList(user);
+		
+        return enhancerList;
+	}
+	
+	@RequestMapping(value="/api/character/buy", method=RequestMethod.POST)
+	@ResponseStatus(HttpStatus.OK)
+    public @ResponseBody boolean buyCharacter(@RequestParam int character) throws GameException {
+		User user = userDetailsService.getPrincipal();
+		return characterService.buyCharacter(character, user);
+		
+	}
+	
+	@RequestMapping(value="/api/character/enhancer/buy", method=RequestMethod.POST)
+	@ResponseStatus(HttpStatus.OK)
+    public @ResponseBody boolean buyEnhancer(@RequestParam int enhancer) throws GameException {
+		User user = userDetailsService.getPrincipal();
+		return characterService.buyEnhancer(enhancer, user);
 		
 	}
 	

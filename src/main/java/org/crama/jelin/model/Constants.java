@@ -103,6 +103,22 @@ public class Constants {
 	    }
 	}
 	
+	public enum Status {
+		
+		BOUGHT(0),
+		AVAILABLE(1),
+		BLOCKED(2);
+				
+		private final int value;
+	    private Status(int value) {
+	        this.value = value;
+	    }
+
+	    public int getValue() {
+	        return value;
+	    }
+	}
+	
 	
 	public static final String[] NetStatusString = {
 			"OFFLINE",
@@ -131,7 +147,7 @@ public class Constants {
 			"EXPIRED"
 	};
 	
-	public static final String[] readinessString = {
+	public static final String[] ReadinessString = {
 			"CATEGORY",
 			"QUESTION",
 			"ANSWER",
