@@ -8,13 +8,8 @@ import org.crama.jelin.model.Character;
 import org.crama.jelin.model.User;
 import org.crama.jelin.service.CharacterService;
 import org.crama.jelin.service.UserDetailsServiceImpl;
-import org.crama.jelin.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -28,8 +23,6 @@ public class CharacterController {
 
 	@Autowired
 	private CharacterService characterService;
-	@Autowired
-	private UserService userService;
 	@Autowired
 	private UserDetailsServiceImpl userDetailsService;
 	

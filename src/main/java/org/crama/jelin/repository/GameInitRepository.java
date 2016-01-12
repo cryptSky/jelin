@@ -12,7 +12,7 @@ public interface GameInitRepository {
 	//boolean updateDifficulty(int gameId, Difficulty difficulty);
 
 	Game getGame(User creator, GameState state);
-
+	
 	boolean updateGame(Game game);
 
 	Game getInviteGame(User user);

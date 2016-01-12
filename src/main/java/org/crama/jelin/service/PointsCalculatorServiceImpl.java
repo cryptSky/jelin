@@ -7,7 +7,6 @@ import org.crama.jelin.model.GameRound;
 import org.crama.jelin.model.Question;
 import org.crama.jelin.model.QuestionResult;
 import org.crama.jelin.repository.AnswerRepository;
-import org.crama.jelin.repository.GameRepository;
 import org.crama.jelin.repository.GameRoundRepository;
 import org.crama.jelin.repository.QuestionResultRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,9 +17,6 @@ public class PointsCalculatorServiceImpl implements PointsCalculatorService {
 
 	@Autowired
 	private AnswerRepository answerRepository;
-	
-	@Autowired
-	private GameRepository gameRepository;
 	
 	@Autowired
 	private GameRoundRepository gameRoundRepository;
@@ -55,7 +51,8 @@ public class PointsCalculatorServiceImpl implements PointsCalculatorService {
 	{
 		int playerNumber = answer.getPlayerNumber();
 		Question question = answer.getQuestion();
-		if (answer.getTime() > question.getTime())
+		if (answer.getTime() > question.getTime() || 
+				answer.getVariant() != question.getAnswer())
 		{
 			return new QuestionResult(answer.getVariant(), 0, question, 
 							round, playerNumber);
@@ -81,6 +78,7 @@ public class PointsCalculatorServiceImpl implements PointsCalculatorService {
 		
 		QuestionResult result = new QuestionResult(answer.getVariant(), points, question, 
 														round, playerNumber);
+		result.setAcrons(acrons);
 		return result;
 	}
 

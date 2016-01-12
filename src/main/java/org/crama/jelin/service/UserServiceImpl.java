@@ -142,7 +142,17 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public User createBot(Game game, GameBot bot) {
-		User userBot = new User("username", "email");
+		User userBot = new User("", "");
+				
+		StringBuilder sb = new StringBuilder();
+		int userNumber = game.getGameOpponents().size();
+		sb.append("bot").append(game.getId()).append("_").append(userNumber);
+		String name = sb.toString();
+		String email = sb.append("@bot.com").toString();
+		
+		userBot.setUsername(name);
+		userBot.setEmail(email);		
+		
 		userBot.setType(UserType.BOT);
 		userBot.setBot(bot);
 		userRepository.saveUser(userBot);

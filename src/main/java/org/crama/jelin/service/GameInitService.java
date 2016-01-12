@@ -18,7 +18,7 @@ public interface GameInitService {
 	boolean updateDifficulty(Game game, Difficulty difficulty);
 
 	Game getCreatedGame(User creator);
-
+	
 	void removeOpponent(Game game, int userId) throws GameException;
 
 	Set<User> getGameOpponents(Game game);
