@@ -59,7 +59,6 @@ public class PointsCalculatorServiceImpl implements PointsCalculatorService {
 		}
 		
 		int points = 0;
-		int acrons = 0;
 		switch(orderNumber)
 		{
 			case 0: points = 85;
@@ -74,11 +73,9 @@ public class PointsCalculatorServiceImpl implements PointsCalculatorService {
 			default: break;
 		}
 		
-		acrons = (int)(points*0.43); // where to save it? 
-		
 		QuestionResult result = new QuestionResult(answer.getVariant(), points, question, 
 														round, playerNumber);
-		result.setAcrons(acrons);
+		
 		return result;
 	}
 

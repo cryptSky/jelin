@@ -39,6 +39,10 @@ public class ScoreSummary implements Serializable {
     @JoinColumn(name="GAME_ID")
 	private Game game;
 	
+	@JsonIgnore
+	@Column(name = "ACRONS")
+	private int acrons;
+	
 	public ScoreSummary()
 	{
 		
@@ -49,6 +53,7 @@ public class ScoreSummary implements Serializable {
 		this.score = score;
 		this.user = user;
 		this.game = game;
+		this.acrons = (int)(score * 0.43);
 	}
 
 	public int getScore() {
@@ -81,5 +86,13 @@ public class ScoreSummary implements Serializable {
 
 	public void setGame(Game game) {
 		this.game = game;
+	}
+
+	public int getAcrons() {
+		return acrons;
+	}
+
+	public void setAcrons(int acrons) {
+		this.acrons = acrons;
 	}
 }
