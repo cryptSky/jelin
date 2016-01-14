@@ -2,7 +2,9 @@ package org.crama.jelin.model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -14,9 +16,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
-
 
 
 @Entity
@@ -53,18 +53,27 @@ public class GameRound implements Serializable {
 	@Column(name = "PLAYER4_POINTS", nullable = false)
 	private int player4Points;
 	
+	@Column(name = "PLAYER1_QUESTION_NUM", nullable = false)
+	private int player1QuestionNumber;
+	
+	@Column(name = "PLAYER2_QUESTION_NUM", nullable = false)
+	private int player2QuestionNumber;
+	
+	@Column(name = "PLAYER3_QUESTION_NUM", nullable = false)
+	private int player3QuestionNumber;
+	
+	@Column(name = "PLAYER4_QUESTION_NUM", nullable = false)
+	private int player4QuestionNumber;
+	
 	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JoinColumn(name = "CATEGORY_ID")
 	private Category category;
 	
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private List<Question> questions = new ArrayList<Question>();
 	
-	@Column(name = "QUESTION_NUMBER")
-	private int questionNumber = 0;
-	
 	@Column(name = "ANSWER_COUNT")
-	private int answerCount = 0;
+	private int humanAnswerCount = 0;
 	
 	public GameRound()
 	{
@@ -158,6 +167,38 @@ public class GameRound implements Serializable {
 		this.player4Points = player4Points;
 	}
 	
+	public int getPlayer1QuestionNumber() {
+		return player1QuestionNumber;
+	}
+
+	public void setPlayer1QuestionNumber(int player1QuestionNumber) {
+		this.player1QuestionNumber = player1QuestionNumber;
+	}
+
+	public int getPlayer2QuestionNumber() {
+		return player2QuestionNumber;
+	}
+
+	public void setPlayer2QuestionNumber(int player2QuestionNumber) {
+		this.player2QuestionNumber = player2QuestionNumber;
+	}
+
+	public int getPlayer3QuestionNumber() {
+		return player3QuestionNumber;
+	}
+
+	public void setPlayer3QuestionNumber(int player3QuestionNumber) {
+		this.player3QuestionNumber = player3QuestionNumber;
+	}
+
+	public int getPlayer4QuestionNumber() {
+		return player4QuestionNumber;
+	}
+
+	public void setPlayer4QuestionNumber(int player4QuestionNumber) {
+		this.player4QuestionNumber = player4QuestionNumber;
+	}
+
 	public Question getQuestion(int index)
 	{
 		if (index < Constants.questionsNumber && index < questions.size())
@@ -172,20 +213,82 @@ public class GameRound implements Serializable {
 		questions.add(question);
 	}
 
-	public int getQuestionNumber() {
-		return questionNumber;
+	public int getHumanAnswerCount() {
+		return humanAnswerCount;
 	}
 
-	public void setQuestionNumber(int answerOrderNumber) {
-		this.questionNumber = answerOrderNumber;
+	public void setHumanAnswerCount(int answerCount) {
+		this.humanAnswerCount = answerCount;
 	}
-
-	public int getAnswerCount() {
-		return answerCount;
+	
+	public int getQuestionNumber(User player)
+	{
+		int id = game.getPlayerNumberByUser(player);
+		int result = 0;
+		switch (id)
+		{
+			case 1: result = getPlayer1QuestionNumber();
+					break;
+			case 2: result = getPlayer2QuestionNumber();
+					break;
+			case 3: result = getPlayer3QuestionNumber();
+					break;
+			case 4: result = getPlayer4QuestionNumber();
+					break;
+		}
+		
+		return result;
 	}
-
-	public void setAnswerCount(int answerCount) {
-		this.answerCount = answerCount;
+	
+	public void setQuestionNumber(User player, int qnumber)
+	{
+		int id = game.getPlayerNumberByUser(player);
+		switch (id)
+		{
+			case 1: setPlayer1QuestionNumber(qnumber);
+					break;
+			case 2: setPlayer2QuestionNumber(qnumber);
+					break;
+			case 3: setPlayer3QuestionNumber(qnumber);
+					break;
+			case 4: setPlayer4QuestionNumber(qnumber);
+					break;
+		}
+	}
+	
+	public boolean allHumanGotQuestion()
+	{
+		List<User> humans = getGame().getHumans();
+		Set<Integer> set = new HashSet<Integer>();
+		for (User human: humans)
+		{
+			int playerNumber = getGame().getPlayerNumberByUser(human);
+			switch (playerNumber)
+			{
+				case 1: set.add(getPlayer1QuestionNumber());
+						break;
+				case 2: set.add(getPlayer2QuestionNumber());
+						break;
+				case 3: set.add(getPlayer3QuestionNumber());
+						break;
+				case 4: set.add(getPlayer4QuestionNumber());
+						break;
+			}
+		}
+		
+		boolean result = set.size() == 1;
+		
+		return result;
+	}
+	
+	public boolean endOfRound()
+	{
+		boolean result = getPlayer1QuestionNumber() == Constants.questionsNumber &&
+						 getPlayer1QuestionNumber() == getPlayer2QuestionNumber() &&
+						 getPlayer2QuestionNumber() == getPlayer3QuestionNumber() &&
+						 getPlayer3QuestionNumber() == getPlayer4QuestionNumber();
+		
+		return result;
 	}
 	
 	public void writeResult(QuestionResult result)

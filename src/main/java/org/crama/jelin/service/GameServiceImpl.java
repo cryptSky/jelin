@@ -11,10 +11,8 @@ import org.crama.jelin.model.Constants.ProcessStatus;
 import org.crama.jelin.model.Constants.Readiness;
 import org.crama.jelin.model.Constants.UserType;
 import org.crama.jelin.model.Answer;
-import org.apache.tomcat.util.bcel.classfile.Constant;
 import org.crama.jelin.exception.GameException;
 import org.crama.jelin.model.Constants;
-import org.crama.jelin.model.Difficulty;
 import org.crama.jelin.model.Game;
 import org.crama.jelin.model.GameBot;
 import org.crama.jelin.model.GameOpponent;
@@ -23,14 +21,13 @@ import org.crama.jelin.model.Question;
 import org.crama.jelin.model.QuestionResult;
 import org.crama.jelin.model.ScoreSummary;
 import org.crama.jelin.model.User;
-import org.crama.jelin.repository.GameInitRepository;
 import org.crama.jelin.repository.AnswerRepository;
 import org.crama.jelin.repository.GameOpponentRepository;
 import org.crama.jelin.repository.GameRepository;
 import org.crama.jelin.repository.GameRoundRepository;
 import org.crama.jelin.repository.QuestionResultRepository;
+import org.crama.jelin.repository.ScoreSummaryRepository;
 import org.crama.jelin.repository.UserRepository;
-import org.crama.jelin.model.Constants.GameState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,9 +48,6 @@ public class GameServiceImpl implements GameService {
 	private GameOpponentRepository gameOpponentRepository;
 	
 	@Autowired
-	private GameInitRepository gameInitRepository;
-	
-	@Autowired
 	private AnswerRepository answerRepository;
 	
 	@Autowired
@@ -67,12 +61,18 @@ public class GameServiceImpl implements GameService {
 	
 	@Autowired
 	private PointsCalculatorService pointsCalculatorService;
+	
+	@Autowired
+	private CategoryService categoryService;
 
+	@Autowired
+	private ScoreSummaryRepository scoreSummaryRepository;
+	
 	@Override
 	@Transactional
-	public void startGame(Game game) {
+	public void startGame(Game game) throws GameException {
 		List<User> hosts = setUpHosts(game);
-		
+						
 		List<GameRound> gameRounds = new ArrayList<GameRound>();
 
 		for (int round = 0; round < 4; round++)
@@ -86,8 +86,19 @@ public class GameServiceImpl implements GameService {
 		game.setRound(gameRounds.get(0));
 		game.setGameState(GameState.IN_PROGRESS);
 		game.setReadiness(Readiness.CATEGORY);
+		
 		gameRepository.updateGame(game);
-						
+		
+		
+		if (hosts.get(0).getType() == UserType.BOT)
+		{
+			setRandomCategory(game);
+			
+		}
+		
+		gameRoundRepository.saveOrUpdateRounds(gameRounds);
+		gameRepository.updateGame(game);
+		
 		User creator = game.getCreator();
 		creator.setProcessStatus(ProcessStatus.INGAME);
 		userRepository.updateUser(creator);
@@ -135,7 +146,7 @@ public class GameServiceImpl implements GameService {
 	}
 
 	@Override
-	public void saveRoundCategory(Game game, Category category) {
+	public void saveRoundCategory(Game game, Category category) throws GameException {
 		GameRound gameRound = game.getRound();
 		gameRound.setCategory(category);
 		for (int i = 0; i < Constants.questionsNumber; i++)
@@ -144,20 +155,24 @@ public class GameServiceImpl implements GameService {
 			gameRound.addQuestion(question);
 		}
 		gameRoundRepository.updateRound(gameRound);
-		gameInitRepository.updateGame(game);
+		game.setReadiness(Readiness.QUESTION);
+		updateGame(game);
 		
 	}
 
 	@Override
 	public void processAnswer(Game game, User player, int variant, int time) {
 		GameRound gameRound = game.getRound();
-        int index = gameRound.getQuestionNumber();
+        int index = gameRound.getQuestionNumber(player);
         Question question = gameRound.getQuestion(index);
-        int playerNumber = getPlayerNumber(game, player);
+        int playerNumber = game.getPlayerNumberByUser(player);
         
-        int answerCount = gameRound.getAnswerCount();
-        answerCount++;
-        gameRound.setAnswerCount(answerCount);
+        if (player.getType() == UserType.HUMAN)
+        {
+        	int answerCount = gameRound.getHumanAnswerCount();
+        	answerCount++;
+        	gameRound.setHumanAnswerCount(answerCount);
+        }
         
         gameRoundRepository.updateRound(gameRound);
         
@@ -166,51 +181,36 @@ public class GameServiceImpl implements GameService {
       		
 	}
 
-	private int getPlayerNumber(Game game, User player) {
-		if (game.getCreator().getId() == player.getId())
-		{
-			return 1;
-		}
-		for (GameOpponent opponent: game.getGameOpponents())
-		{
-			if (opponent.getUser().getId() == player.getId())
-			{
-				return opponent.getPlayerNum();
-			}
-		}
-		return -1;
-	}
-
 	@Override
-	public Question getNextQuestion(Game game) {
+	public Question getNextQuestion(Game game, User player) {
 		GameRound gameRound = game.getRound();
-        int questionNumber = gameRound.getQuestionNumber();
-        Question question = gameRound.getQuestion(questionNumber);
+        int questionNumber = gameRound.getQuestionNumber(player);
         
-        questionNumber++;
         if (questionNumber >= Constants.questionsNumber)
         {
         	return null;
         }
         
-        gameRound.setQuestionNumber(questionNumber);
-        gameRoundRepository.updateRound(gameRound);
+        Question question = gameRound.getQuestion(questionNumber);
+        questionNumber++;
         
+        gameRound.setQuestionNumber(player, questionNumber);
+        gameRoundRepository.updateRound(gameRound);
+  
         return question;
         
 	}
 
 	@Override
 	public void processBotsAnswers(Game game) {
-		GameRound gameRound = game.getRound();
-        int index = gameRound.getQuestionNumber();
-        Question question = gameRound.getQuestion(index);
-        
-		for (GameOpponent opponent: game.getGameOpponents())
+		
+    	for (GameOpponent opponent: game.getGameOpponents())
     	{
     		User user = opponent.getUser();
     		if (user.getType() == UserType.BOT)
     		{
+    			Question question = getNextQuestion(game, user);
+    			 
     			GameBot bot = user.getBot();
     			int botChoice = gameBotService.getBotChoice(bot, question);
     			int botTime = gameBotService.getBotTime(bot, question);
@@ -218,7 +218,8 @@ public class GameServiceImpl implements GameService {
     			processAnswer(game, user, botChoice, botTime);
     		}
     	}
-		
+
+       		
 	}
 	
 	private GameRound getNextRound(Game game) {
@@ -245,7 +246,7 @@ public class GameServiceImpl implements GameService {
 		}
 		
 		game.setRound(nextRound);
-		gameRepository.updateGame(game);
+		updateGame(game);
 		
 		return true;		
 	}
@@ -263,26 +264,15 @@ public class GameServiceImpl implements GameService {
 
 	@Override
 	public void finishGame(Game game) {
-		List<GameRound> rounds = gameRoundRepository.getAllRoundsByGame(game);
-		GameRound lastRound = gameRoundRepository.getRoundByNumber(3);
-		
-		for (int round = 0; round < 3; round++)
-		{
-			lastRound.setPlayer1Points(rounds.get(round).getPlayer1Points());
-			lastRound.setPlayer2Points(rounds.get(round).getPlayer2Points());
-			lastRound.setPlayer3Points(rounds.get(round).getPlayer3Points());
-			lastRound.setPlayer4Points(rounds.get(round).getPlayer4Points());
-		}
-		
-		game.setGameState(GameState.ENDED);
-		updateGame(game);
+		saveScores(game);		
+				
+		// game.setGameState(GameState.ENDED);
+		// updateGame(game);
 		
 	}
 
-	@Override
-	public List<ScoreSummary> getScoreSummary(Game game) {
-		List<ScoreSummary> summaries = new ArrayList<ScoreSummary>();
-		
+	private void saveScores(Game game)
+	{
 		List<GameRound> rounds = gameRoundRepository.getAllRoundsByGame(game);
 		
 		int[] scores = new int[game.getPlayersCount()];
@@ -298,12 +288,17 @@ public class GameServiceImpl implements GameService {
 		{
 			int playerNumber = i + 1;
 			User player = game.getUserByPlayerNumber(playerNumber);
-			ScoreSummary summary = new ScoreSummary(scores[i], player);
+			ScoreSummary summary = new ScoreSummary(scores[i], player, game);
 			
-			summaries.add(summary);
+			scoreSummaryRepository.saveSummary(summary);
 		}
+	}
+	
+	@Override
+	public List<ScoreSummary> getScoreSummary(Game game) {
+		List<ScoreSummary> summary = scoreSummaryRepository.getSummaryByGame(game);
 		
-		return summaries;
+		return summary;
 	}
 
 	@Override
@@ -311,11 +306,26 @@ public class GameServiceImpl implements GameService {
 		gameRepository.updateGame(game);
 		
 	}
+	
+	@Override
+	public void updateGameRound(GameRound round) {
+		gameRoundRepository.updateRound(round);
+		
+	}
 
-	
+	@Override
+	public void setRandomCategory(Game game) throws GameException {
+		Category category = categoryService.getRandomCategoryFromTheme(game.getTheme());
+		if (category == null)
+		{
+			throw new GameException(0, "There is no category in this theme!");
+		}
+		
+		saveRoundCategory(game, category);
+		
+	}
 
-	
-	
+		
 }
 	
 

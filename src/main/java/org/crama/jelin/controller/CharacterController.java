@@ -25,7 +25,6 @@ public class CharacterController {
 
 	@Autowired
 	private CharacterService characterService;
-	
 	@Autowired
 	private UserDetailsServiceImpl userDetailsService;
 	

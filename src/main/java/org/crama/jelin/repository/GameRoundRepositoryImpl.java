@@ -6,11 +6,9 @@ import javax.transaction.Transactional;
 
 import org.crama.jelin.model.Game;
 import org.crama.jelin.model.GameRound;
-import org.crama.jelin.model.QuestionResult;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -34,6 +32,7 @@ public class GameRoundRepositoryImpl implements GameRoundRepository {
 	}
 
 	@Override
+	@Transactional
 	public void updateRound(GameRound round) {
 		Session session = sessionFactory.getCurrentSession();	
 		session.update(round);

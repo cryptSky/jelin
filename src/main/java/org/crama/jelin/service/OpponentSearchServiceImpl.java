@@ -65,7 +65,8 @@ public class OpponentSearchServiceImpl implements OpponentSearchService {
 						
 		GameBot bot = gameBotService.getRandomBot(game.getTheme(), game.getDifficulty());
 		User userBot = userService.createBot(game, bot);
-		
+		userBot.setChoosenCharacter(bot.getCharacter());
+				
 		gameInitService.addGameOpponent(game, userBot);
 		gameInitService.confirmInvite(game, userBot);
 		

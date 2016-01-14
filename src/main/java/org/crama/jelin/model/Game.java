@@ -1,8 +1,10 @@
 package org.crama.jelin.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -209,6 +211,11 @@ public class Game implements Serializable {
 			}
 		}
 		
+		if (getCreator().getType() == UserType.HUMAN)
+		{
+			count++;
+		}
+		
 		return count;		
 	}
 	
@@ -244,6 +251,27 @@ public class Game implements Serializable {
 		}
 		
 		return result;
+	}
+	
+	public List<User> getHumans()
+	{
+		List<User> humans = new ArrayList<User>();
+		if (getCreator().getType() == UserType.HUMAN)
+		{
+			humans.add(getCreator());
+		}
+		
+		for (GameOpponent opponent: getGameOpponents())
+		{
+			User player = opponent.getUser();
+			if (player.getType() == UserType.HUMAN)
+			{
+				humans.add(player);
+			}
+		}
+		
+		return humans;
+		
 	}
 	
 	@Override

@@ -20,4 +20,6 @@ public interface CategoryService {
 	void checkCategoryNotNull(Category category) throws GameException;
 
 	Category getCategoryById(int category);
+	
+	Category getRandomCategoryFromTheme(Category theme);
 }

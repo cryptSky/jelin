@@ -65,7 +65,7 @@ public class GameInitController {
         		!creator.getProcessStatus().equals(ProcessStatus.CALLING)) {
         	//user is in process status free 
 	        throw new GameException(102, "User should be in status " + ProcessStatus.FREE + " or in status " + ProcessStatus.CALLING 
-	        		+ " to call this method. Current status: " + creator.getProcessStatus().getValue());
+	        		+ " to call this method. Current status: " + creator.getProcessStatus());
         }
         
         Game game = gameInitService.getCreatedGame(creator);
@@ -102,7 +102,7 @@ public class GameInitController {
         		!creator.getProcessStatus().equals(ProcessStatus.CALLING)) {
         	//user is in process status free 
 	        throw new GameException(102, "User should be in status " + ProcessStatus.FREE + " or in status " + ProcessStatus.CALLING 
-	        		+ " to call this method. Current status: " + creator.getProcessStatus().getValue());
+	        		+ " to call this method. Current status: " + creator.getProcessStatus());
         }
         
         /*else if (!creator.getProcessStatus().equals(ProcessStatus.CALLING)) {
@@ -324,6 +324,11 @@ public class GameInitController {
 
 		User creator = userDetailsService.getPrincipal();
 		Game game = gameInitService.getCreatedGame(creator);
+		
+		if (game.getGameOpponents().size() == 3)
+		{
+			throw new GameException(501, "The game has no more available seats!");
+		}
 		
 		if (creator.getChoosenCharacter() == null) {
 			throw new GameException(501, "Character is not set");

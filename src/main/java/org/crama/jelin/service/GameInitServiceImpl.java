@@ -14,7 +14,6 @@ import org.crama.jelin.model.Game;
 import org.crama.jelin.model.GameOpponent;
 import org.crama.jelin.model.User;
 import org.crama.jelin.repository.GameInitRepository;
-import org.crama.jelin.repository.GameOpponentRepository;
 import org.crama.jelin.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,8 +25,6 @@ public class GameInitServiceImpl implements GameInitService {
 	private GameInitRepository gameInitRepository;
 	@Autowired
 	private UserRepository userRepository;
-	@Autowired
-	private GameOpponentRepository gameOpponentRepository;
 	@Autowired
 	private UserService userService;
 	

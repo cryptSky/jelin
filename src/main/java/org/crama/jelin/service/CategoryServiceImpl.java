@@ -1,6 +1,7 @@
 package org.crama.jelin.service;
 
 import java.util.List;
+import java.util.Random;
 
 import org.crama.jelin.exception.ErrorMessagesStorage;
 import org.crama.jelin.exception.GameException;
@@ -54,6 +55,18 @@ public class CategoryServiceImpl implements CategoryService {
 	@Override
 	public Category getCategoryById(int category) {
 		return categoryRepository.getCategoryById(category);
+	}
+
+	@Override
+	public Category getRandomCategoryFromTheme(Category theme) {
+		List<Category> categories = getAllCategoriesFromThemes(theme.getId());
+		
+		Random rand = new Random();
+		int index = rand.nextInt(categories.size());
+		
+		Category category = categories.get(index);
+		
+		return category;
 	}
 
 

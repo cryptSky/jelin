@@ -16,7 +16,7 @@ import javax.persistence.Table;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
-@Table(name = "Question")
+@Table(name = "QuestionResult")
 public class QuestionResult implements Serializable {
 
 	private static final long serialVersionUID = -777778292929211111L;
@@ -28,10 +28,6 @@ public class QuestionResult implements Serializable {
 	
 	@Column(name = "ANSWER")
 	private int answer;
-	
-	@JsonIgnore
-	@Column(name = "ACRONS")
-	private int acrons;
 	
 	@Column(name = "SCORE")
 	private int score;
@@ -85,14 +81,6 @@ public class QuestionResult implements Serializable {
 
 	public void setScore(int score) {
 		this.score = score;
-	}
-
-	public int getAcrons() {
-		return acrons;
-	}
-
-	public void setAcrons(int acrons) {
-		this.acrons = acrons;
 	}
 
 	public Question getQuestion() {

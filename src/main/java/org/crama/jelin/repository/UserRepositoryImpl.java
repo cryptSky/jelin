@@ -16,6 +16,9 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Property;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -203,6 +206,16 @@ public class UserRepositoryImpl implements UserRepository {
 		@SuppressWarnings("unchecked")
 		List<User> user = (List<User>)query.list();
 		return user;
+	}
+
+	@Override
+	public int getMaxUserId() {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(User.class);
+		
+		criteria.setProjection(Projections.max("id"));
+		int maxId = (int)criteria.uniqueResult();
+		
+		return maxId;
 	}
 
 	
