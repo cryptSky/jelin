@@ -1,6 +1,7 @@
 package org.crama.jelin.service;
 
 import java.util.List;
+import java.util.Set;
 
 import org.crama.jelin.exception.GameException;
 import org.crama.jelin.model.Character;
@@ -22,5 +23,9 @@ public interface CharacterService {
 	boolean buyCharacter(int character, User user) throws GameException;
 
 	boolean buyEnhancer(int enhancer, User user) throws GameException;
+
+	Character getCurrentCharacter(User user) throws GameException;
+
+	Set<Character> getUserCharacters(User user);
 
 }

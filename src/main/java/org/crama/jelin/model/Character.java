@@ -2,12 +2,16 @@ package org.crama.jelin.model;
 
 import java.io.Serializable;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -36,6 +40,9 @@ public class Character implements Serializable {
 	
 	@Column(name="DESCRIPTION", nullable=true)
 	private String description;
+	
+	@OneToMany(mappedBy = "character", fetch = FetchType.LAZY, cascade=CascadeType.ALL)
+	private List<ImageLayer> imageLayerList;
 	
 	@JsonIgnore
 	@ManyToMany(mappedBy = "characterSet")
@@ -98,6 +105,14 @@ public class Character implements Serializable {
 
 	public void setUserSet(Set<User> userSet) {
 		this.userSet = userSet;
+	}
+
+	public List<ImageLayer> getImageLayerList() {
+		return imageLayerList;
+	}
+
+	public void setImageLayerList(List<ImageLayer> imageLayerList) {
+		this.imageLayerList = imageLayerList;
 	}
 
 	@Override

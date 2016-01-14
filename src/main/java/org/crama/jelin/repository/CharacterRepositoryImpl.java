@@ -17,7 +17,7 @@ public class CharacterRepositoryImpl implements CharacterRepository {
 	private SessionFactory sessionFactory;
 	
 	private static final String GET_STANDARD_CHARACTERS = "FROM Character "
-			+ "WHERE special = false";
+			+ "WHERE special = false AND acrons = 0 AND goldAcrons = 0";
 	private static final String GET_ALL_CHARACTERS_FOR_MONEY = "FROM Character "
 			+ "WHERE acrons <> 0 OR goldAcrons <> 0";
 	private static final String GET_CHARACTER = "FROM Character "

@@ -10,7 +10,6 @@ import org.crama.jelin.model.Enhancer;
 import org.crama.jelin.model.User;
 import org.crama.jelin.service.CharacterService;
 import org.crama.jelin.service.UserDetailsServiceImpl;
-import org.crama.jelin.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -26,8 +25,7 @@ public class CharacterController {
 
 	@Autowired
 	private CharacterService characterService;
-	@Autowired
-	private UserService userService;
+	
 	@Autowired
 	private UserDetailsServiceImpl userDetailsService;
 	
@@ -56,12 +54,31 @@ public class CharacterController {
 		
 	}
 	
+	//get current character
+	@RequestMapping(value="/api/character/current", method=RequestMethod.GET)
+	@ResponseStatus(HttpStatus.OK)
+    public @ResponseBody Character getCurrentCharacter() throws GameException {
+		User user = userDetailsService.getPrincipal();
+		Character character = characterService.getCurrentCharacter(user);
+		return character;
+		
+	}
+	
 	//get all characters available for money (special = true, not user character) 
 	@RequestMapping(value="/api/character", method=RequestMethod.GET)
 	@ResponseStatus(HttpStatus.OK)
     public @ResponseBody List<Character> getCharactersForSale() {
 		User user = userDetailsService.getPrincipal();
 		List<Character> characterList = characterService.getCharactersForSale(user);
+        return characterList;
+	}
+	
+	//get all characters user owned 
+	@RequestMapping(value="/api/character/users", method=RequestMethod.GET)
+	@ResponseStatus(HttpStatus.OK)
+    public @ResponseBody Set<Character> getUserCharacters() {
+		User user = userDetailsService.getPrincipal();
+		Set<Character> characterList = characterService.getUserCharacters(user);
         return characterList;
 	}
 	

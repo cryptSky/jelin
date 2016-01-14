@@ -12,7 +12,13 @@
 	<context:component-scan base-package="org.crama.jelin.controller"/>
 	
 	<mvc:resources mapping="/resources/**"
-				   location="/resources/"/>
+				   location="/resources"/>
+    <mvc:resources mapping="/icons/**"
+    		       location="/icons/"/>
+    <mvc:resources mapping="/avatar/**"
+    			   location="/avatar/"/>
+    <mvc:resources mapping="/images/**"
+    			   location="/images/"/>
 				   
 	<bean class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
 		<property name="order" value="0"/>

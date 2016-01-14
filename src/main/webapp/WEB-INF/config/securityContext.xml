@@ -8,6 +8,9 @@
 		http://www.springframework.org/schema/security
 		http://www.springframework.org/schema/security/spring-security-4.0.xsd">
 <security:http pattern="/resources/**" security="none"/>
+<security:http pattern="/icons/**" security="none"/>
+<security:http pattern="/avatar/**" security="none"/>
+<security:http pattern="/images/**" security="none"/>
 
 <security:http create-session="stateless">
    <security:intercept-url pattern="/api/user/checkFree" access="permitAll" />

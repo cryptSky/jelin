@@ -9,6 +9,7 @@ import org.crama.jelin.exception.GameException;
 import org.crama.jelin.model.Character;
 import org.crama.jelin.model.Constants.Status;
 import org.crama.jelin.model.Enhancer;
+import org.crama.jelin.model.ImageLayer;
 import org.crama.jelin.model.User;
 import org.crama.jelin.model.UserEnhancer;
 import org.crama.jelin.repository.CharacterRepository;
@@ -26,7 +27,20 @@ public class CharacterServiceImpl implements CharacterService {
 	
 	@Override
 	public List<Character> getPublicCharacters() {
-		return characterRepository.getStandardCharacters();
+		List<Character> characterList = characterRepository.getStandardCharacters();
+		//remove all enhancer images 
+		for (Character c: characterList) {
+			List<ImageLayer> images = c.getImageLayerList();
+			for (ImageLayer i: new ArrayList<ImageLayer>(images)) {
+				/*if (i.getLayerNum() != 3) {
+					images.remove(i);
+				}*/
+				if (i.getEnhancer() != null) {
+					images.remove(i);
+				}
+			}
+		}
+		return characterList;
 	}
 
 	@Override
@@ -75,6 +89,17 @@ public class CharacterServiceImpl implements CharacterService {
 					characters.remove(c);
 				}
 			}
+			//remove all enhancer images 
+			List<ImageLayer> images = c.getImageLayerList();
+			for (ImageLayer i: new ArrayList<ImageLayer>(images)) {
+				/*if (i.getLayerNum() != 3) {
+					images.remove(i);
+				}*/
+				if (i.getEnhancer() != null) {
+					images.remove(i);
+				}
+			}
+			
 		}
 		return characters;
 	}
@@ -172,6 +197,75 @@ public class CharacterServiceImpl implements CharacterService {
 		userRepository.updateUser(user);
 		
 		return true;
+	}
+
+	@Override
+	public Character getCurrentCharacter(User user) throws GameException {
+		Character character = user.getChoosenCharacter();
+		if (character == null) {
+			throw new GameException(308, "User haven't chosen current character");
+		}
+		List<ImageLayer> imageLayerList = character.getImageLayerList();
+		List<UserEnhancer> userEnhancerList = user.getEnhancerList();
+		
+		
+		for (ImageLayer il: new ArrayList<ImageLayer>(imageLayerList)) {
+			boolean found = false;
+			for (UserEnhancer ue: userEnhancerList) {
+				
+				Enhancer userEnhancer = ue.getEnhancer();
+				
+				//System.out.println("User Enhancer: " + userEnhancer);
+				//System.out.println("Image Layer Enhancer: " + il.getEnhancer());
+				
+				if (il.getEnhancer() == null) {
+					found = true;
+					break;
+				}
+				if (ue.getStatus().equals(Status.BOUGHT) && userEnhancer.equals(il.getEnhancer())) {
+					found = true;
+					break;
+				}
+			}
+			if (!found) {
+				imageLayerList.remove(il);
+			}
+		}
+		return character;
+	}
+
+	@Override
+	public Set<Character> getUserCharacters(User user) {
+		
+		Set<Character> userCharacterList = user.getCharacterSet();
+		List<UserEnhancer> userEnhancerList = user.getEnhancerList();
+		//remove all enhancer images 
+		for (Character c: userCharacterList) {
+			List<ImageLayer> images = c.getImageLayerList();
+			for (ImageLayer il: new ArrayList<ImageLayer>(images)) {
+				boolean found = false;
+				for (UserEnhancer ue: userEnhancerList) {
+					
+					Enhancer userEnhancer = ue.getEnhancer();
+					
+					//System.out.println("User Enhancer: " + userEnhancer);
+					//System.out.println("Image Layer Enhancer: " + il.getEnhancer());
+					
+					if (il.getEnhancer() == null) {
+						found = true;
+						break;
+					}
+					if (ue.getStatus().equals(Status.BOUGHT) && userEnhancer.equals(il.getEnhancer())) {
+						found = true;
+						break;
+					}
+				}
+				if (!found) {
+					images.remove(il);
+				}
+			}
+		}
+		return userCharacterList;
 	}
 
 }

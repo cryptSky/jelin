@@ -26,7 +26,7 @@ public class Enhancer implements Serializable {
 	private int id;
 	
 	@ManyToOne(cascade=CascadeType.ALL, fetch = FetchType.EAGER) 
-	@JoinColumn(name = "CHARACTER_ID", nullable = true)
+	@JoinColumn(name = "CHARACTER_ID", nullable = false)
 	private Character character;
 	
 	@Column(name = "IS_EQUIPMENT")
