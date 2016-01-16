@@ -219,8 +219,6 @@ public class GameController {
         	throw new GameException(516, "There is no next question in this round!");
         }
         
-        gameService.setPlayerQuestion(round, player);
-        
         if (round.allHumanGotQuestion())
         {
         	game.setReadiness(Readiness.ANSWER);

@@ -178,10 +178,7 @@ public class GameServiceImpl implements GameService {
         	answerCount++;
         	gameRound.setHumanAnswerCount(answerCount);
         }
-        
-        /*questionNumber++;
-        gameRound.setQuestionNumber(player, questionNumber);*/
-        
+       
         gameRoundRepository.updateRound(gameRound);
                 
         Answer answer = new Answer(gameRound, question, playerNumber, variant, time);
@@ -199,7 +196,11 @@ public class GameServiceImpl implements GameService {
         {
         	return null;
         }
-                
+         
+        questionNumber++;
+        gameRound.setQuestionNumber(player, questionNumber);
+        gameRoundRepository.updateRound(gameRound);
+        
         return question;
   	}
 
@@ -335,17 +336,7 @@ public class GameServiceImpl implements GameService {
 		
 	}
 
-	@Override
-	public void setPlayerQuestion(GameRound round, User player) {
-		
-		int questionNumber = round.getQuestionNumber(player);
-        questionNumber++;
-        round.setQuestionNumber(player, questionNumber);
-        gameRoundRepository.updateRound(round);
-		
-	}
-
-		
+			
 }
 	
 
