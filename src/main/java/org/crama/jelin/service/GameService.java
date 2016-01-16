@@ -39,5 +39,7 @@ public interface GameService {
 	Game getGameByPlayer(User player);
 
 	void saveRoundCategory(Game game, Category categoryObj) throws GameException;
+
+	void setPlayerQuestion(GameRound round, User player);
 	
 }
