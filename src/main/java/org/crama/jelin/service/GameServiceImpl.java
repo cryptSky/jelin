@@ -153,13 +153,7 @@ public class GameServiceImpl implements GameService {
 		gameRound.setCategory(category);
 		
 		List<Question> questions = questionService.getRandomQuestionList(category, game.getDifficulty(), Constants.questionsNumber);
-		/*for (int i = 0; i < Constants.questionsNumber; i++)
-		{
-			
-			Question question = questionService.getRandomQuestion(category, game.getDifficulty());
-			
-			gameRound.addQuestion(question);
-		}*/
+		
 		for (Question q: questions) {
 			gameRound.addQuestion(q);
 		}
@@ -173,8 +167,8 @@ public class GameServiceImpl implements GameService {
 	@Override
 	public void processAnswer(Game game, User player, int variant, int time) {
 		GameRound gameRound = game.getRound();
-        int index = gameRound.getQuestionNumber(player);
-        Question question = gameRound.getQuestion(index);
+        int questionNumber = gameRound.getQuestionNumber(player);
+        Question question = gameRound.getQuestion(questionNumber);
         int playerNumber = game.getPlayerNumberByUser(player);
         
         if (player.getType() == UserType.HUMAN)
@@ -184,8 +178,10 @@ public class GameServiceImpl implements GameService {
         	gameRound.setHumanAnswerCount(answerCount);
         }
         
+        questionNumber++;
+        gameRound.setQuestionNumber(player, questionNumber);
         gameRoundRepository.updateRound(gameRound);
-        
+                
         Answer answer = new Answer(gameRound, question, playerNumber, variant, time);
         answerRepository.saveAnswer(answer);
       		
@@ -195,21 +191,15 @@ public class GameServiceImpl implements GameService {
 	public Question getNextQuestion(Game game, User player) {
 		GameRound gameRound = game.getRound();
         int questionNumber = gameRound.getQuestionNumber(player);
-        
-        if (questionNumber >= Constants.questionsNumber)
+                        
+        Question question = gameRound.getQuestion(questionNumber);
+        if (question == null)
         {
         	return null;
         }
-        
-        Question question = gameRound.getQuestion(questionNumber);
-        questionNumber++;
-        
-        gameRound.setQuestionNumber(player, questionNumber);
-        gameRoundRepository.updateRound(gameRound);
-  
+                
         return question;
-        
-	}
+  	}
 
 	@Override
 	public void processBotsAnswers(Game game) {
@@ -285,13 +275,21 @@ public class GameServiceImpl implements GameService {
 	{
 		List<GameRound> rounds = gameRoundRepository.getAllRoundsByGame(game);
 		
-		int[] scores = new int[game.getPlayersCount()];
+		int playersCount = game.getPlayersCount();
+		
+		int[] scores = new int[playersCount];
 		for (GameRound round: rounds)
 		{
 			scores[0] = scores[0] + round.getPlayer1Points();
 			scores[1] = scores[1] + round.getPlayer2Points();
-			scores[2] = scores[2] + round.getPlayer3Points();
-			scores[3] = scores[3] + round.getPlayer4Points();
+			if (playersCount >= 3)
+			{
+				scores[2] = scores[2] + round.getPlayer3Points();
+			}
+			if (playersCount == 4)
+			{
+				scores[3] = scores[3] + round.getPlayer4Points();
+			}
 		}
 		
 		for (int i = 0; i < game.getPlayersCount(); i++)

@@ -206,13 +206,20 @@ public class GameController {
         	throw new GameException(516, "Readiness is not equal to QUESTION!");
         }
         
+        GameRound round = game.getRound();
+        if (round.alreadyGotQuestion(player))
+        {
+        	throw new GameException(516, "User already got his new question in this round but other players haven't got it yet");
+        }
+        
+        
         Question question = gameService.getNextQuestion(game, player);
         if (question == null)
         {
         	throw new GameException(516, "There is no next question in this round!");
         }
         
-        GameRound round = game.getRound();
+        
         if (round.allHumanGotQuestion())
         {
         	game.setReadiness(Readiness.ANSWER);

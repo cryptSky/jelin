@@ -8,4 +8,5 @@ import org.crama.jelin.model.GameBot;
 
 public interface GameBotRepository {
 	List<GameBot> getBotByThemeAndDifficulty(Category theme, Difficulty diff);
+	List<GameBot> getBotByNullThemeAndDifficulty(Difficulty diff);
 }

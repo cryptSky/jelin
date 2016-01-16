@@ -6,6 +6,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 
+import org.crama.jelin.exception.GameException;
 import org.crama.jelin.model.Category;
 import org.crama.jelin.model.Difficulty;
 import org.crama.jelin.model.Game;
@@ -61,7 +62,7 @@ public class OpponentSearchServiceImpl implements OpponentSearchService {
 	}
 	
 	@Override
-	public User createBot(Game game) {
+	public User createBot(Game game) throws GameException {
 						
 		GameBot bot = gameBotService.getRandomBot(game.getTheme(), game.getDifficulty());
 		User userBot = userService.createBot(game, bot);

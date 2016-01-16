@@ -3,6 +3,7 @@ package org.crama.jelin.service;
 import java.util.List;
 import java.util.Random;
 
+import org.crama.jelin.exception.GameException;
 import org.crama.jelin.model.Category;
 import org.crama.jelin.model.Difficulty;
 import org.crama.jelin.model.GameBot;
@@ -18,9 +19,18 @@ public class GameBotServiceImpl implements GameBotService {
 	private GameBotRepository gameBotRepository;
 	
 	@Override
-	public GameBot getRandomBot(Category theme, Difficulty diff) {
+	public GameBot getRandomBot(Category theme, Difficulty diff) throws GameException {
 		List<GameBot> bots = gameBotRepository.getBotByThemeAndDifficulty(theme, diff);
 		
+		if (bots.size() == 0)
+		{
+			bots = gameBotRepository.getBotByNullThemeAndDifficulty(diff);
+		}
+		if (bots.size() == 0)
+		{
+			throw new GameException(0, "There is no bot available to play with.");
+		}
+				
 		Random randomGenerator = new Random();
 		int index = randomGenerator.nextInt(bots.size());
 		GameBot bot = bots.get(index);

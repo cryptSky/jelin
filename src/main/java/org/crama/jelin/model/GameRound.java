@@ -14,6 +14,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
@@ -70,6 +71,13 @@ public class GameRound implements Serializable {
 	private Category category;
 	
 	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JoinTable(name = "round_question", 
+	   joinColumns = { 
+	          @JoinColumn(name = "ROUND_ID", unique = false)
+	   }, 
+	   inverseJoinColumns = { 
+	          @JoinColumn(name = "QUESTION_ID", unique = false)
+	   })
 	private List<Question> questions = new ArrayList<Question>();
 	
 	@Column(name = "ANSWER_COUNT")
@@ -221,6 +229,45 @@ public class GameRound implements Serializable {
 		this.humanAnswerCount = answerCount;
 	}
 	
+	public boolean alreadyGotQuestion(User player)
+	{
+		int questionNumber = getQuestionNumber(player);
+		int playerCount = game.getPlayersCount();
+		int maxQuestionNumber = -1;
+		int minQuestionNumber = -1;
+		if (playerCount == 2)
+		{
+			maxQuestionNumber = Math.max(getPlayer1QuestionNumber(), getPlayer2QuestionNumber());
+			minQuestionNumber = Math.min(getPlayer1QuestionNumber(), getPlayer2QuestionNumber());					 
+		}
+		else if (playerCount == 3)
+		{
+			maxQuestionNumber = Math.max(Math.max(getPlayer1QuestionNumber(), getPlayer2QuestionNumber()),
+					 									getPlayer3QuestionNumber());
+
+			minQuestionNumber = Math.min(Math.min(getPlayer1QuestionNumber(), getPlayer2QuestionNumber()),
+					 									getPlayer3QuestionNumber());
+
+		} else if (playerCount == 4)
+		{
+			maxQuestionNumber = Math.max(Math.max(getPlayer1QuestionNumber(), getPlayer2QuestionNumber()),
+					 Math.max(getPlayer3QuestionNumber(), getPlayer4QuestionNumber()));
+
+			minQuestionNumber = Math.min(Math.min(getPlayer1QuestionNumber(), getPlayer2QuestionNumber()),
+					 Math.min(getPlayer3QuestionNumber(), getPlayer4QuestionNumber()));
+		}
+		
+		
+		if (questionNumber == maxQuestionNumber && questionNumber > minQuestionNumber)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	
 	public int getQuestionNumber(User player)
 	{
 		int id = game.getPlayerNumberByUser(player);
@@ -283,11 +330,27 @@ public class GameRound implements Serializable {
 	
 	public boolean endOfRound()
 	{
-		boolean result = getPlayer1QuestionNumber() == Constants.questionsNumber &&
-						 getPlayer1QuestionNumber() == getPlayer2QuestionNumber() &&
-						 getPlayer2QuestionNumber() == getPlayer3QuestionNumber() &&
-						 getPlayer3QuestionNumber() == getPlayer4QuestionNumber();
-		
+		boolean result = false;
+		int playerCount = game.getPlayersCount();
+		if (playerCount == 2)
+		{
+			result = getPlayer1QuestionNumber() == Constants.questionsNumber &&
+					 getPlayer1QuestionNumber() == getPlayer2QuestionNumber();
+		}
+		else if (playerCount == 3)
+		{
+			result = getPlayer1QuestionNumber() == Constants.questionsNumber &&
+					 getPlayer1QuestionNumber() == getPlayer2QuestionNumber() &&
+					 getPlayer2QuestionNumber() == getPlayer3QuestionNumber();
+		}
+		else if (playerCount == 4)
+		{
+			result = getPlayer1QuestionNumber() == Constants.questionsNumber &&
+					 getPlayer1QuestionNumber() == getPlayer2QuestionNumber() &&
+					 getPlayer2QuestionNumber() == getPlayer3QuestionNumber() &&
+					 getPlayer3QuestionNumber() == getPlayer4QuestionNumber();
+		}
+				
 		return result;
 	}
 	

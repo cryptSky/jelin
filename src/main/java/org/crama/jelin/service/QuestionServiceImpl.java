@@ -27,7 +27,7 @@ public class QuestionServiceImpl implements QuestionService {
 		{
 			throw new GameException(515, "There is no questions with category: "
 										+ category.getName() +
-										" and difficulty" + diff.getName());
+										" and difficulty " + diff.getName());
 		}
 		
 		Random randomGenerator = new Random();
@@ -46,7 +46,7 @@ public class QuestionServiceImpl implements QuestionService {
 		if (questions.size() == 0) {
 			throw new GameException(515, "There is no questions with category: "
 										+ category.getName() +
-										" and difficulty" + difficulty.getName());
+										" and difficulty " + difficulty.getName());
 		}
 		
 		if (questions.size() < questionsNumber) {

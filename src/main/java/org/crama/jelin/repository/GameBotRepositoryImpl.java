@@ -28,5 +28,16 @@ public class GameBotRepositoryImpl implements GameBotRepository {
 		
 		return criteria.list();
 	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<GameBot> getBotByNullThemeAndDifficulty(Difficulty diff) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(GameBot.class);
+		Criterion category = Restrictions.isNull("category");
+		Criterion difficulty = Restrictions.eq("difficulty", diff);
+		criteria.add(Restrictions.and(category, difficulty));
+		
+		return criteria.list();
+	}
 
 }
