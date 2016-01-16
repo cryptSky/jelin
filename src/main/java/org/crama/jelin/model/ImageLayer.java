@@ -82,5 +82,11 @@ public class ImageLayer implements Serializable {
 	public void setImage(String image) {
 		this.image = image;
 	}
+
+	@Override
+	public String toString() {
+		return "ImageLayer [id=" + id + ", enhancer=" + enhancer + ", character=" + character + ", layerNum=" + layerNum
+				+ ", image=" + image + "]";
+	}
 	
 }

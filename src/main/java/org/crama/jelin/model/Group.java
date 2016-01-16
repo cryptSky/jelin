@@ -12,7 +12,7 @@ import javax.persistence.Table;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
-@Table(name = "QuestionGroup")
+@Table(name = "question_group")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Group  implements Serializable {
 	

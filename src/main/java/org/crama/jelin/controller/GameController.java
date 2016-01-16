@@ -60,7 +60,7 @@ public class GameController {
         {
         	throw new GameException(511, "Game not found! User " + creator + " has not created any game"); 
         }
-        
+       
         gameService.startGame(game);
         
         return true;
@@ -185,15 +185,7 @@ public class GameController {
         
 	}
 
-	@ExceptionHandler
-    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
-	public @ResponseBody RestError handleException(GameException ge) {
-		logger.error("Game Controller: Game Exception");
-		logger.error(ge.toString());
-		
-		RestError re = new RestError(HttpStatus.BAD_REQUEST, ge.getCode(), ge.getMessage());
-		return re;
-   }
+	
 	
 	@RequestMapping(value="/api/game/question", method=RequestMethod.GET)
 	public @ResponseBody Question getNextQuestion() throws GameException {
@@ -347,4 +339,15 @@ public class GameController {
         
         return summaries;
 	}
+	
+	@ExceptionHandler
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+	public @ResponseBody RestError handleException(GameException ge) {
+		logger.error("Game Controller: Game Exception");
+		logger.error(ge.toString());
+		
+		RestError re = new RestError(HttpStatus.BAD_REQUEST, ge.getCode(), ge.getMessage());
+		return re;
+   }
+	
 }

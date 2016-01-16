@@ -14,7 +14,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "GameBot")
+@Table(name = "game_bot")
 public class GameBot implements Serializable{
 	
 	private static final long serialVersionUID = 4455599900000532111L;

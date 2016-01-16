@@ -7,6 +7,7 @@ import java.util.Random;
 
 import org.crama.jelin.model.Category;
 import org.crama.jelin.model.Constants.GameState;
+import org.crama.jelin.model.Constants.InviteStatus;
 import org.crama.jelin.model.Constants.ProcessStatus;
 import org.crama.jelin.model.Constants.Readiness;
 import org.crama.jelin.model.Constants.UserType;
@@ -81,12 +82,11 @@ public class GameServiceImpl implements GameService {
 			gameRounds.add(gameRound);
 		}
 		
-		gameRoundRepository.saveOrUpdateRounds(gameRounds);
-		
 		game.setRound(gameRounds.get(0));
 		game.setGameState(GameState.IN_PROGRESS);
 		game.setReadiness(Readiness.CATEGORY);
 		
+		gameRoundRepository.saveOrUpdateRounds(gameRounds);
 		gameRepository.updateGame(game);
 		
 		
@@ -105,9 +105,11 @@ public class GameServiceImpl implements GameService {
 		
 		for (GameOpponent opponent: game.getGameOpponents())
 		{
-			User player = opponent.getUser();
-			player.setProcessStatus(ProcessStatus.INGAME);
-			userRepository.updateUser(player);
+			if (opponent.getInviteStatus().equals(InviteStatus.ACCEPTED)) {
+				User player = opponent.getUser();
+				player.setProcessStatus(ProcessStatus.INGAME);
+				userRepository.updateUser(player);
+			}
 		}
 		
 	}
@@ -149,11 +151,19 @@ public class GameServiceImpl implements GameService {
 	public void saveRoundCategory(Game game, Category category) throws GameException {
 		GameRound gameRound = game.getRound();
 		gameRound.setCategory(category);
-		for (int i = 0; i < Constants.questionsNumber; i++)
+		
+		List<Question> questions = questionService.getRandomQuestionList(category, game.getDifficulty(), Constants.questionsNumber);
+		/*for (int i = 0; i < Constants.questionsNumber; i++)
 		{
+			
 			Question question = questionService.getRandomQuestion(category, game.getDifficulty());
+			
 			gameRound.addQuestion(question);
+		}*/
+		for (Question q: questions) {
+			gameRound.addQuestion(q);
 		}
+		
 		gameRoundRepository.updateRound(gameRound);
 		game.setReadiness(Readiness.QUESTION);
 		updateGame(game);

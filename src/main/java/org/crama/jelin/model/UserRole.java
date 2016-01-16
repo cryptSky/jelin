@@ -13,7 +13,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "Role")
+@Table(name = "role")
 public class UserRole implements Serializable {
 	
 	private static final long serialVersionUID = -6558128018092674791L;

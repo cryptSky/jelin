@@ -14,7 +14,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "Region")
+@Table(name = "region")
 public class Region implements Serializable {
 
 	private static final long serialVersionUID = -9667822342450781L;

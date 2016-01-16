@@ -41,7 +41,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 	)
 })*/
 @Entity
-@Table(name = "Game")
+@Table(name = "game")
 public class Game implements Serializable {
 	
 	private static final long serialVersionUID = -99467490547468311L;

@@ -211,20 +211,22 @@ public class CharacterServiceImpl implements CharacterService {
 		
 		for (ImageLayer il: new ArrayList<ImageLayer>(imageLayerList)) {
 			boolean found = false;
-			for (UserEnhancer ue: userEnhancerList) {
-				
-				Enhancer userEnhancer = ue.getEnhancer();
-				
-				//System.out.println("User Enhancer: " + userEnhancer);
-				//System.out.println("Image Layer Enhancer: " + il.getEnhancer());
-				
-				if (il.getEnhancer() == null) {
-					found = true;
-					break;
-				}
-				if (ue.getStatus().equals(Status.BOUGHT) && userEnhancer.equals(il.getEnhancer())) {
-					found = true;
-					break;
+			if (il.getEnhancer() == null) {
+				found = true;
+				continue;
+			}
+			else {
+				for (UserEnhancer ue: userEnhancerList) {
+					
+					Enhancer userEnhancer = ue.getEnhancer();
+					
+					//System.out.println("User Enhancer: " + userEnhancer);
+					//System.out.println("Image Layer Enhancer: " + il.getEnhancer());
+					
+					if (ue.getStatus().equals(Status.BOUGHT) && userEnhancer.equals(il.getEnhancer())) {
+						found = true;
+						break;
+					}
 				}
 			}
 			if (!found) {
@@ -244,23 +246,26 @@ public class CharacterServiceImpl implements CharacterService {
 			List<ImageLayer> images = c.getImageLayerList();
 			for (ImageLayer il: new ArrayList<ImageLayer>(images)) {
 				boolean found = false;
-				for (UserEnhancer ue: userEnhancerList) {
-					
-					Enhancer userEnhancer = ue.getEnhancer();
-					
-					//System.out.println("User Enhancer: " + userEnhancer);
-					//System.out.println("Image Layer Enhancer: " + il.getEnhancer());
-					
-					if (il.getEnhancer() == null) {
-						found = true;
-						break;
-					}
-					if (ue.getStatus().equals(Status.BOUGHT) && userEnhancer.equals(il.getEnhancer())) {
-						found = true;
-						break;
+				if (il.getEnhancer() == null) {
+					found = true;
+					continue;
+				}
+				else {
+					for (UserEnhancer ue: userEnhancerList) {
+						
+						Enhancer userEnhancer = ue.getEnhancer();
+						
+						//System.out.println("User Enhancer: " + userEnhancer);
+						//System.out.println("Image Layer Enhancer: " + il.getEnhancer());
+						
+						if (ue.getStatus().equals(Status.BOUGHT) && userEnhancer.equals(il.getEnhancer())) {
+							found = true;
+							break;
+						}
 					}
 				}
 				if (!found) {
+					System.out.println(il);
 					images.remove(il);
 				}
 			}

@@ -17,7 +17,7 @@ import javax.validation.constraints.Size;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
-@Table(name = "UserModel")
+@Table(name = "user_model")
 public class UserModel implements Serializable {
 
 	private static final long serialVersionUID = -5360750778811586440L;
