@@ -3,7 +3,6 @@ package org.crama.jelin.service;
 import java.util.List;
 import java.util.Random;
 
-import org.crama.jelin.exception.ErrorMessagesStorage;
 import org.crama.jelin.exception.GameException;
 import org.crama.jelin.model.Category;
 import org.crama.jelin.model.Group;
@@ -48,7 +47,7 @@ public class CategoryServiceImpl implements CategoryService {
 	@Override
 	public void checkCategoryNotNull(Category category) throws GameException {
 		if (category== null) {
-			throw new GameException(201, ErrorMessagesStorage.ERROR_201.getMessage());
+			throw new GameException(201, "Category with given id doesn't exist");
 		}
 	}
 

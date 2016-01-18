@@ -99,9 +99,6 @@ public class User implements Serializable {
 	@OneToMany(cascade=CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "user") 
 	private List<UserEnhancer> enhancerList = new ArrayList<UserEnhancer>();
 	
-	/*@JsonIgnore
-	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade=CascadeType.ALL)
-    private Set<GameUser> gamePlayerSet = new HashSet<GameUser>();*/
 	
 	public User() {}
 	

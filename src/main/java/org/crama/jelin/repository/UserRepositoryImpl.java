@@ -16,9 +16,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Criterion;
-import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Projections;
-import org.hibernate.criterion.Property;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -42,6 +40,9 @@ public class UserRepositoryImpl implements UserRepository {
 										+ "WHERE role = :role";
 	
 	private static final String GET_ALL_USERS = "FROM User ";
+	
+	private static final String UPDATE_ALL_USERS_NET_STATUS = "UPDATE User SET netStatus = :status "
+										+ "WHERE id <> :id";
 
 		
 	@Override
@@ -76,9 +77,7 @@ public class UserRepositoryImpl implements UserRepository {
 			session.getTransaction().rollback();
 		}
 		
-		//if (!tx.wasCommitted()) {
-			tx.commit();
-		//}
+		tx.commit();
 
 	}
 
@@ -98,37 +97,10 @@ public class UserRepositoryImpl implements UserRepository {
 			session.getTransaction().rollback();
 		}
 		
-		//if (!tx.wasCommitted()) {
-			tx.commit();
-		//}
+		tx.commit();
 		
 	}
 
-	
-	
-
-	/*@Override
-	public void saveUserRoles(UserModel model) {
-		Session session = sessionFactory.getCurrentSession();
-		Set<UserRole> roles = model.getRoles();
-		for (UserRole role: roles) {
-			Transaction tx = session.beginTransaction();
-			try {
-				
-				Query query = session.createSQLQuery(SAVE_USER_ROLE);
-				query.setParameter(0, model.getUsername());
-				query.setParameter(1, role.getRoleId());
-				
-				int rows = query.executeUpdate();
-				tx.commit();
-			}
-			catch (HibernateException e) {
-				e.printStackTrace();
-				tx.rollback();
-			}
-		}
-		
-	}*/
 
 	@Override
 	public UserRole getUserRole(String roleUser) {
@@ -216,6 +188,17 @@ public class UserRepositoryImpl implements UserRepository {
 		int maxId = (int)criteria.uniqueResult();
 		
 		return maxId;
+	}
+
+	@Override
+	@Transactional
+	public void updateAllUsersNetStatus(User user, NetStatus status) {
+		
+		Query query = sessionFactory.getCurrentSession().createQuery(UPDATE_ALL_USERS_NET_STATUS);
+		query.setParameter("status", status);
+		query.setParameter("id", user.getId());
+		query.executeUpdate();
+		
 	}
 
 	
