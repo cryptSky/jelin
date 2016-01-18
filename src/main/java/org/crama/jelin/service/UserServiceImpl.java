@@ -2,7 +2,6 @@ package org.crama.jelin.service;
 
 import java.util.List;
 
-import org.crama.jelin.exception.ErrorMessagesStorage;
 import org.crama.jelin.exception.GameException;
 import org.crama.jelin.model.Constants.NetStatus;
 import org.crama.jelin.model.Constants.ProcessStatus;
@@ -42,22 +41,11 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public boolean saveUser(UserModel model) {
 		if (checkUsername(model.getUsername())) {
-			/*Set<UserRole> userRole = new HashSet<UserRole>();
-			UserRole role = userRepository.getUserRole(UserRole.ROLE_USER);
-			//UserRole role = new UserRole();
-			//role.setRole(UserRole.ROLE_USER);
-			userRole.add(role);
-			model.setRoles(userRole);
 			
-			Set<UserRole> roles = model.getRoles();
-			for (UserRole r: roles) {
-				System.out.println(r);
-			}*/
 			UserRole role = userRepository.getUserRole(UserRole.ROLE_USER);
 			model.setRole(role);
 			
 			userRepository.saveUserModel(model);
-			//userRepository.saveUserRoles(model);
 			User newUser = new User(model.getUsername(), model.getEmail());
 			newUser.setType(UserType.HUMAN);
 			newUser.setNetStatus(NetStatus.ONLINE);
@@ -117,7 +105,7 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public void checkUserAuthorized(User creator) throws GameException {
 		if (creator == null) {
-        	throw new GameException(101, ErrorMessagesStorage.ERROR_101.getMessage());
+        	throw new GameException(101, "User is not autheticated");
         	
         }
 	}
@@ -158,6 +146,25 @@ public class UserServiceImpl implements UserService {
 		userRepository.saveUser(userBot);
 		
 		return userBot;
+	}
+
+	@Override
+	public void changeNetStatus(User user, int status) throws GameException {
+		NetStatus s = null;
+		if (status == 0) {
+			s = NetStatus.ONLINE;
+		}
+		else if (status == 1) {
+			s = NetStatus.SHADOW;
+		}
+		else if (status == 2) {
+			s = NetStatus.OFFLINE;
+		}
+		else {
+			throw new GameException(112, "Wrong NetStatus value");
+		}
+		userRepository.updateAllUsersNetStatus(user, s);
+		
 	}
 	
 

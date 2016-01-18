@@ -3,6 +3,7 @@ package org.crama.jelin.repository;
 
 import java.util.List;
 
+import org.crama.jelin.model.Constants.NetStatus;
 import org.crama.jelin.model.User;
 import org.crama.jelin.model.UserModel;
 import org.crama.jelin.model.UserRole;
@@ -37,5 +38,7 @@ public interface UserRepository {
 	List<User> getAllUsers();
 	
 	int getMaxUserId();
+
+	void updateAllUsersNetStatus(User user, NetStatus status);
 
 }

@@ -39,5 +39,7 @@ public interface UserService {
 	
 	User createBot(Game game, GameBot bot);
 
+	void changeNetStatus(User user, int status) throws GameException;
+
 
 }

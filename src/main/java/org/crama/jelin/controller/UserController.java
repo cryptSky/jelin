@@ -4,7 +4,6 @@ import java.util.List;
 
 import javax.validation.Valid;
 
-import org.crama.jelin.exception.ErrorMessagesStorage;
 import org.crama.jelin.exception.GameException;
 import org.crama.jelin.exception.RestError;
 import org.crama.jelin.model.User;
@@ -71,14 +70,14 @@ public class UserController {
         
     }
 	
-	//TODO 
+	
 	@RequestMapping(value="/api/user/login", method=RequestMethod.GET)
 	@ResponseStatus(HttpStatus.OK)
     public boolean checkUserCredentials() throws GameException {
 		User user = userDetailsService.getPrincipal();
 		
 		if (user == null) { 
-			throw new GameException(101, ErrorMessagesStorage.ERROR_101.getMessage());
+			throw new GameException(101, "User is not authenticated");
 		}
         return true;
 	}
@@ -96,6 +95,13 @@ public class UserController {
 		return userService.getAllUsers(user);
 	}
 	
+	@RequestMapping(value="/api/user/netstatus", method=RequestMethod.POST)
+	public void changeUsersNetStatus(@RequestParam int status) throws GameException {
+		
+		User user = userDetailsService.getPrincipal();
+		userService.changeNetStatus(user, status);
+		
+	}
 	
 	@ExceptionHandler
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
