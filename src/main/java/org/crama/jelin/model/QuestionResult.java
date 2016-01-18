@@ -19,9 +19,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @Table(name = "question_result")
 public class QuestionResult implements Serializable {
 
-	private static final long serialVersionUID = -777778292929211111L;
+	private static final long serialVersionUID = 4790402842804634685L;
 	
 	@Id
+	@JsonIgnore
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name="ID", nullable=false, unique=true)
 	private int id;
@@ -32,7 +33,7 @@ public class QuestionResult implements Serializable {
 	@Column(name = "SCORE")
 	private int score;
 	
-	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JoinColumn(name = "QUESTION_ID")
 	private Question question;
 	

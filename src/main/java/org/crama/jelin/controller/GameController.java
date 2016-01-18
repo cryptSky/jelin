@@ -203,7 +203,7 @@ public class GameController {
 		
         if (game.getReadiness() != Readiness.QUESTION)
         {
-        	throw new GameException(516, "Readiness is not equal to QUESTION!");
+        	throw new GameException(516, "Game Readiness is: " + game.getReadiness().toString() + ". Should be: QUESTION");
         }
         
         GameRound round = game.getRound();
@@ -244,7 +244,7 @@ public class GameController {
 		
         if (game.getReadiness() != Readiness.ANSWER)
         {
-        	throw new GameException(517, "Readiness is not equal to ANSWER!");
+        	throw new GameException(517, "Game Readiness is: " + game.getReadiness().toString() + ". Should be: ANSWER");
         }
         
         gameService.processAnswer(game, player, variant, time);
@@ -253,49 +253,22 @@ public class GameController {
         
         // if all Humans already answered
         if (game.getHumanPlayersCount() == round.getHumanAnswerCount())
-        {
+        {        	
+        	gameService.processBotsAnswers(game);
+        	
+        	int questionNumber = round.getQuestionNumber(player) - 1;
+        	Question question = round.getQuestion(questionNumber);
+        	
+        	gameService.finishQuestionStep(round, question);
         	
         	round.setHumanAnswerCount(0);
         	gameService.updateGameRound(round);
+        	
+        	game.setReadiness(Readiness.RESULT);
         	gameService.updateGame(game);
-        	
-        	gameService.processBotsAnswers(game);
-        	
-        	// end of round
-        	if (game.getRound().endOfRound())
-        	{
-        		gameService.finishRound(game.getRound());
-        		game.setReadiness(Readiness.RESULT);       // RESULT state never is available
-            	gameService.updateGame(game);
-            	
-            	boolean hasNextRound = gameService.nextRound(game);
-            	if (!hasNextRound)
-            	{       	
-            		game.setReadiness(Readiness.SUMMARY);
-                	gameService.updateGame(game);
-                	
-            		gameService.finishGame(game);
-            		return;
-            	}
-            	
-            	// if next round host is bot, set category
-            	if (game.getRound().getHost().getType() == UserType.BOT)
-            	{
-            		gameService.setRandomCategory(game);
-              	}
-            	else
-            	{
-            		game.setReadiness(Readiness.CATEGORY);
-                	gameService.updateGame(game);
-            	}
-        	}
-        	else
-        	{
-        		game.setReadiness(Readiness.QUESTION);
-            	gameService.updateGame(game);
-        	}
-        	        	     	
-        }     	
+        	      	        	        	     	
+        }
+       
 	}
 	
 	@RequestMapping(value="/api/game/results", method=RequestMethod.POST)
@@ -314,11 +287,51 @@ public class GameController {
 		
         if (game.getReadiness() != Readiness.RESULT)
         {
-        	throw new GameException(518, "Readiness is not equal to RESULT!");
+        	throw new GameException(518, "Game Readiness is: " + game.getReadiness().toString() + ". Should be: RESULT");
         }
 		
-        List<QuestionResult> result = gameService.getPersonalRoundResults(game, player);
+        GameRound round = game.getRound();
         
+        round.setHumanAnswerCount(round.getHumanAnswerCount()+1);
+    	gameService.updateGameRound(round);
+        
+        List<QuestionResult> result = gameService.getPersonalResults(game, player);
+        
+        // if all humans already called /api/game/results after their answers
+        if (game.getHumanPlayersCount() == round.getHumanAnswerCount())
+        {
+        	round.setHumanAnswerCount(0);
+        	gameService.updateGameRound(round);
+        	if (round.endOfRound())
+        	{
+        		boolean hasNextRound = gameService.nextRound(game);
+            	if (!hasNextRound)
+            	{       	
+            		game.setReadiness(Readiness.SUMMARY);
+                	gameService.updateGame(game);
+                	
+            		gameService.finishGame(game);
+            		return result;
+            	}
+            	
+            	// if next round host is bot, set category
+            	if (game.getRound().getHost().getType() == UserType.BOT)
+            	{
+            		gameService.setRandomCategory(game);
+              	}
+            	else
+            	{
+            		game.setReadiness(Readiness.CATEGORY);
+                	gameService.updateGame(game);
+            	}
+        	}
+        	else
+        	{
+        		game.setReadiness(Readiness.QUESTION);
+        		gameService.updateGame(game);
+        	}
+        }
+                
         return result;
 	}
 	
@@ -338,7 +351,7 @@ public class GameController {
 		
         if (game.getReadiness() != Readiness.SUMMARY && game.getReadiness() != Readiness.RESULT)
         {
-        	throw new GameException(519, "Readiness is not equal to SUMMARY!");
+        	throw new GameException(519, "Game Readiness is: " + game.getReadiness().toString() + ". Should be: SUMMARY");
         }
         
         List<ScoreSummary> summaries = gameService.getScoreSummary(game);

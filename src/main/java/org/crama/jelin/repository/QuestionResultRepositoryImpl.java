@@ -24,7 +24,7 @@ public class QuestionResultRepositoryImpl implements QuestionResultRepository {
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<QuestionResult> getPersonalRoundResults(Game game, User player) throws GameException {
+	public List<QuestionResult> getPersonalResults(Game game, User player) throws GameException {
 		GameRound round = game.getRound();
 		int playerNumber = game.getPlayerNumberByUser(player);
 		if (playerNumber < 1 || playerNumber > 4)

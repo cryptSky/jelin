@@ -29,35 +29,17 @@ public class PointsCalculatorServiceImpl implements PointsCalculatorService {
 		
 		for (Question question: round.getQuestions())
 		{
-			List<Answer> answers = answerRepository.getRoundAnswersByQuestion(round, question);
-			int orderNumber = 0;
-			for (Answer answer: answers)
-			{
-				QuestionResult result = calculatePoints(round, answer, orderNumber);
-				questionResultRepository.saveResult(result);
-				round.writeResult(result);
-				orderNumber++;
-			}
-			
+			calculateQuestion(round, question);			
 			gameRoundRepository.updateRound(round);
 		}
-		
-		
-		
-
+	
 	}
 	
 	private QuestionResult calculatePoints(GameRound round, Answer answer, int orderNumber)
 	{
 		int playerNumber = answer.getPlayerNumber();
 		Question question = answer.getQuestion();
-		if (answer.getTime() > question.getTime() || 
-				answer.getVariant() != question.getAnswer())
-		{
-			return new QuestionResult(answer.getVariant(), 0, question, 
-							round, playerNumber);
-		}
-		
+				
 		int points = 0;
 		switch(orderNumber)
 		{
@@ -77,6 +59,32 @@ public class PointsCalculatorServiceImpl implements PointsCalculatorService {
 														round, playerNumber);
 		
 		return result;
+	}
+
+	@Override
+	public void calculateQuestion(GameRound round, Question question) {
+		List<Answer> answers = answerRepository.getRoundAnswersByQuestion(round, question);
+		int orderNumber = 0;
+		for (Answer answer: answers)
+		{
+			QuestionResult result = null;
+			
+			if (answer.getTime() > question.getTime() || 
+					answer.getVariant() != question.getAnswer())
+			{
+				result = calculatePoints(round, answer, -1);
+			}
+			else
+			{
+				result = calculatePoints(round, answer, orderNumber);
+				orderNumber++;
+			}
+			
+			questionResultRepository.saveResult(result);
+			round.writeResult(result);
+			
+		}
+		
 	}
 
 }

@@ -20,8 +20,10 @@ public interface GameService {
 	
 	boolean nextRound(Game game);
 	
-	void finishRound(GameRound round);
+	void finishQuestionStep(GameRound round, Question question);
 	
+	void finishRound(GameRound round);
+		
 	void finishGame(Game game);
 	
 	void updateGame(Game game);
@@ -32,7 +34,7 @@ public interface GameService {
 	
 	List<ScoreSummary> getScoreSummary(Game game);
 	
-	List<QuestionResult> getPersonalRoundResults(Game game, User player) throws GameException;
+	List<QuestionResult> getPersonalResults(Game game, User player) throws GameException;
 	
 	Question getNextQuestion(Game game, User player);
 	

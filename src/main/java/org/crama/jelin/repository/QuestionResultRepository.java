@@ -8,6 +8,6 @@ import org.crama.jelin.model.QuestionResult;
 import org.crama.jelin.model.User;
 
 public interface QuestionResultRepository {
-	List<QuestionResult> getPersonalRoundResults(Game game, User player) throws GameException;
+	List<QuestionResult> getPersonalResults(Game game, User player) throws GameException;
 	void saveResult(QuestionResult result);
 }

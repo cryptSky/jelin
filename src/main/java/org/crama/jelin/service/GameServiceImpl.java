@@ -255,14 +255,13 @@ public class GameServiceImpl implements GameService {
 	}
 
 	@Override
-	public void finishRound(GameRound round) {
-		pointsCalculatorService.calculate(round);
-		
+	public void finishQuestionStep(GameRound round, Question question) {
+		pointsCalculatorService.calculateQuestion(round, question);		
 	}
 
 	@Override
-	public List<QuestionResult> getPersonalRoundResults(Game game, User player) throws GameException {
-		return questionResultRepository.getPersonalRoundResults(game, player);
+	public List<QuestionResult> getPersonalResults(Game game, User player) throws GameException {
+		return questionResultRepository.getPersonalResults(game, player);
 	}
 
 	@Override
@@ -333,6 +332,12 @@ public class GameServiceImpl implements GameService {
 		}
 		
 		saveRoundCategory(game, category);
+		
+	}
+
+	@Override
+	public void finishRound(GameRound round) {
+		pointsCalculatorService.calculate(round);
 		
 	}
 
