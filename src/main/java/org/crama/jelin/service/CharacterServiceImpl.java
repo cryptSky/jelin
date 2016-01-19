@@ -32,9 +32,7 @@ public class CharacterServiceImpl implements CharacterService {
 		for (Character c: characterList) {
 			List<ImageLayer> images = c.getImageLayerList();
 			for (ImageLayer i: new ArrayList<ImageLayer>(images)) {
-				/*if (i.getLayerNum() != 3) {
-					images.remove(i);
-				}*/
+				
 				if (i.getEnhancer() != null) {
 					images.remove(i);
 				}
@@ -92,9 +90,7 @@ public class CharacterServiceImpl implements CharacterService {
 			//remove all enhancer images 
 			List<ImageLayer> images = c.getImageLayerList();
 			for (ImageLayer i: new ArrayList<ImageLayer>(images)) {
-				/*if (i.getLayerNum() != 3) {
-					images.remove(i);
-				}*/
+				
 				if (i.getEnhancer() != null) {
 					images.remove(i);
 				}
@@ -220,8 +216,6 @@ public class CharacterServiceImpl implements CharacterService {
 					
 					Enhancer userEnhancer = ue.getEnhancer();
 					
-					//System.out.println("User Enhancer: " + userEnhancer);
-					//System.out.println("Image Layer Enhancer: " + il.getEnhancer());
 					
 					if (ue.getStatus().equals(Status.BOUGHT) && userEnhancer.equals(il.getEnhancer())) {
 						found = true;
@@ -255,8 +249,6 @@ public class CharacterServiceImpl implements CharacterService {
 						
 						Enhancer userEnhancer = ue.getEnhancer();
 						
-						//System.out.println("User Enhancer: " + userEnhancer);
-						//System.out.println("Image Layer Enhancer: " + il.getEnhancer());
 						
 						if (ue.getStatus().equals(Status.BOUGHT) && userEnhancer.equals(il.getEnhancer())) {
 							found = true;

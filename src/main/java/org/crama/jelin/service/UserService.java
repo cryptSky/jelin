@@ -41,5 +41,7 @@ public interface UserService {
 
 	void changeNetStatus(User user, int status) throws GameException;
 
+	void changeOthersNetStatus(User user, int status) throws GameException;
+
 
 }

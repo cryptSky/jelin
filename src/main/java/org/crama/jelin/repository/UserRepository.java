@@ -41,4 +41,6 @@ public interface UserRepository {
 
 	void updateAllUsersNetStatus(User user, NetStatus status);
 
+	void updateNetStatus(User user, NetStatus s);
+
 }

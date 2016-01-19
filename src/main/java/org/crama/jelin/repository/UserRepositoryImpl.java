@@ -44,6 +44,9 @@ public class UserRepositoryImpl implements UserRepository {
 	private static final String UPDATE_ALL_USERS_NET_STATUS = "UPDATE User SET netStatus = :status "
 										+ "WHERE id <> :id";
 
+	private static final String UPDATE_USERS_NET_STATUS = "UPDATE User SET netStatus = :status "
+			+ "WHERE id = :id";
+
 		
 	@Override
 	public UserModel getUserModel(String username) {
@@ -199,6 +202,15 @@ public class UserRepositoryImpl implements UserRepository {
 		query.setParameter("id", user.getId());
 		query.executeUpdate();
 		
+	}
+
+	@Override
+	@Transactional
+	public void updateNetStatus(User user, NetStatus s) {
+		Query query = sessionFactory.getCurrentSession().createQuery(UPDATE_USERS_NET_STATUS);
+		query.setParameter("status", s);
+		query.setParameter("id", user.getId());
+		query.executeUpdate();
 	}
 
 	

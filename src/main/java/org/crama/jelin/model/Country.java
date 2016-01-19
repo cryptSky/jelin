@@ -9,8 +9,11 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 @Entity
 @Table(name = "country")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Country implements Serializable {
 	
 	private static final long serialVersionUID = -990822342450781L;

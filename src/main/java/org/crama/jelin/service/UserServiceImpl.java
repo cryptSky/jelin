@@ -149,7 +149,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public void changeNetStatus(User user, int status) throws GameException {
+	public void changeOthersNetStatus(User user, int status) throws GameException {
 		NetStatus s = null;
 		if (status == 0) {
 			s = NetStatus.ONLINE;
@@ -165,6 +165,24 @@ public class UserServiceImpl implements UserService {
 		}
 		userRepository.updateAllUsersNetStatus(user, s);
 		
+	}
+
+	@Override
+	public void changeNetStatus(User user, int status) throws GameException {
+		NetStatus s = null;
+		if (status == 0) {
+			s = NetStatus.ONLINE;
+		}
+		else if (status == 1) {
+			s = NetStatus.SHADOW;
+		}
+		else if (status == 2) {
+			s = NetStatus.OFFLINE;
+		}
+		else {
+			throw new GameException(112, "Wrong NetStatus value");
+		}
+		userRepository.updateNetStatus(user, s);
 	}
 	
 

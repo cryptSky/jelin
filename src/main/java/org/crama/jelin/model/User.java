@@ -20,6 +20,7 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -99,6 +100,9 @@ public class User implements Serializable {
 	@OneToMany(cascade=CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "user") 
 	private List<UserEnhancer> enhancerList = new ArrayList<UserEnhancer>();
 	
+	@JsonIgnore
+	@OneToOne(mappedBy = "user", fetch = FetchType.LAZY, cascade=CascadeType.ALL)  
+	private UserInfo userInfo;
 	
 	public User() {}
 	
@@ -217,6 +221,14 @@ public class User implements Serializable {
 
 	public void setEnhancerList(List<UserEnhancer> enhancerList) {
 		this.enhancerList = enhancerList;
+	}
+	
+	public UserInfo getUserInfo() {
+		return userInfo;
+	}
+
+	public void setUserInfo(UserInfo userInfo) {
+		this.userInfo = userInfo;
 	}
 
 	@Override

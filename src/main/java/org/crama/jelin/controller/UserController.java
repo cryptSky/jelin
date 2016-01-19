@@ -82,11 +82,11 @@ public class UserController {
         return true;
 	}
 	
-	//TODO add functionality
 	@RequestMapping(value="/api/user", method=RequestMethod.GET)
 	@ResponseStatus(HttpStatus.OK)
     public @ResponseBody User getUserPrincipal() {
-        return new User(1, "user", "user@gmail.com");
+		User user = userDetailsService.getPrincipal();
+        return user;
     }
 	
 	@RequestMapping(value="/api/user/all", method=RequestMethod.GET)
@@ -96,10 +96,19 @@ public class UserController {
 	}
 	
 	@RequestMapping(value="/api/user/netstatus", method=RequestMethod.POST)
-	public void changeUsersNetStatus(@RequestParam int status) throws GameException {
+	public void changeNetStatus(@RequestParam int status) throws GameException {
 		
 		User user = userDetailsService.getPrincipal();
 		userService.changeNetStatus(user, status);
+		
+	}
+	
+	//only for testing
+	@RequestMapping(value="/api/user/netstatus/all", method=RequestMethod.POST)
+	public void changeUsersNetStatus(@RequestParam int status) throws GameException {
+		
+		User user = userDetailsService.getPrincipal();
+		userService.changeOthersNetStatus(user, status);
 		
 	}
 	

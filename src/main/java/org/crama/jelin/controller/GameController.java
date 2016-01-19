@@ -58,7 +58,7 @@ public class GameController {
         Game game = gameInitService.getCreatedGame(creator);
         if (game == null)
         {
-        	throw new GameException(511, "Game not found! User " + creator + " has not created any game"); 
+        	throw new GameException(511, "Game not found! User " + creator.getUsername() + " has not created any game"); 
         }
        
         gameService.startGame(game);
@@ -78,7 +78,7 @@ public class GameController {
         	game = gameService.getGameByPlayer(player);
         	if (game == null)
 	        {
-	        	throw new GameException(512, "Game not found! User " + player + " is not playing any game"); 
+	        	throw new GameException(512, "Game not found! User " + player.getUsername() + " is not playing any game"); 
 	        }
         }
        		        
@@ -197,7 +197,7 @@ public class GameController {
         	game = gameService.getGameByPlayer(player);
         	if (game == null)
 	        {
-	        	throw new GameException(516, "Game not found! User " + player + " is not playing any game"); 
+	        	throw new GameException(516, "Game not found! User " + player.getUsername() + " is not playing any game"); 
 	        }
         }
 		
@@ -238,7 +238,7 @@ public class GameController {
         	game = gameService.getGameByPlayer(player);
         	if (game == null)
 	        {
-	        	throw new GameException(517, "Game not found! User " + player + " is not playing any game"); 
+	        	throw new GameException(517, "Game not found! User " + player.getUsername() + " is not playing any game"); 
 	        }
         }
 		
@@ -281,7 +281,7 @@ public class GameController {
         	game = gameService.getGameByPlayer(player);
         	if (game == null)
 	        {
-	        	throw new GameException(518, "Game not found! User  " + player + " is not playing any game"); 
+	        	throw new GameException(518, "Game not found! User  " + player.getUsername() + " is not playing any game"); 
 	        }
         }
 		
@@ -345,7 +345,7 @@ public class GameController {
         	game = gameService.getGameByPlayer(player);
         	if (game == null)
 	        {
-	        	throw new GameException(519, "Game not found! User " + player + " is not playing any game"); 
+	        	throw new GameException(519, "Game not found! User " + player.getUsername() + " is not playing any game"); 
 	        }
         }
 		

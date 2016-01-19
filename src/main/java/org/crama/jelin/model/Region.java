@@ -13,8 +13,11 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 @Entity
 @Table(name = "region")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Region implements Serializable {
 
 	private static final long serialVersionUID = -9667822342450781L;
