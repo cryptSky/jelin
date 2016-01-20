@@ -236,7 +236,7 @@ public class GameServiceImpl implements GameService {
 		}
 		else
 		{
-			return gameRoundRepository.getRoundByNumber(nextRoundNumber);
+			return gameRoundRepository.getRoundByNumber(nextRoundNumber, game);
 		}
 	}
 	

@@ -221,11 +221,7 @@ public class GameInitController {
 			throw new GameException(104, "Opponent should be in status " + ProcessStatus.FREE 
 	    			+ "Current status: " + opponent.getProcessStatus());
 		}
-		//7 check if user already inviting someone
-		/*if (gameInitService.checkInviteStatus(game)) {
-			System.out.println("User already inviting opponent");
-			return null;
-		}*/
+		
 		//invite user
 		InviteStatus inviteStatus = gameInitService.inviteUser(game, creator, opponent);
 		return Constants.InviteStatusString[inviteStatus.getValue()];

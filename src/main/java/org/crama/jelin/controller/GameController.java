@@ -187,7 +187,8 @@ public class GameController {
 
 	
 	
-	@RequestMapping(value="/api/game/question", method=RequestMethod.GET)
+	@RequestMapping(value="/api/game/question", method=RequestMethod.GET, 
+			produces={"application/json; charset=UTF-8"})
 	public @ResponseBody Question getNextQuestion() throws GameException {
 		User player = userDetailsService.getPrincipal();
         
@@ -271,7 +272,8 @@ public class GameController {
        
 	}
 	
-	@RequestMapping(value="/api/game/results", method=RequestMethod.POST)
+	@RequestMapping(value="/api/game/results", method=RequestMethod.POST, 
+			produces={"application/json; charset=UTF-8"})
 	public @ResponseBody List<QuestionResult> getQuestionResult() throws GameException {
 		User player = userDetailsService.getPrincipal();
         

@@ -9,6 +9,6 @@ public interface GameRoundRepository {
 	void saveOrUpdateRounds(List<GameRound> GameRound);
 	void updateRound(GameRound round);
 	
-	GameRound getRoundByNumber(int roundNumber);
+	GameRound getRoundByNumber(int roundNumber, Game game);
 	List<GameRound> getAllRoundsByGame(Game game);
 }
