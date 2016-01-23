@@ -43,5 +43,7 @@ public interface UserService {
 
 	void changeOthersNetStatus(User user, int status) throws GameException;
 
+	void createUsersInfoAndStatistics();
+
 
 }

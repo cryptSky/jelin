@@ -9,6 +9,7 @@ import org.crama.jelin.model.Constants.InviteStatus;
 import org.crama.jelin.model.Difficulty;
 import org.crama.jelin.model.Game;
 import org.crama.jelin.model.User;
+import org.crama.jelin.model.json.UserJson;
 
 public interface GameInitService {
 	boolean initGame(User creator, Category theme, boolean random);
@@ -21,7 +22,7 @@ public interface GameInitService {
 	
 	void removeOpponent(Game game, int userId) throws GameException;
 
-	Set<User> getGameOpponents(Game game);
+	Set<UserJson> getGameOpponents(Game game);
 	
 	void addGameOpponent(Game game, User opponent);
 

@@ -2,6 +2,7 @@ package org.crama.jelin.controller;
 
 import org.crama.jelin.model.User;
 import org.crama.jelin.model.UserInfo;
+import org.crama.jelin.model.UserStatistics;
 import org.crama.jelin.service.UserDetailsServiceImpl;
 import org.crama.jelin.service.UserInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,5 +62,13 @@ public class UserInfoController {
 		userInfoService.updateUserInfo(userInfo);
 		
     }
+	
+	//TODO
+	@RequestMapping(value="/api/user/stats", method=RequestMethod.GET)
+	@ResponseStatus(HttpStatus.OK)
+    public UserStatistics getUserStats() {
+		User user = userDetailsService.getPrincipal();
+		return new UserStatistics(user);
+	}
 	
 }

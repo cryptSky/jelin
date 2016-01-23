@@ -152,7 +152,7 @@ public class GameServiceImpl implements GameService {
 		GameRound gameRound = game.getRound();
 		gameRound.setCategory(category);
 		
-		List<Question> questions = questionService.getRandomQuestionList(category, game.getDifficulty(), Constants.questionsNumber);
+		List<Question> questions = questionService.getRandomQuestionList(category, game.getDifficulty(), Constants.QUESTION_NUMBER);
 		
 		for (Question q: questions) {
 			gameRound.addQuestion(q);

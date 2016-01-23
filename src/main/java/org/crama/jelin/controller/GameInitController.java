@@ -13,9 +13,11 @@ import org.crama.jelin.model.Constants.ProcessStatus;
 import org.crama.jelin.model.Difficulty;
 import org.crama.jelin.model.Game;
 import org.crama.jelin.model.User;
+import org.crama.jelin.model.json.UserJson;
 import org.crama.jelin.service.CategoryService;
 import org.crama.jelin.service.DifficultyService;
 import org.crama.jelin.service.GameInitService;
+import org.crama.jelin.service.GameService;
 import org.crama.jelin.service.OpponentSearchService;
 import org.crama.jelin.service.UserDetailsServiceImpl;
 import org.crama.jelin.service.UserService;
@@ -48,6 +50,8 @@ public class GameInitController {
 	private UserDetailsServiceImpl userDetailsService;
 	@Autowired
 	private OpponentSearchService opponentSearchService;
+	@Autowired
+	private GameService gameService;
 	
 	@RequestMapping(value="/api/game", method=RequestMethod.PUT, params={"theme", "random"})
 	@ResponseStatus(HttpStatus.CREATED)
@@ -105,11 +109,6 @@ public class GameInitController {
 	        		+ " to call this method. Current status: " + creator.getProcessStatus());
         }
         
-        /*else if (!creator.getProcessStatus().equals(ProcessStatus.CALLING)) {
-        	System.out.println("User is in status: " + creator.getProcessStatus() + ". User should be in status calling.");
-        	return false;
-        	
-        }*/
         
         Game game = gameInitService.getCreatedGame(creator);
         
@@ -125,32 +124,42 @@ public class GameInitController {
 	}
 	
 	@RequestMapping(value = "/api/game/opponents", method = RequestMethod.GET)
-	public Set<User> getOpponents() throws GameException {
+	public Set<UserJson> getOpponents() throws GameException {
 		
-		User creator = userDetailsService.getPrincipal();
-		Game game = gameInitService.getCreatedGame(creator);
+		User user = userDetailsService.getPrincipal();
+		Game game = gameInitService.getGame(user, null);
+		
+		if (game == null) {
+        	game = gameInitService.getInviteGame(user);
+        	
+        	if (game == null) {
+	        	throw new GameException(515, "Game not found! User " + user.getUsername() + " "
+	        			+ "doesn't created and is not invited to any game"); 
+	        }
+        }
 		
 		System.out.println(game);
-		System.out.println(creator);
+		System.out.println(user);
 		
-		if (creator.getChoosenCharacter() == null) {
+		if (user.getChoosenCharacter() == null) {
 			throw new GameException(501, "Character is not set");
 		}
+		gameInitService.checkGameCreated(game);
 		if (game.getTheme() == null) {
 			throw new GameException(406, "Game theme is not set" );
 		}
-		gameInitService.checkGameCreated(game);
+		
 		difficultyService.checkDifficultyNotNull(game.getDifficulty());
 		gameInitService.checkGameRandom(game);
 		
 		
-		if (!userService.checkUserStatusIsEquals(creator, ProcessStatus.CALLING)) {
+		/*if (!userService.checkUserStatusIsEquals(creator, ProcessStatus.CALLING)) {
         	//user is in process status free 
 	        throw new GameException(102, "User should be in status " + ProcessStatus.CALLING + " to get opponents. "
 	    			+ "User is in status: " + creator.getProcessStatus());
-        }
+        }*/
 		
-		Set<User> opponents = gameInitService.getGameOpponents(game);
+		Set<UserJson> opponents = gameInitService.getGameOpponents(game);
 		return opponents;
 	}
 	
@@ -359,15 +368,7 @@ public class GameInitController {
 		}				
 	}
 	
-	@RequestMapping(value="/api/game/close", method=RequestMethod.POST)
-	public void closeGame() throws GameException {
-		User creator = userDetailsService.getPrincipal();
-		Game game = gameInitService.getCreatedGame(creator);
-		
-		gameInitService.checkGameCreated(game);
-		
-		gameInitService.closeGame(game);
-	}
+	
 	
 	//EXCEPTION HANLER
 	

@@ -39,7 +39,7 @@ public class UserInfo implements Serializable {
 	private String gender;
 	
 	@Column(name = "AGE", nullable = true)
-	private int age;
+	private int age = 0;
 	
 	@Column(name = "AVATAR", nullable = true)
 	private String avatar;
@@ -47,6 +47,15 @@ public class UserInfo implements Serializable {
 	@ManyToOne(cascade=CascadeType.ALL, fetch = FetchType.LAZY) 
 	@JoinColumn(name = "LOCALITY_ID", nullable = true)
 	private Locality locality;
+
+	public UserInfo() {
+		super();
+	}
+	
+	public UserInfo(User user) {
+		super();
+		this.user = user;
+	}
 
 	public int getId() {
 		return id;

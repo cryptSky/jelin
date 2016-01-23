@@ -80,17 +80,6 @@ public class Game implements Serializable {
 	@JoinColumn(name = "CURRENT_ROUND")
 	private GameRound round;
 	
-	/*@JsonIgnore
-	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@JoinTable(name = "GameOpponent", 
-    joinColumns = { 
-           @JoinColumn(name = "GAME_ID")
-    }, 
-    inverseJoinColumns = { 
-           @JoinColumn(name = "USER_ID")
-    })
-	private Set<User> gameOpponents = new HashSet<User>(); 
-	*/
 	
 	@JsonIgnore
 	@OneToMany(mappedBy = "game", fetch = FetchType.LAZY, cascade=CascadeType.ALL)

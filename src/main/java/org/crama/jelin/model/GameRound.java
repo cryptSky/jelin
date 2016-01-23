@@ -209,7 +209,7 @@ public class GameRound implements Serializable {
 
 	public Question getQuestion(int index)
 	{
-		if (index < Constants.questionsNumber && index < questions.size())
+		if (index < Constants.QUESTION_NUMBER && index < questions.size())
 		{
 			return questions.get(index);
 		}
@@ -334,18 +334,18 @@ public class GameRound implements Serializable {
 		int playerCount = game.getPlayersCount();
 		if (playerCount == 2)
 		{
-			result = getPlayer1QuestionNumber() == Constants.questionsNumber &&
+			result = getPlayer1QuestionNumber() == Constants.QUESTION_NUMBER &&
 					 getPlayer1QuestionNumber() == getPlayer2QuestionNumber();
 		}
 		else if (playerCount == 3)
 		{
-			result = getPlayer1QuestionNumber() == Constants.questionsNumber &&
+			result = getPlayer1QuestionNumber() == Constants.QUESTION_NUMBER &&
 					 getPlayer1QuestionNumber() == getPlayer2QuestionNumber() &&
 					 getPlayer2QuestionNumber() == getPlayer3QuestionNumber();
 		}
 		else if (playerCount == 4)
 		{
-			result = getPlayer1QuestionNumber() == Constants.questionsNumber &&
+			result = getPlayer1QuestionNumber() == Constants.QUESTION_NUMBER &&
 					 getPlayer1QuestionNumber() == getPlayer2QuestionNumber() &&
 					 getPlayer2QuestionNumber() == getPlayer3QuestionNumber() &&
 					 getPlayer3QuestionNumber() == getPlayer4QuestionNumber();

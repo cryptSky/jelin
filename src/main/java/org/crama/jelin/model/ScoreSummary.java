@@ -39,7 +39,6 @@ public class ScoreSummary implements Serializable {
     @JoinColumn(name="GAME_ID")
 	private Game game;
 	
-	@JsonIgnore
 	@Column(name = "ACRONS")
 	private int acrons;
 	

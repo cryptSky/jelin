@@ -13,6 +13,7 @@ import org.crama.jelin.model.Difficulty;
 import org.crama.jelin.model.Game;
 import org.crama.jelin.model.GameOpponent;
 import org.crama.jelin.model.User;
+import org.crama.jelin.model.json.UserJson;
 import org.crama.jelin.repository.GameInitRepository;
 import org.crama.jelin.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,9 +29,6 @@ public class GameInitServiceImpl implements GameInitService {
 	@Autowired
 	private UserService userService;
 	
-	//private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-	//private ScheduledFuture<?> inviteTimer;
-	
 	//TODO get it out from here and change to 8 and 2
 	public static final int TIMEOUT = 20;
 	public static final int CHECK_TIMEOUT = 5;
@@ -41,11 +39,6 @@ public class GameInitServiceImpl implements GameInitService {
 		
 		Game game = new Game(theme, random);
 		game.setGameState(GameState.CREATED);
-		
-		//Set<GameUser> gameUserSet = new HashSet<GameUser>();
-		//GameUser gameUser = new GameUser(creator, game, true);
-		//gameUserSet.add(gameUser);
-		//game.setGamePlayerSet(gameUserSet);
 		
 		game.setCreator(creator);
 		game.setInitDate(new Date());
@@ -94,34 +87,18 @@ public class GameInitServiceImpl implements GameInitService {
 		
 		gameInitRepository.removeGameOpponent(game, user);
 		
-		
-		/*Set<GameOpponent> opponents = game.getGameOpponents();
-		for (GameOpponent o:new HashSet<GameOpponent>(opponents)) {
-			System.out.println(o);
-			if (o.getUser().getId() == userId) {
-				System.out.println("remove opponent: " + userId);
-				opponents.remove(o);
-				
-			}
-		}
-		System.out.println("Opponents after removal:");
-		for (GameOpponent o: opponents) {
-			System.out.println(o);
-		}
-		game.setGameOpponents(opponents);
-		gameInitRepository.updateGame(game);*/
 	}
 
 	@Override
-	public Set<User> getGameOpponents(Game game) {
+	public Set<UserJson> getGameOpponents(Game game) {
 		Set<GameOpponent> opponents = game.getGameOpponents();
-		Set<User> acceptedOpponents = new HashSet<User>();
+		Set<UserJson> acceptedOpponents = new HashSet<UserJson>();
 		System.out.println("Op: " + opponents + ", " + opponents.size());
 		for (GameOpponent o: opponents) {
 			System.out.println("Op: " + o);
 			if (o.getInviteStatus().equals(InviteStatus.ACCEPTED)) {
 				System.out.println("Accepted opponent: " + o);
-				acceptedOpponents.add(o.getUser());
+				acceptedOpponents.add(new UserJson(o.getUser()));
 			}
 		}
 		return acceptedOpponents;
@@ -369,8 +346,16 @@ public class GameInitServiceImpl implements GameInitService {
 
 	@Override
 	public Game getGame(User creator, GameState state) {
-		
-		return gameInitRepository.getGame(creator, state);
+		if (state == null) {
+			Game game = gameInitRepository.getGame(creator, GameState.CREATED);
+			if (game == null) {
+				game = gameInitRepository.getGame(creator, GameState.IN_PROGRESS);
+			}
+			return game;
+		}
+		else {
+			return gameInitRepository.getGame(creator, state);
+		}
 	}
 
 }

@@ -54,11 +54,11 @@ public class User implements Serializable {
 	@Column(name = "TYPE", nullable = false)
 	private UserType type;
 	
-	@JsonIgnore
+	
 	@Column(name = "NET_STATUS")
 	private NetStatus netStatus;
 		
-	@JsonIgnore
+	
 	@Column(name = "PROCESS_STATUS")
 	private ProcessStatus processStatus;
 	
@@ -88,13 +88,13 @@ public class User implements Serializable {
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date lastGameTime;
 	
-	@JsonIgnore
+	/*@JsonIgnore
 	@Column(name = "ACORNS")
 	private int acorns;
 	
 	@JsonIgnore
 	@Column(name = "GOLD_ACORNS")
-	private int goldAcorns;
+	private int goldAcorns;*/
 	
 	@JsonIgnore
 	@OneToMany(cascade=CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "user") 
@@ -104,14 +104,31 @@ public class User implements Serializable {
 	@OneToOne(mappedBy = "user", fetch = FetchType.LAZY, cascade=CascadeType.ALL)  
 	private UserInfo userInfo;
 	
+	@JsonIgnore
+	@OneToOne(mappedBy = "user", fetch = FetchType.LAZY, cascade=CascadeType.ALL)  
+	private UserStatistics userStatistics;
+	
+	@JsonIgnore
+	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JoinTable(name = "user_friend", 
+    joinColumns = { 
+           @JoinColumn(name = "USER_ID")
+    }, 
+    inverseJoinColumns = { 
+           @JoinColumn(name = "FRIEND_ID")
+    })
+	private Set<User> friendList = new HashSet<User>();
+	
 	public User() {}
 	
 	public User(String username, String email) {
 		super();
 		this.username = username;
 		this.email = email;
-		this.acorns = 0;
-		this.goldAcorns = 0;
+		this.userStatistics = new UserStatistics();
+		this.userStatistics.setUser(this);
+		this.userInfo = new UserInfo();
+		this.userInfo.setUser(this);
 	}
 	
 	public User(int id, String username, String email) {
@@ -119,8 +136,10 @@ public class User implements Serializable {
 		this.id = id;
 		this.username = username;
 		this.email = email;
-		this.acorns = 0;
-		this.goldAcorns = 0;
+		this.userStatistics = new UserStatistics();
+		this.userStatistics.setUser(this);
+		this.userInfo = new UserInfo();
+		this.userInfo.setUser(this);
 	}
 
 	public int getId() {
@@ -199,7 +218,7 @@ public class User implements Serializable {
 		this.lastGameTime = lastGameTime;
 	}
 	
-	public int getAcorns() {
+	/*public int getAcorns() {
 		return acorns;
 	}
 
@@ -214,7 +233,7 @@ public class User implements Serializable {
 	public void setGoldAcorns(int goldAcorns) {
 		this.goldAcorns = goldAcorns;
 	}
-
+*/
 	public List<UserEnhancer> getEnhancerList() {
 		return enhancerList;
 	}
@@ -229,6 +248,22 @@ public class User implements Serializable {
 
 	public void setUserInfo(UserInfo userInfo) {
 		this.userInfo = userInfo;
+	}
+
+	public Set<User> getFriendList() {
+		return friendList;
+	}
+
+	public void setFriendList(Set<User> friendList) {
+		this.friendList = friendList;
+	}
+
+	public UserStatistics getUserStatistics() {
+		return userStatistics;
+	}
+
+	public void setUserStatistics(UserStatistics userStatistics) {
+		this.userStatistics = userStatistics;
 	}
 
 	@Override
@@ -253,13 +288,10 @@ public class User implements Serializable {
 		return true;
 	}
 
-	/*@Override
+	@Override
 	public String toString() {
-		return "User [id=" + id + ", username=" + username + ", email=" + email + ", netStatus=" + netStatus
-				+ ", processStatus=" + processStatus + ", characterSet=" + characterSet + ", choosenCharacter="
-				+ choosenCharacter + ", lastGameTime=" + lastGameTime + "]";
-	}*/
+		return username;
+	}
 
-	
 	
 }

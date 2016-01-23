@@ -7,7 +7,9 @@ import javax.validation.Valid;
 import org.crama.jelin.exception.GameException;
 import org.crama.jelin.exception.RestError;
 import org.crama.jelin.model.User;
+import org.crama.jelin.model.UserInfo;
 import org.crama.jelin.model.UserModel;
+import org.crama.jelin.model.UserStatistics;
 import org.crama.jelin.service.UserDetailsServiceImpl;
 import org.crama.jelin.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +31,7 @@ public class UserController {
 	private UserService userService;
 	@Autowired
 	private UserDetailsServiceImpl userDetailsService;
+
 	
 	@RequestMapping(value="/api/user/checkFree", method=RequestMethod.GET)
 	@ResponseStatus(HttpStatus.OK)
@@ -103,15 +106,6 @@ public class UserController {
 		
 	}
 	
-	//only for testing
-	@RequestMapping(value="/api/user/netstatus/all", method=RequestMethod.POST)
-	public void changeUsersNetStatus(@RequestParam int status) throws GameException {
-		
-		User user = userDetailsService.getPrincipal();
-		userService.changeOthersNetStatus(user, status);
-		
-	}
-	
 	@ExceptionHandler
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
 	public @ResponseBody RestError handleException(GameException ge) {
@@ -121,6 +115,27 @@ public class UserController {
 		
         return re;
     }
+	
+	//DEVELOPMENT METHODS
+	
+	//only for testing
+	@RequestMapping(value="/api/user/netstatus/all", method=RequestMethod.POST)
+	public void changeUsersNetStatus(@RequestParam int status) throws GameException {
+		
+		User user = userDetailsService.getPrincipal();
+		userService.changeOthersNetStatus(user, status);
+		
+	}
+	
+	@RequestMapping(value="/api/user/infostats", method=RequestMethod.POST)
+	@ResponseStatus(HttpStatus.OK)
+    public void createUsersInfoAndStatistics() {
+		User user = userDetailsService.getPrincipal();
+		userService.createUsersInfoAndStatistics();
+		
+		
+	}
+	
 	
 }
 

@@ -37,10 +37,6 @@ public class GameInitRepositoryImpl implements GameInitRepository {
 	public static final String GET_INVITE_STATUS = "FROM InviteStatus " +
 			"WHERE status = :status ";
 	
-	//user_id
-	//inviteStatus = open
-	//ex. select p from Parent p join p.childList c
-    //where p.name = 'John' and c.favoriteColor = 'blue'
 	public static final String GET_INVITE_GAME = "SELECT g FROM Game g JOIN g.gameOpponents o " +
 			"WHERE g.gameState = :gameState " +
 			"AND o.user = :user " +
@@ -67,22 +63,6 @@ public class GameInitRepositoryImpl implements GameInitRepository {
 		
 		return true;
 		
-		/*Game game = new Game(theme, random);
-		Session session = sessionFactory.getCurrentSession();
-		
-		try
-		{	
-			session.beginTransaction();
-			session.save(game);
-			session.getTransaction().commit();			
-		}
-		catch (HibernateException e) {
-			e.printStackTrace();
-			session.getTransaction().rollback();
-			return false;
-		}
-		
-		return true;*/
 	}
 
 	@Override
@@ -95,36 +75,7 @@ public class GameInitRepositoryImpl implements GameInitRepository {
 		session.update(game);
 		return true;
 	}
-	/*@Override
-	@Transactional
-	public boolean updateDifficulty(int gameId, Difficulty difficulty) {
-		Session session = sessionFactory.getCurrentSession();		
-		
-		Game game = (Game)session.get(Game.class, gameId);
-		if (game == null) return false;
-		System.out.println(difficulty);
-		game.setDifficulty(difficulty);
-		session.update(game);
-		return true;
-		
-		try
-		{	
-			session.beginTransaction();
-			Game game = (Game)session.get(Game.class, gameId);
-			if (game == null) return false;
-			System.out.println(difficulty);
-			game.setDifficulty(difficulty);
-			session.update(game);
-			session.getTransaction().commit();			
-		}
-		catch (HibernateException e) {
-			e.printStackTrace();
-			session.getTransaction().rollback();
-			return false;
-		}
-		
-		return true;
-	}*/
+	
 
 	@Override
 	public Game getGame(User creator, GameState state) {
@@ -136,14 +87,7 @@ public class GameInitRepositoryImpl implements GameInitRepository {
 		Game game = (Game)query.uniqueResult();
 		System.out.println(game);
 		return game;
-		
-		/*Query query = sessionFactory.getCurrentSession().getNamedQuery("getCreatedGameSQL");
-		query.setParameter("state", GameState.CREATED);
-		query.setParameter("userId", creator.getId());
-		Game game = (Game)query.uniqueResult();
-		System.out.println(game);
-		return game;*/
-		
+	
 	}
 
 	@Override

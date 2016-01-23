@@ -361,6 +361,16 @@ public class GameController {
         return summaries;
 	}
 	
+	@RequestMapping(value="/api/game/close", method=RequestMethod.POST)
+	public void closeGame() throws GameException {
+		User creator = userDetailsService.getPrincipal();
+		Game game = gameInitService.getGame(creator, null);
+		
+		gameInitService.checkGameCreated(game);
+		
+		gameInitService.closeGame(game);
+	}
+	
 	@ExceptionHandler
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
 	public @ResponseBody RestError handleException(GameException ge) {

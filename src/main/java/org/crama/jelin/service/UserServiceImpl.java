@@ -9,8 +9,10 @@ import org.crama.jelin.model.Constants.UserType;
 import org.crama.jelin.model.Game;
 import org.crama.jelin.model.GameBot;
 import org.crama.jelin.model.User;
+import org.crama.jelin.model.UserInfo;
 import org.crama.jelin.model.UserModel;
 import org.crama.jelin.model.UserRole;
+import org.crama.jelin.model.UserStatistics;
 import org.crama.jelin.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -183,6 +185,25 @@ public class UserServiceImpl implements UserService {
 			throw new GameException(112, "Wrong NetStatus value");
 		}
 		userRepository.updateNetStatus(user, s);
+	}
+
+	@Override
+	public void createUsersInfoAndStatistics() {
+		List<User> allUsers = userRepository.getAllUsers();
+		
+		for (User u: allUsers) {
+			UserInfo info = u.getUserInfo();
+			UserStatistics stats = u.getUserStatistics();
+			if (info == null) {
+				info = new UserInfo(u);
+				u.setUserInfo(info);
+			}
+			if (stats == null) {
+				stats = new UserStatistics(u);
+				u.setUserStatistics(stats);
+			}
+			userRepository.updateUser(u);
+		}
 	}
 	
 

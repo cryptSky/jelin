@@ -139,18 +139,18 @@ public class CharacterServiceImpl implements CharacterService {
 		int acorns = userCharacter.getAcrons();
 		int goldAcorns = userCharacter.getGoldAcrons();
 		if (acorns != 0) {
-			int acornsLeft = user.getAcorns() - acorns;
+			int acornsLeft = user.getUserStatistics().getAcrons() - acorns;
 			if (acornsLeft < 0) {
 				throw new GameException(306, "You have not enough acorns to buy character");
 			}
-			user.setAcorns(acornsLeft);
+			user.getUserStatistics().setAcrons(acornsLeft);
 		}
 		else if (goldAcorns != 0) {
-			int acornsLeft = user.getGoldAcorns() - goldAcorns;
+			int acornsLeft = user.getUserStatistics().getGoldAcrons() - goldAcorns;
 			if (acornsLeft < 0) {
 				throw new GameException(306, "You have not enough gold acorns to buy character");
 			}
-			user.setGoldAcorns(acornsLeft);
+			user.getUserStatistics().setGoldAcrons(acornsLeft);
 		}
 		
 		userRepository.updateUser(user);
@@ -174,18 +174,18 @@ public class CharacterServiceImpl implements CharacterService {
 		int acorns = enhancerObj.getAcorns();
 		int goldAcorns = enhancerObj.getGoldAcorns();
 		if (acorns != 0) {
-			int acornsLeft = user.getAcorns() - acorns;
+			int acornsLeft = user.getUserStatistics().getAcrons() - acorns;
 			if (acornsLeft < 0) {
 				throw new GameException(307, "You have not enough acorns to buy enhancer");
 			}
-			user.setAcorns(acornsLeft);
+			user.getUserStatistics().setAcrons(acornsLeft);
 		}
 		else if (goldAcorns != 0) {
-			int acornsLeft = user.getGoldAcorns() - goldAcorns;
+			int acornsLeft = user.getUserStatistics().getGoldAcrons() - goldAcorns;
 			if (acornsLeft < 0) {
 				throw new GameException(307, "You have not enough gold acorns to buy enhancer");
 			}
-			user.setGoldAcorns(acornsLeft);
+			user.getUserStatistics().setGoldAcrons(acornsLeft);
 		}
 		UserEnhancer newUserEnhancer = new UserEnhancer(enhancerObj, user, Status.BOUGHT, new Date());
 		userEnhancerList.add(newUserEnhancer);
