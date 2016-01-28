@@ -25,6 +25,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.crama.jelin.model.Constants.Language;
 import org.crama.jelin.model.Constants.NetStatus;
 import org.crama.jelin.model.Constants.ProcessStatus;
 import org.crama.jelin.model.Constants.UserType;
@@ -58,9 +59,11 @@ public class User implements Serializable {
 	@Column(name = "NET_STATUS")
 	private NetStatus netStatus;
 		
-	
 	@Column(name = "PROCESS_STATUS")
 	private ProcessStatus processStatus;
+	
+	@Column(name = "LANGUAGE")
+	private Language language;
 	
 	@JsonIgnore
 	@ManyToOne(cascade=CascadeType.ALL, fetch = FetchType.LAZY)
@@ -118,6 +121,8 @@ public class User implements Serializable {
            @JoinColumn(name = "FRIEND_ID")
     })
 	private Set<User> friendList = new HashSet<User>();
+	
+	
 	
 	public User() {}
 	
@@ -208,6 +213,14 @@ public class User implements Serializable {
 
 	public void setType(UserType type) {
 		this.type = type;
+	}
+
+	public Language getLanguage() {
+		return language;
+	}
+
+	public void setLanguage(Language language) {
+		this.language = language;
 	}
 
 	public Date getLastGameTime() {

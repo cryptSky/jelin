@@ -170,6 +170,13 @@
 		<artifactId>logback-classic</artifactId>
 		<version>${logback.version}</version>
 	</dependency>
+	
+	<!-- 4. pushy -->
+	<dependency>
+    	<groupId>com.relayrides</groupId>
+    	<artifactId>pushy</artifactId>
+    	<version>0.5</version>
+	</dependency>
     
   </dependencies>
   <build>

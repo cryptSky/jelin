@@ -3,6 +3,7 @@ package org.crama.jelin.repository;
 
 import java.util.List;
 
+import org.crama.jelin.model.Constants.Language;
 import org.crama.jelin.model.Constants.NetStatus;
 import org.crama.jelin.model.User;
 import org.crama.jelin.model.UserModel;
@@ -42,5 +43,7 @@ public interface UserRepository {
 	void updateAllUsersNetStatus(User user, NetStatus status);
 
 	void updateNetStatus(User user, NetStatus s);
+
+	List<String> getDeviceTokens();
 
 }

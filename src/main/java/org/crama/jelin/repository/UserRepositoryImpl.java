@@ -213,5 +213,11 @@ public class UserRepositoryImpl implements UserRepository {
 		query.executeUpdate();
 	}
 
+	@Override
+	public List<String> getDeviceTokens() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 	
 }

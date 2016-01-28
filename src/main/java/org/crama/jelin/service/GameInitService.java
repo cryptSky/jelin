@@ -47,7 +47,6 @@ public interface GameInitService {
 	void closeGame(Game game);
 
 	Game getGame(User creator, GameState state);
-
 	
-
+	
 }

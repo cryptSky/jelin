@@ -45,5 +45,4 @@ public interface UserService {
 
 	void createUsersInfoAndStatistics();
 
-
 }
