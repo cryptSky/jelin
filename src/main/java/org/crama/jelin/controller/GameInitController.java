@@ -19,6 +19,7 @@ import org.crama.jelin.service.DifficultyService;
 import org.crama.jelin.service.GameInitService;
 import org.crama.jelin.service.GameService;
 import org.crama.jelin.service.OpponentSearchService;
+import org.crama.jelin.service.PushNotificationService;
 import org.crama.jelin.service.UserDetailsServiceImpl;
 import org.crama.jelin.service.UserService;
 import org.slf4j.Logger;
@@ -50,6 +51,8 @@ public class GameInitController {
 	private UserDetailsServiceImpl userDetailsService;
 	@Autowired
 	private OpponentSearchService opponentSearchService;
+	@Autowired
+	private PushNotificationService pushNotificationService;
 	@Autowired
 	private GameService gameService;
 	
@@ -231,8 +234,25 @@ public class GameInitController {
 	    			+ "Current status: " + opponent.getProcessStatus());
 		}
 		
+			
 		//invite user
 		InviteStatus inviteStatus = gameInitService.inviteUser(game, creator, opponent);
+		
+		Set<UserJson> opponents = gameInitService.getGameOpponents(game);
+		if (opponents.size() == 0)
+		{
+			pushNotificationService.sendPushInviteFriend(opponent, creator, game.getTheme());
+		}
+		else
+		{
+			pushNotificationService.sendPushInviteFriends(opponent, creator, game.getTheme(), opponents.size());
+		}
+		
+		if (inviteStatus == InviteStatus.EXPIRED)
+		{
+			pushNotificationService.sendPushMissedGames(opponent);
+		}
+				
 		return Constants.InviteStatusString[inviteStatus.getValue()];
 	}
 	
@@ -364,6 +384,7 @@ public class GameInitController {
 		else {
 			//invite user
 			InviteStatus inviteStatus = gameInitService.inviteUser(game, creator, opponent);
+			pushNotificationService.sendPushInviteRandom(opponent, creator, game.getTheme());
 			return Constants.InviteStatusString[inviteStatus.getValue()];
 		}				
 	}

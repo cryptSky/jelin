@@ -4,6 +4,7 @@ public class Constants {
 	
 	public static final int QUESTION_NUMBER = 3;
 	public static final String BUNDLE_ID = "com.nt.Jelin"; 
+	public static final String P12_PASSWORD = "p124zI78KlmP";
 		
 	public enum UserType {
 		HUMAN(0),

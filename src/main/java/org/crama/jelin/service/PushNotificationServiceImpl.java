@@ -43,7 +43,7 @@ public class PushNotificationServiceImpl implements PushNotificationService {
 	{
 		try
 		{
-			apnsClient = new ApnsClient<SimpleApnsPushNotification>(new File("/path/to/certificate.p12"), "p12-file-password");
+			apnsClient = new ApnsClient<SimpleApnsPushNotification>(new File("~/Jelin_pushes.p12"), Constants.P12_PASSWORD);
 			connectFuture = apnsClient.connect(ApnsClient.DEVELOPMENT_APNS_HOST);
 			connectFuture.await();
 		}
@@ -131,14 +131,13 @@ public class PushNotificationServiceImpl implements PushNotificationService {
 	}
 
 	@Override
-	public void sendPushInviteFriends(User user, User initiator, Category theme, Game game) {
+	public void sendPushInviteFriends(User user, User initiator, Category theme, int opponentsCount) {
 		Language language = user.getLanguage();
 		int lIndex = language.getValue();
 		int nIndex = NotificationType.ACCEPT_FRIENDS.getValue();
 		String name = initiator.getUsername();
 		String topic = theme.getName();
-		int playersInRoom = game.getGameOpponents().size() - 1;
-		String message = String.format(Constants.NotificationTypeString[lIndex][nIndex], name, topic, playersInRoom);
+		String message = String.format(Constants.NotificationTypeString[lIndex][nIndex], name, topic, opponentsCount);
 		
 		sendNotificationMessage(user, message);	
 		

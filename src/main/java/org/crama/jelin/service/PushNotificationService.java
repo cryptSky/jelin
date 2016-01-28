@@ -8,7 +8,7 @@ public interface PushNotificationService {
 	
 	void sendPushInviteRandom(User user, User initiator, Category theme);
 	void sendPushInviteFriend(User user, User initiator, Category theme);
-	void sendPushInviteFriends(User user, User initiator, Category theme, Game game);
+	void sendPushInviteFriends(User user, User initiator, Category theme, int opponentsCount);
 	void sendPushMissedGames(User user);
 	
 }
