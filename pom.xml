@@ -187,7 +187,7 @@
 	<dependency>
     	<groupId>com.relayrides</groupId>
     	<artifactId>pushy</artifactId>
-    	<version>0.5</version>
+    	<version>0.5.1</version>
 	</dependency>
 	
 	<dependency>
@@ -200,14 +200,14 @@
 		<groupId>io.netty</groupId>
 		<artifactId>netty-tcnative</artifactId>
 		<version>1.1.33.Fork11</version>
-		<classifier>${os.detected.classifier}</classifier>
+		<classifier>linux-x86_64</classifier>
 	</dependency>
 	
-	<dependency>
+	<!-- <dependency>
 		<groupId>org.mortbay.jetty.alpn</groupId>
 		<artifactId>alpn-boot</artifactId>
 		<version>8.1.6.v20151105</version>
-	</dependency>
+	</dependency>  -->
 	
 	<dependency>
 		<groupId>com.google.code.gson</groupId>
@@ -251,29 +251,7 @@
 				<failOnMissingWebXml>false</failOnMissingWebXml>
 			</configuration>
 		</plugin>
-		
-		<plugin>
-            <artifactId>maven-surefire-plugin</artifactId>
-            <configuration>
-                <argLine>
-                    -Xbootclasspath/p:${settings.localRepository}/org/mortbay/jetty/alpn/alpn-boot/${alpn-boot-version}/alpn-boot-${alpn-boot-version}.jar
-                </argLine>
-            </configuration>
-        </plugin>
-		
-<!-- 		<plugin> -->
-<!--         	<groupId>org.apache.maven.plugins</groupId> -->
-<!--         	<artifactId>maven-compiler-plugin</artifactId> -->
-<!--         	<version>3.5</version> -->
-       		<!-- <configuration>
-          	<compilerArguments>
-          		<bootclasspath>alpn-boot-8.1.6.v20151105.jar</bootclasspath> -->
-<!--           		<arg>-Dosgi.requiredJavaVersion=1.7</arg> -->
-<!--             	<arg>-Xms256m</arg> -->
-<!--             	<arg>-Xmx1024m</arg> -->
-<!--           	</compilerArguments> -->
-<!--         	</configuration> -->
-<!--       	</plugin> -->
+
 		
     </plugins>
     </pluginManagement>
