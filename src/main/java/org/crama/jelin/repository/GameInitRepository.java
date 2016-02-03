@@ -23,6 +23,6 @@ public interface GameInitRepository {
 
 	boolean removeGameOpponent(Game game, User user);
 	
-	int getExpiredInvites(User user);
+	long getExpiredInvites(User user);
 		
 }

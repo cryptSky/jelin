@@ -131,10 +131,10 @@ public class GameInitRepositoryImpl implements GameInitRepository {
 	}
 
 	@Override
-	public int getExpiredInvites(User user) {
+	public long getExpiredInvites(User user) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(GameOpponent.class);
 		criteria.add(Restrictions.eq("inviteStatus", InviteStatus.EXPIRED));
-		int result = (int) criteria.setProjection(Projections.rowCount()).uniqueResult();
+		long result = (long) criteria.setProjection(Projections.rowCount()).uniqueResult();
 		return result;
 	}
 

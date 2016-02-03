@@ -6,19 +6,14 @@ import java.net.URL;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-import javax.net.ssl.SSLException;
-
 import org.crama.jelin.model.Category;
 import org.crama.jelin.model.Constants;
 import org.crama.jelin.model.Constants.Language;
 import org.crama.jelin.model.Constants.NotificationType;
-import org.crama.jelin.model.Game;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.crama.jelin.model.User;
 import org.crama.jelin.model.UserSession;
-import org.crama.jelin.repository.GameInitRepository;
-import org.crama.jelin.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.relayrides.pushy.apns.*;
@@ -69,67 +64,6 @@ public class PushNotificationServiceImpl implements PushNotificationService {
 	   
 	}
 
-	/*
-	@Override
-	public void sendPushInviteRandom(User user, User initiator, Category theme) {
-		UserSession session = userSessionService.getSession(user);
-		Language language = session.getLanguage();
-		
-		int lIndex = language.getValue();
-		int nIndex = NotificationType.ACCEPT_RANDOM.getValue();
-		String name = initiator.getUsername();
-		String topic = theme.getName();
-		String message = String.format(Constants.NotificationTypeString[lIndex][nIndex], name, topic);
-		
-		sendNotificationMessage(user, message);		
-	}
-	
-	@Override
-	public void sendPushInviteFriend(User user, User initiator, Category theme) {
-		UserSession session = userSessionService.getSession(user);
-		Language language = session.getLanguage();
-		
-		int lIndex = language.getValue();
-		int nIndex = NotificationType.ACCEPT_FRIEND.getValue();
-		String name = initiator.getUsername();
-		String topic = theme.getName();
-		String message = String.format(Constants.NotificationTypeString[lIndex][nIndex], name, topic);
-		
-		sendNotificationMessage(user, message);	
-		
-	}
-
-	@Override
-	public void sendPushInviteFriends(User user, User initiator, Category theme, int opponentsCount) {
-		UserSession session = userSessionService.getSession(user);
-		Language language = session.getLanguage();
-		
-		int lIndex = language.getValue();
-		int nIndex = NotificationType.ACCEPT_FRIENDS.getValue();
-		String name = initiator.getUsername();
-		String topic = theme.getName();
-		String message = String.format(Constants.NotificationTypeString[lIndex][nIndex], name, topic, opponentsCount);
-		
-		sendNotificationMessage(user, message);	
-		
-	}
-
-	@Override
-	public void sendPushMissedGames(User user) {
-		UserSession session = userSessionService.getSession(user);
-		Language language = session.getLanguage();
-		
-		int lIndex = language.getValue();
-		int nIndex = NotificationType.MISSED_GAMES.getValue();
-		
-		int missedGames = gameInitRepository.getExpiredInvites(user);
-		
-		String message = String.format(Constants.NotificationTypeString[lIndex][nIndex], missedGames);
-		
-		sendNotificationMessage(user, message);	
-		
-	} */
-	
 	private void sendMessage(String message, String deviceToken)
 	{
 		final ApnsPayloadBuilder payloadBuilder = new ApnsPayloadBuilder();
@@ -138,10 +72,11 @@ public class PushNotificationServiceImpl implements PushNotificationService {
 	    
 	    final String token = TokenUtil.sanitizeTokenString(deviceToken);
     	SimpleApnsPushNotification pushNotification = new SimpleApnsPushNotification(token, Constants.BUNDLE_ID, payload);
-    	Future<PushNotificationResponse<SimpleApnsPushNotification>> result = apnsClient.sendNotification(pushNotification);
+    	
     	
     	try 
     	{
+    		Future<PushNotificationResponse<SimpleApnsPushNotification>> result = apnsClient.sendNotification(pushNotification);
     	    PushNotificationResponse<SimpleApnsPushNotification> pushNotificationReponse =
     	    		result.get();
 
@@ -164,8 +99,9 @@ public class PushNotificationServiceImpl implements PushNotificationService {
     	    	logger.debug("Waiting for client to reconnect…");
     	       	try {
 					apnsClient.getReconnectionFuture().await();
-				} catch (InterruptedException e1) {
+				} catch (Exception e1) {
 					logger.error("Failed to reconnect the client..");
+					e.printStackTrace();
 				}
     	       	logger.debug("Reconnected.");
     	    }
@@ -184,7 +120,7 @@ public class PushNotificationServiceImpl implements PushNotificationService {
 		String name = null;
 		String topic = null;
 		int opponentsCount = 0;
-		int missedGames = 0;	
+		long missedGames = 0;	
 		
 		switch (notificationType)
 		{
@@ -204,7 +140,7 @@ public class PushNotificationServiceImpl implements PushNotificationService {
 								 result = String.format(Constants.NotificationTypeString[lIndex][nIndex], name, topic, opponentsCount);
 								 break;
 								 
-			case MISSED_GAMES: missedGames = (int) params[0];
+			case MISSED_GAMES: missedGames = (long) params[0];
 			 				   result = String.format(Constants.NotificationTypeString[lIndex][nIndex], missedGames);
 			 				   break;
 				

@@ -205,7 +205,7 @@ public class GameInitServiceImpl implements GameInitService {
 			 updatedGame = getCreatedGame(creator);
 			
 			 // pushNotificationService.sendPushMissedGames(opponent);
-			 int missedGames = gameInitRepository.getExpiredInvites(opponent); 
+			 long missedGames = gameInitRepository.getExpiredInvites(opponent); 
 			 pushNotificationService.sendNotificationMessage(opponent, NotificationType.MISSED_GAMES, missedGames);
 						 
 			 for (GameOpponent o: updatedGame.getGameInvitationOpponents()) {
