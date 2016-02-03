@@ -44,6 +44,4 @@ public interface UserRepository {
 
 	void updateNetStatus(User user, NetStatus s);
 
-	List<String> getDeviceTokens();
-
 }

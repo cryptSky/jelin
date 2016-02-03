@@ -29,5 +29,6 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="C:/Program Files/Java/alpn-boot-8.1.6.v20151105.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

@@ -1,6 +1,8 @@
 package org.crama.jelin.service;
 
 import java.io.File;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -14,6 +16,7 @@ import org.crama.jelin.model.Game;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.crama.jelin.model.User;
+import org.crama.jelin.model.UserSession;
 import org.crama.jelin.repository.GameInitRepository;
 import org.crama.jelin.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,18 +35,17 @@ public class PushNotificationServiceImpl implements PushNotificationService {
 	private ApnsClient<SimpleApnsPushNotification> apnsClient;
 	
 	private Future<Void> connectFuture;
-	
+		
 	@Autowired
-	private GameInitRepository gameInitRepository;
-	
-	@Autowired
-	private UserRepository userRepository;
+	private UserSessionService userSessionService;
 	
 	public PushNotificationServiceImpl()
 	{
 		try
 		{
-			apnsClient = new ApnsClient<SimpleApnsPushNotification>(new File("~/Jelin_pushes.p12"), Constants.P12_PASSWORD);
+			URL resource = this.getClass().getClassLoader().getResource("Jelin_pushes.p12");
+			File cert = new File(resource.getFile());
+			apnsClient = new ApnsClient<SimpleApnsPushNotification>(cert, Constants.P12_PASSWORD);
 			connectFuture = apnsClient.connect(ApnsClient.DEVELOPMENT_APNS_HOST);
 			connectFuture.await();
 		}
@@ -53,61 +55,26 @@ public class PushNotificationServiceImpl implements PushNotificationService {
 		}
 		
 	}
-		
-	private void sendNotificationMessage(User user, String message)
+	
+	@Override
+	public void sendNotificationMessage(User user, NotificationType notificationType, Object... params)
 	{
-		final ApnsPayloadBuilder payloadBuilder = new ApnsPayloadBuilder();
-	    payloadBuilder.setAlertBody(message);
-
-	    final String payload = payloadBuilder.buildWithDefaultMaximumLength();
+		List<UserSession> sessions = userSessionService.getAllSessions(user);
 	    
-	    List<String> deviceTokens = userRepository.getDeviceTokens();
-	    	    
-	    for (String deviceToken: deviceTokens)
+	    for (UserSession session: sessions)
 	    {
-	    	final String token = TokenUtil.sanitizeTokenString(deviceToken);
-	    	SimpleApnsPushNotification pushNotification = new SimpleApnsPushNotification(token, Constants.BUNDLE_ID, payload);
-	    	Future<PushNotificationResponse<SimpleApnsPushNotification>> result = apnsClient.sendNotification(pushNotification);
-	    	
-	    	try 
-	    	{
-	    	    PushNotificationResponse<SimpleApnsPushNotification> pushNotificationReponse =
-	    	    		result.get();
-
-	    	    if (pushNotificationReponse.isAccepted()) {
-	    	        logger.debug("Push notitification accepted by APNs gateway.");
-	    	    } else {
-	    	    	logger.debug("Notification rejected by the APNs gateway: " +
-	    	                pushNotificationReponse.getRejectionReason());
-
-	    	        if (pushNotificationReponse.getTokenInvalidationTimestamp() != null) {
-	    	        	logger.debug("\t…and the token is invalid as of " +
-	    	                pushNotificationReponse.getTokenInvalidationTimestamp());
-	    	        }
-	    	    }
-	    	} catch (final ExecutionException e) {
-	    		logger.error("Failed to send push notification.");
-	    	    e.printStackTrace();
-
-	    	    if (e.getCause() instanceof ClientNotConnectedException) {
-	    	    	logger.debug("Waiting for client to reconnect…");
-	    	       	try {
-						apnsClient.getReconnectionFuture().await();
-					} catch (InterruptedException e1) {
-						logger.error("Failed to reconnect the client..");
-					}
-	    	       	logger.debug("Reconnected.");
-	    	    }
-	    	} catch (InterruptedException e1) {
-	    		logger.error("Failed to get push notification response..");
-			}
+	    	String message = messageBuilder(session.getLanguage(), notificationType, params);
+	    	sendMessage(message, session.getDeviceToken());
 	    }
-	    
+	   
 	}
 
+	/*
 	@Override
 	public void sendPushInviteRandom(User user, User initiator, Category theme) {
-		Language language = user.getLanguage();
+		UserSession session = userSessionService.getSession(user);
+		Language language = session.getLanguage();
+		
 		int lIndex = language.getValue();
 		int nIndex = NotificationType.ACCEPT_RANDOM.getValue();
 		String name = initiator.getUsername();
@@ -119,7 +86,9 @@ public class PushNotificationServiceImpl implements PushNotificationService {
 	
 	@Override
 	public void sendPushInviteFriend(User user, User initiator, Category theme) {
-		Language language = user.getLanguage();
+		UserSession session = userSessionService.getSession(user);
+		Language language = session.getLanguage();
+		
 		int lIndex = language.getValue();
 		int nIndex = NotificationType.ACCEPT_FRIEND.getValue();
 		String name = initiator.getUsername();
@@ -132,7 +101,9 @@ public class PushNotificationServiceImpl implements PushNotificationService {
 
 	@Override
 	public void sendPushInviteFriends(User user, User initiator, Category theme, int opponentsCount) {
-		Language language = user.getLanguage();
+		UserSession session = userSessionService.getSession(user);
+		Language language = session.getLanguage();
+		
 		int lIndex = language.getValue();
 		int nIndex = NotificationType.ACCEPT_FRIENDS.getValue();
 		String name = initiator.getUsername();
@@ -145,7 +116,9 @@ public class PushNotificationServiceImpl implements PushNotificationService {
 
 	@Override
 	public void sendPushMissedGames(User user) {
-		Language language = user.getLanguage();
+		UserSession session = userSessionService.getSession(user);
+		Language language = session.getLanguage();
+		
 		int lIndex = language.getValue();
 		int nIndex = NotificationType.MISSED_GAMES.getValue();
 		
@@ -155,6 +128,89 @@ public class PushNotificationServiceImpl implements PushNotificationService {
 		
 		sendNotificationMessage(user, message);	
 		
+	} */
+	
+	private void sendMessage(String message, String deviceToken)
+	{
+		final ApnsPayloadBuilder payloadBuilder = new ApnsPayloadBuilder();
+	    payloadBuilder.setAlertBody(message);
+	    final String payload = payloadBuilder.buildWithDefaultMaximumLength();
+	    
+	    final String token = TokenUtil.sanitizeTokenString(deviceToken);
+    	SimpleApnsPushNotification pushNotification = new SimpleApnsPushNotification(token, Constants.BUNDLE_ID, payload);
+    	Future<PushNotificationResponse<SimpleApnsPushNotification>> result = apnsClient.sendNotification(pushNotification);
+    	
+    	try 
+    	{
+    	    PushNotificationResponse<SimpleApnsPushNotification> pushNotificationReponse =
+    	    		result.get();
+
+    	    if (pushNotificationReponse.isAccepted()) {
+    	        logger.debug("Push notitification accepted by APNs gateway.");
+    	    } else {
+    	    	logger.debug("Notification rejected by the APNs gateway: " +
+    	                pushNotificationReponse.getRejectionReason());
+
+    	        if (pushNotificationReponse.getTokenInvalidationTimestamp() != null) {
+    	        	logger.debug("\t…and the token is invalid as of " +
+    	                pushNotificationReponse.getTokenInvalidationTimestamp());
+    	        }
+    	    }
+    	} catch (final ExecutionException e) {
+    		logger.error("Failed to send push notification.");
+    	    e.printStackTrace();
+
+    	    if (e.getCause() instanceof ClientNotConnectedException) {
+    	    	logger.debug("Waiting for client to reconnect…");
+    	       	try {
+					apnsClient.getReconnectionFuture().await();
+				} catch (InterruptedException e1) {
+					logger.error("Failed to reconnect the client..");
+				}
+    	       	logger.debug("Reconnected.");
+    	    }
+    	} catch (InterruptedException e1) {
+    		logger.error("Failed to get push notification response..");
+		}
+    	
+	}		
+	
+	private String messageBuilder(Language language, NotificationType notificationType, Object... params)
+	{
+		int lIndex = language.getValue();
+		int nIndex = notificationType.getValue();
+		String result = null; 
+		
+		String name = null;
+		String topic = null;
+		int opponentsCount = 0;
+		int missedGames = 0;	
+		
+		switch (notificationType)
+		{
+			case ACCEPT_RANDOM: name = ((User) params[0]).getUsername();
+								topic = ((Category) params[1]).getName();
+								result = String.format(Constants.NotificationTypeString[lIndex][nIndex], name, topic);
+								break;
+								
+			case ACCEPT_FRIEND: name = ((User) params[0]).getUsername();
+								topic = ((Category) params[1]).getName();
+								result = String.format(Constants.NotificationTypeString[lIndex][nIndex], name, topic);
+								break;
+								
+			case ACCEPT_FRIENDS: name = ((User) params[0]).getUsername();
+								 topic = ((Category) params[1]).getName();
+								 opponentsCount = (int) params[2];
+								 result = String.format(Constants.NotificationTypeString[lIndex][nIndex], name, topic, opponentsCount);
+								 break;
+								 
+			case MISSED_GAMES: missedGames = (int) params[0];
+			 				   result = String.format(Constants.NotificationTypeString[lIndex][nIndex], missedGames);
+			 				   break;
+				
+		}
+		
+		return result;
 	}
 
 	

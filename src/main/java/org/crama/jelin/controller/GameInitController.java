@@ -17,9 +17,7 @@ import org.crama.jelin.model.json.UserJson;
 import org.crama.jelin.service.CategoryService;
 import org.crama.jelin.service.DifficultyService;
 import org.crama.jelin.service.GameInitService;
-import org.crama.jelin.service.GameService;
 import org.crama.jelin.service.OpponentSearchService;
-import org.crama.jelin.service.PushNotificationService;
 import org.crama.jelin.service.UserDetailsServiceImpl;
 import org.crama.jelin.service.UserService;
 import org.slf4j.Logger;
@@ -51,11 +49,7 @@ public class GameInitController {
 	private UserDetailsServiceImpl userDetailsService;
 	@Autowired
 	private OpponentSearchService opponentSearchService;
-	@Autowired
-	private PushNotificationService pushNotificationService;
-	@Autowired
-	private GameService gameService;
-	
+		
 	@RequestMapping(value="/api/game", method=RequestMethod.PUT, params={"theme", "random"})
 	@ResponseStatus(HttpStatus.CREATED)
     public boolean setTheme(@RequestParam int theme, @RequestParam(required = false) boolean random) throws GameException {
@@ -196,7 +190,7 @@ public class GameInitController {
 	@RequestMapping(value = "/api/game/userGameState", method = RequestMethod.GET)
 	public @ResponseBody String getUserGameStatus() {
 		User creator = userDetailsService.getPrincipal();
-		return Constants.ProcessStatusString[creator.getProcessStatus().getValue()];
+		return creator.getProcessStatus().toString();
 	}
 	
 	@RequestMapping(value = "/api/game/invite", method = RequestMethod.POST, params={"user"})
@@ -236,24 +230,8 @@ public class GameInitController {
 		
 			
 		//invite user
-		InviteStatus inviteStatus = gameInitService.inviteUser(game, creator, opponent);
-		
-		Set<UserJson> opponents = gameInitService.getGameOpponents(game);
-		if (opponents.size() == 0)
-		{
-			pushNotificationService.sendPushInviteFriend(opponent, creator, game.getTheme());
-		}
-		else
-		{
-			pushNotificationService.sendPushInviteFriends(opponent, creator, game.getTheme(), opponents.size());
-		}
-		
-		if (inviteStatus == InviteStatus.EXPIRED)
-		{
-			pushNotificationService.sendPushMissedGames(opponent);
-		}
-				
-		return Constants.InviteStatusString[inviteStatus.getValue()];
+		InviteStatus inviteStatus = gameInitService.inviteUser(game, creator, opponent, false);
+		return inviteStatus.toString();
 	}
 	
 	
@@ -383,12 +361,10 @@ public class GameInitController {
 
 		else {
 			//invite user
-			InviteStatus inviteStatus = gameInitService.inviteUser(game, creator, opponent);
-			pushNotificationService.sendPushInviteRandom(opponent, creator, game.getTheme());
-			return Constants.InviteStatusString[inviteStatus.getValue()];
+			InviteStatus inviteStatus = gameInitService.inviteUser(game, creator, opponent, true);			
+			return inviteStatus.toString();
 		}				
 	}
-	
 	
 	
 	//EXCEPTION HANLER

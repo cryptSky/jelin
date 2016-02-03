@@ -62,9 +62,6 @@ public class User implements Serializable {
 	@Column(name = "PROCESS_STATUS")
 	private ProcessStatus processStatus;
 	
-	@Column(name = "LANGUAGE")
-	private Language language;
-	
 	@JsonIgnore
 	@ManyToOne(cascade=CascadeType.ALL, fetch = FetchType.LAZY)
 	@JoinColumn(name = "BOT_ID")
@@ -213,14 +210,6 @@ public class User implements Serializable {
 
 	public void setType(UserType type) {
 		this.type = type;
-	}
-
-	public Language getLanguage() {
-		return language;
-	}
-
-	public void setLanguage(Language language) {
-		this.language = language;
 	}
 
 	public Date getLastGameTime() {

@@ -8,6 +8,7 @@ import org.crama.jelin.exception.GameException;
 import org.crama.jelin.model.Category;
 import org.crama.jelin.model.Constants.GameState;
 import org.crama.jelin.model.Constants.InviteStatus;
+import org.crama.jelin.model.Constants.NotificationType;
 import org.crama.jelin.model.Constants.ProcessStatus;
 import org.crama.jelin.model.Difficulty;
 import org.crama.jelin.model.Game;
@@ -28,7 +29,9 @@ public class GameInitServiceImpl implements GameInitService {
 	private UserRepository userRepository;
 	@Autowired
 	private UserService userService;
-	
+	@Autowired
+	private PushNotificationService pushNotificationService;
+		
 	//TODO get it out from here and change to 8 and 2
 	public static final int TIMEOUT = 20;
 	public static final int CHECK_TIMEOUT = 5;
@@ -91,7 +94,7 @@ public class GameInitServiceImpl implements GameInitService {
 
 	@Override
 	public Set<UserJson> getGameOpponents(Game game) {
-		Set<GameOpponent> opponents = game.getGameOpponents();
+		Set<GameOpponent> opponents = game.getGameInvitationOpponents();
 		Set<UserJson> acceptedOpponents = new HashSet<UserJson>();
 		System.out.println("Op: " + opponents + ", " + opponents.size());
 		for (GameOpponent o: opponents) {
@@ -105,11 +108,11 @@ public class GameInitServiceImpl implements GameInitService {
 	}
 
 	@Override
-	public InviteStatus inviteUser(Game game, User creator, User opponent) {
+	public InviteStatus inviteUser(Game game, User creator, User opponent, boolean isRandom) {
 		opponent.setProcessStatus(ProcessStatus.INVITING);
 		userRepository.updateUser(opponent);
 		
-		Set<GameOpponent> opponents = game.getGameOpponents();
+		Set<GameOpponent> opponents = game.getGameInvitationOpponents();
 		InviteStatus inviteStatus = InviteStatus.OPEN;
 		System.out.println(inviteStatus);
 		GameOpponent newOpponent = new GameOpponent(opponent, game, inviteStatus);
@@ -132,8 +135,31 @@ public class GameInitServiceImpl implements GameInitService {
 		}
 		System.out.println("Is new opponent: " + isNewOpponent);
 		if (isNewOpponent) {
-			 opponents.add(newOpponent);
-			game.setGameOpponents(opponents);
+			opponents.add(newOpponent);
+			game.setGameInvitationOpponents(opponents);
+			
+			if (isRandom)
+			{
+				// Send push notification to invited random user
+				// pushNotificationService.sendPushInviteRandom(opponent, creator, game.getTheme());
+				
+				pushNotificationService.sendNotificationMessage(opponent, NotificationType.ACCEPT_RANDOM, creator, game.getTheme());
+			}
+			else
+			{
+				// Send push notification to invited user from the room
+				Set<UserJson> opponentsInvited = getGameOpponents(game);
+				if (opponentsInvited.size() == 0)
+				{
+					// pushNotificationService.sendPushInviteFriend(opponent, creator, game.getTheme());
+					pushNotificationService.sendNotificationMessage(opponent, NotificationType.ACCEPT_FRIEND, creator, game.getTheme());
+				}
+				else
+				{
+					// pushNotificationService.sendPushInviteFriends(opponent, creator, game.getTheme(), opponentsInvited.size());
+					pushNotificationService.sendNotificationMessage(opponent, NotificationType.ACCEPT_FRIENDS, creator, game.getTheme(), opponentsInvited.size());
+				}
+			}
 		}
 		gameInitRepository.updateGame(game);
 		
@@ -174,14 +200,15 @@ public class GameInitServiceImpl implements GameInitService {
 			System.out.println("Invitation expired!");
 			InviteStatus statusExpired = InviteStatus.EXPIRED;
 			 System.out.println("Invite Status: " + statusExpired);
-			 //Set<GameOpponent> opponents = game.getGameOpponents();
-			 //System.out.println("Opponents: " + opponents);
-			 
+			 			 
 			 gameInitRepository.clearSession();
 			 updatedGame = getCreatedGame(creator);
-			 
-			 
-			 for (GameOpponent o: updatedGame.getGameOpponents()) {
+			
+			 // pushNotificationService.sendPushMissedGames(opponent);
+			 int missedGames = gameInitRepository.getExpiredInvites(opponent); 
+			 pushNotificationService.sendNotificationMessage(opponent, NotificationType.MISSED_GAMES, missedGames);
+						 
+			 for (GameOpponent o: updatedGame.getGameInvitationOpponents()) {
 				 System.out.println("inside a loop: " + o);
 				 if (o.getUser().getId() == opponent.getId()) {
 					 
@@ -219,7 +246,7 @@ public class GameInitServiceImpl implements GameInitService {
 		boolean is4Free = true;
 		
 		InviteStatus statusAccepted = InviteStatus.ACCEPTED;
-		Set<GameOpponent> opponents = game.getGameOpponents();
+		Set<GameOpponent> opponents = game.getGameInvitationOpponents();
 		
 		//check free player numbers
 		for (GameOpponent o: opponents) {
@@ -269,7 +296,7 @@ public class GameInitServiceImpl implements GameInitService {
 	@Override
 	public void refuseInvite(Game game, User user) {
 		InviteStatus statusRejected = InviteStatus.REJECTED;
-		Set<GameOpponent> opponents = game.getGameOpponents();
+		Set<GameOpponent> opponents = game.getGameInvitationOpponents();
 		 
 		 for (GameOpponent o: opponents) {
 			 if (o.getUser().equals(user)) {
@@ -289,7 +316,7 @@ public class GameInitServiceImpl implements GameInitService {
 
 	@Override
 	public boolean checkInviteStatus(Game game) {
-		Set<GameOpponent> opponents = game.getGameOpponents();
+		Set<GameOpponent> opponents = game.getGameInvitationOpponents();
 		for (GameOpponent o: opponents) {
 			if (o.getInviteStatus().equals(InviteStatus.OPEN)) {
 				//there is open invite status
@@ -328,7 +355,7 @@ public class GameInitServiceImpl implements GameInitService {
 		game.getCreator().setProcessStatus(ProcessStatus.FREE);
 		
 		gameInitRepository.updateGame(game);
-		Set<GameOpponent> opponents = game.getGameOpponents();
+		Set<GameOpponent> opponents = game.getGameInvitationOpponents();
 		for (GameOpponent go: opponents) {
 			User o = go.getUser();
 			o.setProcessStatus(ProcessStatus.FREE);
@@ -339,7 +366,7 @@ public class GameInitServiceImpl implements GameInitService {
 	@Override
 	public void addGameOpponent(Game game, User user) {
 		GameOpponent opponent = new GameOpponent(user, game, InviteStatus.ACCEPTED);
-		game.addGameOpponent(opponent);
+		game.addGameInvitationOpponent(opponent);
 		gameInitRepository.updateGame(game);
 		
 	}
@@ -357,5 +384,5 @@ public class GameInitServiceImpl implements GameInitService {
 			return gameInitRepository.getGame(creator, state);
 		}
 	}
-
+	
 }

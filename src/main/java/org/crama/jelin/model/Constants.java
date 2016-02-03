@@ -133,6 +133,21 @@ public class Constants {
 	    public int getValue() {
 	        return value;
 	    }
+	    
+	    public static boolean isMember(int value)
+	    {
+	    	boolean result = false;
+	    	Language[] languages = Language.values();
+	    	for (Language language: languages)
+	    	{
+	    		if (language.getValue() == value)
+	    		{
+	    			result = true;
+	    			break;
+	    		}
+	    	}
+	    	return result;
+	    }
 	}
 	
 	public enum NotificationType {
@@ -151,41 +166,6 @@ public class Constants {
 	        return value;
 	    }
 	}
-	
-	public static final String[] NetStatusString = {
-			"OFFLINE",
-			"SHADOW",
-			"ONLINE"
-	};
-	
-	public static final String[] ProcessStatusString = {
-			"FREE",
-			"CALLING",
-			"INVITING",
-			"WAITING",
-			"INGAME"
-	};
-	
-	public static final String[] GameStateString = {
-			"CREATED",
-			"IN_PROGRESS",
-			"ENDED"
-	};
-	
-	public static final String[] InviteStatusString = {
-			"OPEN",
-			"ACCEPTED",
-			"REJECTED",
-			"EXPIRED"
-	};
-	
-	public static final String[] ReadinessString = {
-			"CATEGORY",
-			"QUESTION",
-			"ANSWER",
-			"RESULT",
-			"SUMMARY"
-	};
 	
 	public static final String[][] NotificationTypeString = {
 			{
