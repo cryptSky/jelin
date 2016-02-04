@@ -29,8 +29,8 @@ public class GameInitServiceImpl implements GameInitService {
 	private UserRepository userRepository;
 	@Autowired
 	private UserService userService;
-	@Autowired
-	private PushNotificationService pushNotificationService;
+	// @Autowired
+	// private PushNotificationService pushNotificationService;
 		
 	//TODO get it out from here and change to 8 and 2
 	public static final int TIMEOUT = 20;
@@ -140,10 +140,7 @@ public class GameInitServiceImpl implements GameInitService {
 			
 			if (isRandom)
 			{
-				// Send push notification to invited random user
-				// pushNotificationService.sendPushInviteRandom(opponent, creator, game.getTheme());
-				
-				pushNotificationService.sendNotificationMessage(opponent, NotificationType.ACCEPT_RANDOM, creator, game.getTheme());
+				// pushNotificationService.sendNotificationMessage(opponent, NotificationType.ACCEPT_RANDOM, creator, game.getTheme());
 			}
 			else
 			{
@@ -151,13 +148,11 @@ public class GameInitServiceImpl implements GameInitService {
 				Set<UserJson> opponentsInvited = getGameOpponents(game);
 				if (opponentsInvited.size() == 0)
 				{
-					// pushNotificationService.sendPushInviteFriend(opponent, creator, game.getTheme());
-					pushNotificationService.sendNotificationMessage(opponent, NotificationType.ACCEPT_FRIEND, creator, game.getTheme());
+					// pushNotificationService.sendNotificationMessage(opponent, NotificationType.ACCEPT_FRIEND, creator, game.getTheme());
 				}
 				else
 				{
-					// pushNotificationService.sendPushInviteFriends(opponent, creator, game.getTheme(), opponentsInvited.size());
-					pushNotificationService.sendNotificationMessage(opponent, NotificationType.ACCEPT_FRIENDS, creator, game.getTheme(), opponentsInvited.size());
+					// pushNotificationService.sendNotificationMessage(opponent, NotificationType.ACCEPT_FRIENDS, creator, game.getTheme(), opponentsInvited.size());
 				}
 			}
 		}
@@ -204,9 +199,8 @@ public class GameInitServiceImpl implements GameInitService {
 			 gameInitRepository.clearSession();
 			 updatedGame = getCreatedGame(creator);
 			
-			 // pushNotificationService.sendPushMissedGames(opponent);
 			 long missedGames = gameInitRepository.getExpiredInvites(opponent); 
-			 pushNotificationService.sendNotificationMessage(opponent, NotificationType.MISSED_GAMES, missedGames);
+			 // pushNotificationService.sendNotificationMessage(opponent, NotificationType.MISSED_GAMES, missedGames);
 						 
 			 for (GameOpponent o: updatedGame.getGameInvitationOpponents()) {
 				 System.out.println("inside a loop: " + o);
