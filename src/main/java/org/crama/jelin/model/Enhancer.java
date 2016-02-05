@@ -13,9 +13,12 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 
 @Entity
 @Table(name = "enhancer")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Enhancer implements Serializable {
 
 	private static final long serialVersionUID = -9128111025867791649L;
@@ -36,7 +39,7 @@ public class Enhancer implements Serializable {
 	private String name;
 	
 	@Column(name = "DESCRIPTON", nullable = true)
-	private String description;
+	private String desc;
 	
 	@Column(name = "ICON", nullable = false)
 	private String icon;
@@ -85,12 +88,12 @@ public class Enhancer implements Serializable {
 		this.name = name;
 	}
 
-	public String getDescription() {
-		return description;
+	public String getDesc() {
+		return desc;
 	}
 
-	public void setDescription(String description) {
-		this.description = description;
+	public void setDesc(String desc) {
+		this.desc = desc;
 	}
 
 	public String getIcon() {
@@ -136,7 +139,7 @@ public class Enhancer implements Serializable {
 	@Override
 	public String toString() {
 		return "Enhancer [id=" + id + ", character=" + character + ", equipment=" + equipment + ", name=" + name
-				+ ", description=" + description + ", icon=" + icon + ", pointsPercent=" + pointsPercent
+				+ ", description=" + desc + ", icon=" + icon + ", pointsPercent=" + pointsPercent
 				+ ", acornsPercent=" + acornsPercent + ", acorns=" + acorns + ", goldAcorns=" + goldAcorns + "]";
 	}
 

@@ -35,8 +35,8 @@ public class UserModel implements Serializable {
 	@Pattern(regexp="[@._A-Za-z0-9-]{1,}", message="Wrong password pattern")
 	private String password;
 	
-	@Column(name="EMAIL", nullable=false, unique=true)
-	@NotNull(message="Password should not be empty")
+	@Column(name="EMAIL", nullable=true, unique=true)
+	//@NotNull(message="Password should not be empty")
 	@Size(min=6, message="Password should be from 6 characters long")
 	@Pattern(regexp="^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$", message="Wrong email pattern")
 	private String email;

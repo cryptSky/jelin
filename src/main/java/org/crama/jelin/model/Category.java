@@ -32,7 +32,7 @@ public class Category implements Serializable {
 	private String name;
 	
 	@Column(name="DESCRIPTION", nullable=true)
-	private String description;
+	private String desc;
 	
 	@Column(name="IS_CATEGORY", nullable=false)
 	private boolean isCategory;
@@ -54,7 +54,7 @@ public class Category implements Serializable {
 		super();
 		this.id = id;
 		this.name = name;
-		this.description = description;
+		this.desc = description;
 		this.isCategory = category;
 		this.parent = parent;
 		this.group = group;
@@ -76,12 +76,12 @@ public class Category implements Serializable {
 		this.name = name;
 	}
 
-	public String getDescription() {
-		return description;
+	public String getDesc() {
+		return desc;
 	}
 
-	public void setDescription(String description) {
-		this.description = description;
+	public void setDesc(String desc) {
+		this.desc = desc;
 	}
 
 	public boolean isCategory() {

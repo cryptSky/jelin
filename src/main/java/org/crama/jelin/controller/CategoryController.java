@@ -1,12 +1,15 @@
 package org.crama.jelin.controller;
 
 import java.util.List;
+import java.util.Set;
 
 import org.crama.jelin.exception.GameException;
 import org.crama.jelin.exception.RestError;
 import org.crama.jelin.model.Category;
 import org.crama.jelin.model.Group;
+import org.crama.jelin.model.User;
 import org.crama.jelin.service.CategoryService;
+import org.crama.jelin.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -23,10 +26,14 @@ public class CategoryController {
 	@Autowired
 	private CategoryService categoryService;
 	
+	@Autowired
+	private UserService userService;
+	
 	@RequestMapping(value="/api/question/group", method=RequestMethod.GET)
 	@ResponseBody
-    public List<Group> getAllGroups() {
-		return categoryService.getAllGroups();
+    public Set<Group> getAllGroupsAvailableForUser() {
+		User user = userService.getPrincipal();
+		return categoryService.getAllAvailableGroups(user);
 	}		
 
 	@RequestMapping(value="/api/question/theme", method=RequestMethod.GET)

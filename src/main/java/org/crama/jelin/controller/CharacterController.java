@@ -9,9 +9,10 @@ import org.crama.jelin.model.Character;
 import org.crama.jelin.model.Enhancer;
 import org.crama.jelin.model.User;
 import org.crama.jelin.service.CharacterService;
-import org.crama.jelin.service.UserDetailsServiceImpl;
+import org.crama.jelin.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -25,8 +26,9 @@ public class CharacterController {
 
 	@Autowired
 	private CharacterService characterService;
+	
 	@Autowired
-	private UserDetailsServiceImpl userDetailsService;
+	private UserService userService;
 	
 	//get all public available character (special = false) 
 	@RequestMapping(value="/api/character/first", method=RequestMethod.GET)
@@ -39,7 +41,8 @@ public class CharacterController {
 	@RequestMapping(value="/api/character/first", method=RequestMethod.PUT)
 	@ResponseStatus(HttpStatus.OK)
     public boolean chooseFirstCharacter(@RequestParam int character) throws GameException {
-		User user = userDetailsService.getPrincipal();
+		
+		User user = userService.getPrincipal();
        
         return characterService.saveUserCharacter(character, user);
         
@@ -48,7 +51,7 @@ public class CharacterController {
 	@RequestMapping(value="/api/character/current", method=RequestMethod.POST)
 	@ResponseStatus(HttpStatus.OK)
     public boolean chooseCurrentCharacter(@RequestParam int character) {
-		User user = userDetailsService.getPrincipal();
+		User user = userService.getPrincipal();
 		return characterService.saveCurrentCharacter(character, user);
 		
 	}
@@ -56,9 +59,17 @@ public class CharacterController {
 	//get current character
 	@RequestMapping(value="/api/character/current", method=RequestMethod.GET)
 	@ResponseStatus(HttpStatus.OK)
-    public @ResponseBody Character getCurrentCharacter() throws GameException {
-		User user = userDetailsService.getPrincipal();
-		Character character = characterService.getCurrentCharacter(user);
+    public @ResponseBody Character getCurrentCharacter(@RequestParam(required = false) Integer user) throws GameException {
+		
+		User userObj = null;
+		if (user == null) {
+			userObj = userService.getPrincipal();
+		}
+		else {
+			userObj = userService.getUser(user);
+		}
+		
+		Character character = characterService.getCurrentCharacter(userObj);
 		return character;
 		
 	}
@@ -67,7 +78,7 @@ public class CharacterController {
 	@RequestMapping(value="/api/character", method=RequestMethod.GET)
 	@ResponseStatus(HttpStatus.OK)
     public @ResponseBody List<Character> getCharactersForSale() {
-		User user = userDetailsService.getPrincipal();
+		User user = userService.getPrincipal();
 		List<Character> characterList = characterService.getCharactersForSale(user);
         return characterList;
 	}
@@ -76,7 +87,7 @@ public class CharacterController {
 	@RequestMapping(value="/api/character/users", method=RequestMethod.GET)
 	@ResponseStatus(HttpStatus.OK)
     public @ResponseBody Set<Character> getUserCharacters() {
-		User user = userDetailsService.getPrincipal();
+		User user = userService.getPrincipal();
 		Set<Character> characterList = characterService.getUserCharacters(user);
         return characterList;
 	}
@@ -84,7 +95,7 @@ public class CharacterController {
 	@RequestMapping(value="/api/character/enhancer", method=RequestMethod.GET)
 	@ResponseStatus(HttpStatus.OK)
     public @ResponseBody List<Enhancer> getAvailableEnhancers() throws GameException {
-		User user = userDetailsService.getPrincipal();
+		User user = userService.getPrincipal();
 		Set<Character> userCharacters = user.getCharacterSet();
 		if (userCharacters == null || userCharacters.size() == 0) {
 			throw new GameException(305, "User has no characters. Please choose at least one character first");
@@ -97,7 +108,7 @@ public class CharacterController {
 	@RequestMapping(value="/api/character/buy", method=RequestMethod.POST)
 	@ResponseStatus(HttpStatus.OK)
     public @ResponseBody boolean buyCharacter(@RequestParam int character) throws GameException {
-		User user = userDetailsService.getPrincipal();
+		User user = userService.getPrincipal();
 		return characterService.buyCharacter(character, user);
 		
 	}
@@ -105,7 +116,7 @@ public class CharacterController {
 	@RequestMapping(value="/api/character/enhancer/buy", method=RequestMethod.POST)
 	@ResponseStatus(HttpStatus.OK)
     public @ResponseBody boolean buyEnhancer(@RequestParam int enhancer) throws GameException {
-		User user = userDetailsService.getPrincipal();
+		User user = userService.getPrincipal();
 		return characterService.buyEnhancer(enhancer, user);
 		
 	}

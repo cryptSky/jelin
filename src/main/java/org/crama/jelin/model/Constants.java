@@ -1,6 +1,16 @@
 package org.crama.jelin.model;
 
+import java.time.LocalDate;
+import java.time.Month;
+
 public class Constants {
+	
+	public static final String SHORT_GAME_NAME = "Jelin";
+	public static final String SITE_URL = "jelin.ru";
+	public static final String EMAIL = "vitalii.oleksiv@gmail.com";
+	
+	public static final LocalDate  EARLY_SIGNUP_START_DATE = LocalDate.of(2016, Month.JANUARY, 1);
+	public static final LocalDate  EARLY_SIGNUP_END_DATE = LocalDate.of(2016, Month.MARCH, 1);
 	
 	public static final int QUESTION_NUMBER = 3;
 	
@@ -111,6 +121,22 @@ public class Constants {
 				
 		private final int value;
 	    private Status(int value) {
+	        this.value = value;
+	    }
+
+	    public int getValue() {
+	        return value;
+	    }
+	}
+	
+	public enum PromocodeStatus {
+		
+		NOT_FOUND(0),
+		ALREADY_USED(1),
+		AVAILABLE(2);
+				
+		private final int value;
+	    private PromocodeStatus(int value) {
 	        this.value = value;
 	    }
 

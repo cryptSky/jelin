@@ -19,11 +19,19 @@
   <context-param>
     <param-name>contextConfigLocation</param-name>
     <param-value>
-		    /WEB-INF/config/hibernateContext.xml,
-		    /WEB-INF/config/securityContext.xml
-		    <!-- /WEB-INF/config/appContext.xml -->
-		</param-value>
+	    /WEB-INF/config/hibernateContext.xml,
+	    /WEB-INF/config/securityContext.xml,
+	    /WEB-INF/config/socialContext.xml
+	    <!-- /WEB-INF/config/appContext.xml -->
+	</param-value>
   </context-param>
+  
+  <!-- set active profile to development -->
+  <context-param>
+  	<param-name>spring.profiles.active</param-name>
+	<param-value>dev</param-value>
+  </context-param>
+  
   <listener>
     <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
   </listener>
@@ -50,4 +58,5 @@
     <filter-name>springSecurityFilterChain</filter-name>
     <url-pattern>/*</url-pattern>
   </filter-mapping>
+  
 </web-app>
