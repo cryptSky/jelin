@@ -13,7 +13,9 @@ public class Constants {
 	public static final LocalDate  EARLY_SIGNUP_END_DATE = LocalDate.of(2016, Month.MARCH, 1);
 	
 	public static final int QUESTION_NUMBER = 3;
-	
+	public static final String BUNDLE_ID = "com.nt.Jelin"; 
+	public static final String P12_PASSWORD = "p124zI78KlmP";
+		
 	public enum UserType {
 		HUMAN(0),
 		BOT(1);
@@ -145,40 +147,64 @@ public class Constants {
 	    }
 	}
 	
+
+	public enum Language {
+		ENGLISH(0),
+		RUSSIAN(1);
+				
+		private final int value;
+	    private Language(int value) {
+	        this.value = value;
+	    }
+
+	    public int getValue() {
+	        return value;
+	    }
+	    
+	    public static boolean isMember(int value)
+	    {
+	    	boolean result = false;
+	    	Language[] languages = Language.values();
+	    	for (Language language: languages)
+	    	{
+	    		if (language.getValue() == value)
+	    		{
+	    			result = true;
+	    			break;
+	    		}
+	    	}
+	    	return result;
+	    }
+	}
 	
-	public static final String[] NetStatusString = {
-			"OFFLINE",
-			"SHADOW",
-			"ONLINE"
+	public enum NotificationType {
+		
+		ACCEPT_RANDOM(0),
+		ACCEPT_FRIEND(1),
+		ACCEPT_FRIENDS(2),
+		MISSED_GAMES(3);
+				
+		private final int value;
+	    private NotificationType(int value) {
+	        this.value = value;
+	    }
+
+	    public int getValue() {
+	        return value;
+	    }
+	}
+	
+	public static final String[][] NotificationTypeString = {
+			{
+				"Hi! Jelin user %s has challenged on the topic %s! Are you ready to accept his challenge?",
+				"Hi! Your friend %s has challenged you on the topic %s in Jelin quiz! Are you ready to accept his challenge?",
+				"Hi! Your friend %s and %d have challenged you on the topic %s in Jelin quiz! Are you ready to accept his challenge?",
+				"You’ve got %d invitations from Jelin users and your friends to play quizzes while you were absent. They missed you so much!!"						
+			},
+			{
+				
+			}
 	};
 	
-	public static final String[] ProcessStatusString = {
-			"FREE",
-			"CALLING",
-			"INVITING",
-			"WAITING",
-			"INGAME"
-	};
-	
-	public static final String[] GameStateString = {
-			"CREATED",
-			"IN_PROGRESS",
-			"ENDED"
-	};
-	
-	public static final String[] InviteStatusString = {
-			"OPEN",
-			"ACCEPTED",
-			"REJECTED",
-			"EXPIRED"
-	};
-	
-	public static final String[] ReadinessString = {
-			"CATEGORY",
-			"QUESTION",
-			"ANSWER",
-			"RESULT",
-			"SUMMARY"
-	};
 }
 

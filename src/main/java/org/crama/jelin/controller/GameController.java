@@ -353,7 +353,7 @@ public class GameController {
 	        }
         }
 		
-        if (game.getReadiness() != Readiness.SUMMARY && game.getReadiness() != Readiness.RESULT)
+        if (game.getReadiness() != Readiness.SUMMARY)
         {
         	throw new GameException(519, "Game Readiness is: " + game.getReadiness().toString() + ". Should be: SUMMARY");
         }

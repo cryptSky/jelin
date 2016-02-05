@@ -48,6 +48,7 @@ public class GameInitController {
 	
 	@Autowired
 	private OpponentSearchService opponentSearchService;
+
 	@Autowired
 	private UserActivityService userActivityService;
 	
@@ -184,8 +185,10 @@ public class GameInitController {
 	}
 	@RequestMapping(value = "/api/game/userGameState", method = RequestMethod.GET)
 	public @ResponseBody String getUserGameStatus() {
-		User creator = userService.getPrincipal();
-		return Constants.ProcessStatusString[creator.getProcessStatus().getValue()];
+
+		User creator = userService.getPrincipal();		
+		return creator.getProcessStatus().toString();
+
 	}
 	
 	@RequestMapping(value = "/api/game/invite", method = RequestMethod.POST, params={"user"})
@@ -228,10 +231,11 @@ public class GameInitController {
 		}
 		
 		//invite user
-		InviteStatus inviteStatus = gameInitService.inviteUser(game, creator, opponent);
+		InviteStatus inviteStatus = gameInitService.inviteUser(game, creator, opponent, false);
 		User opponentAfterInvite = userService.getUser(user);
 		userActivityService.saveInvite(opponentAfterInvite, inviteStatus);
-		return Constants.InviteStatusString[inviteStatus.getValue()];
+		return inviteStatus.toString();
+
 	}
 	
 	
@@ -361,8 +365,8 @@ public class GameInitController {
 
 		else {
 			//invite user
-			InviteStatus inviteStatus = gameInitService.inviteUser(game, creator, opponent);
-			return Constants.InviteStatusString[inviteStatus.getValue()];
+			InviteStatus inviteStatus = gameInitService.inviteUser(game, creator, opponent, true);			
+			return inviteStatus.toString();
 		}				
 	}
 	

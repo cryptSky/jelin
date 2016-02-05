@@ -25,6 +25,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.crama.jelin.model.Constants.Language;
 import org.crama.jelin.model.Constants.NetStatus;
 import org.crama.jelin.model.Constants.ProcessStatus;
 import org.crama.jelin.model.Constants.UserType;
@@ -58,7 +59,6 @@ public class User implements Serializable {
 	@Column(name = "NET_STATUS")
 	private NetStatus netStatus;
 		
-	
 	@Column(name = "PROCESS_STATUS")
 	private ProcessStatus processStatus;
 	
@@ -140,6 +140,7 @@ public class User implements Serializable {
 	@Temporal(TemporalType.DATE)
 	@Column(name = "REGISTER_DATE", nullable = false)
 	private Date registerDate;
+
 	
 	public User() {}
 	

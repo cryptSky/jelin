@@ -21,6 +21,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.crama.jelin.model.Constants.GameState;
+import org.crama.jelin.model.Constants.InviteStatus;
 import org.crama.jelin.model.Constants.Readiness;
 import org.crama.jelin.model.Constants.UserType;
 
@@ -83,7 +84,7 @@ public class Game implements Serializable {
 	
 	@JsonIgnore
 	@OneToMany(mappedBy = "game", fetch = FetchType.LAZY, cascade=CascadeType.ALL)
-	private Set<GameOpponent> gameOpponents = new HashSet<GameOpponent>();
+	private Set<GameOpponent> gameInvitationOpponents = new HashSet<GameOpponent>();
 	
 	
 	public Game() {}
@@ -148,16 +149,16 @@ public class Game implements Serializable {
 	}
 
 	
-	public Set<GameOpponent> getGameOpponents() {
-		return gameOpponents;
+	public Set<GameOpponent> getGameInvitationOpponents() {
+		return gameInvitationOpponents;
 	}
 
-	public void setGameOpponents(Set<GameOpponent> gameOpponents) {
-		this.gameOpponents = gameOpponents;
+	public void setGameInvitationOpponents(Set<GameOpponent> gameInvitationOpponents) {
+		this.gameInvitationOpponents = gameInvitationOpponents;
 	}
 
-	public void addGameOpponent(GameOpponent gameOpponent) {
-		this.gameOpponents.add(gameOpponent);
+	public void addGameInvitationOpponent(GameOpponent gameOpponent) {
+		this.gameInvitationOpponents.add(gameOpponent);
 	}
 	
 	public GameRound getRound() {
@@ -184,6 +185,19 @@ public class Game implements Serializable {
 		this.readiness = readiness;
 	}
 
+	public Set<GameOpponent> getGameOpponents() {
+		
+		Set<GameOpponent> gameOpponents = new HashSet<GameOpponent>();
+		for (GameOpponent opponent: gameInvitationOpponents)
+		{
+			if (opponent.getInviteStatus() == InviteStatus.ACCEPTED)
+			{
+				gameOpponents.add(opponent);
+			}
+		}
+		return gameOpponents;
+	}
+	
 	public int getPlayersCount()
 	{
 		return getGameOpponents().size() + 1;

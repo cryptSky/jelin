@@ -8,9 +8,12 @@ import org.crama.jelin.model.Constants.GameState;
 import org.crama.jelin.model.Constants.InviteStatus;
 import org.crama.jelin.repository.GameInitRepository;
 import org.crama.jelin.model.User;
+import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -128,4 +131,12 @@ public class GameInitRepositoryImpl implements GameInitRepository {
 		return rowsUpdated == 0? false: true; 
 	}
 
+	@Override
+	public long getExpiredInvites(User user) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(GameOpponent.class);
+		criteria.add(Restrictions.eq("inviteStatus", InviteStatus.EXPIRED));
+		long result = (long) criteria.setProjection(Projections.rowCount()).uniqueResult();
+		return result;
+	}
+	
 }

@@ -22,5 +22,7 @@ public interface GameInitRepository {
 	void clearSession();
 
 	boolean removeGameOpponent(Game game, User user);
+	
+	long getExpiredInvites(User user);
 		
 }
