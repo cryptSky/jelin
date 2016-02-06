@@ -233,30 +233,8 @@ public class GameRound implements Serializable {
 	{
 		int questionNumber = getQuestionNumber(player);
 		int playerCount = game.getPlayersCount();
-		int maxQuestionNumber = -1;
-		int minQuestionNumber = -1;
-		if (playerCount == 2)
-		{
-			maxQuestionNumber = Math.max(getPlayer1QuestionNumber(), getPlayer2QuestionNumber());
-			minQuestionNumber = Math.min(getPlayer1QuestionNumber(), getPlayer2QuestionNumber());					 
-		}
-		else if (playerCount == 3)
-		{
-			maxQuestionNumber = Math.max(Math.max(getPlayer1QuestionNumber(), getPlayer2QuestionNumber()),
-					 									getPlayer3QuestionNumber());
-
-			minQuestionNumber = Math.min(Math.min(getPlayer1QuestionNumber(), getPlayer2QuestionNumber()),
-					 									getPlayer3QuestionNumber());
-
-		} else if (playerCount == 4)
-		{
-			maxQuestionNumber = Math.max(Math.max(getPlayer1QuestionNumber(), getPlayer2QuestionNumber()),
-					 Math.max(getPlayer3QuestionNumber(), getPlayer4QuestionNumber()));
-
-			minQuestionNumber = Math.min(Math.min(getPlayer1QuestionNumber(), getPlayer2QuestionNumber()),
-					 Math.min(getPlayer3QuestionNumber(), getPlayer4QuestionNumber()));
-		}
-		
+		int maxQuestionNumber = getMaxQuestionNumber();
+		int minQuestionNumber = getMinQuestionNumber();
 		
 		if (questionNumber == maxQuestionNumber && questionNumber > minQuestionNumber)
 		{
@@ -266,6 +244,57 @@ public class GameRound implements Serializable {
 		{
 			return false;
 		}
+	}
+	
+	public Question currentQuestion()
+	{		
+		int maxQuestionNumber = getMaxQuestionNumber();
+	    Question question = this.getQuestion(maxQuestionNumber);			
+		return question;
+	}
+	
+	private int getMinQuestionNumber()
+	{
+		int playerCount = game.getPlayersCount();
+		int minQuestionNumber = -1;
+		if (playerCount == 2)
+		{
+			minQuestionNumber = Math.min(getPlayer1QuestionNumber(), getPlayer2QuestionNumber());					 
+		}
+		else if (playerCount == 3)
+		{
+			minQuestionNumber = Math.min(Math.min(getPlayer1QuestionNumber(), getPlayer2QuestionNumber()),
+					 									getPlayer3QuestionNumber());
+
+		} else if (playerCount == 4)
+		{
+			minQuestionNumber = Math.min(Math.min(getPlayer1QuestionNumber(), getPlayer2QuestionNumber()),
+					 Math.min(getPlayer3QuestionNumber(), getPlayer4QuestionNumber()));
+		}
+		
+		return minQuestionNumber;
+	}
+	
+	private int getMaxQuestionNumber()
+	{
+		int playerCount = game.getPlayersCount();
+		int maxQuestionNumber = -1;
+		if (playerCount == 2)
+		{
+			maxQuestionNumber = Math.max(getPlayer1QuestionNumber(), getPlayer2QuestionNumber());					 
+		}
+		else if (playerCount == 3)
+		{
+			maxQuestionNumber = Math.max(Math.max(getPlayer1QuestionNumber(), getPlayer2QuestionNumber()),
+					 									getPlayer3QuestionNumber());
+		} else if (playerCount == 4)
+		{
+			maxQuestionNumber = Math.max(Math.max(getPlayer1QuestionNumber(), getPlayer2QuestionNumber()),
+					 Math.max(getPlayer3QuestionNumber(), getPlayer4QuestionNumber()));
+		
+		}
+		
+		return maxQuestionNumber;
 	}
 	
 	public int getQuestionNumber(User player)
@@ -356,7 +385,9 @@ public class GameRound implements Serializable {
 	
 	public void writeResult(QuestionResult result)
 	{
-		switch(result.getPlayerNumber())
+		User player = result.getPlayer();
+		int playerNumber = game.getPlayerNumberByUser(player);
+		switch(playerNumber)
 		{
 			case 1: setPlayer1Points(getPlayer1Points() + result.getScore()); 
 					break;

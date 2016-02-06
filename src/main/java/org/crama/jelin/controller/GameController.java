@@ -20,6 +20,7 @@ import org.crama.jelin.model.User;
 import org.crama.jelin.service.CategoryService;
 import org.crama.jelin.service.GameInitService;
 import org.crama.jelin.service.GameService;
+import org.crama.jelin.service.OfflinePlayerChecker;
 import org.crama.jelin.service.UserDetailsServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,6 +50,9 @@ public class GameController {
 
 	@Autowired
 	private UserDetailsServiceImpl userDetailsService;
+	
+	@Autowired
+	private OfflinePlayerChecker offlinePlayerChecker;
 	
 	@RequestMapping(value="/api/game/start", method=RequestMethod.POST)
 	@ResponseStatus(HttpStatus.OK)
@@ -224,6 +228,8 @@ public class GameController {
         {
         	game.setReadiness(Readiness.ANSWER);
         	gameService.updateGame(game);
+        	
+        	offlinePlayerChecker.setUpTimeout(game, Readiness.ANSWER);
         }
             	
         return question;
@@ -298,7 +304,7 @@ public class GameController {
     	gameService.updateGameRound(round);
         
         List<QuestionResult> result = gameService.getPersonalResults(game, player);
-        
+                
         // if all humans already called /api/game/results after their answers
         if (game.getHumanPlayersCount() == round.getHumanAnswerCount())
         {
@@ -313,18 +319,20 @@ public class GameController {
                 	gameService.updateGame(game);
                 	
             		gameService.finishGame(game);
-            		return result;
-            	}
-            	
-            	// if next round host is bot, set category
-            	if (game.getRound().getHost().getType() == UserType.BOT)
-            	{
-            		gameService.setRandomCategory(game);
-              	}
+    		
+            	} 
             	else
             	{
-            		game.setReadiness(Readiness.CATEGORY);
-                	gameService.updateGame(game);
+            		// if next round host is bot, set category
+            		if (game.getRound().getHost().getType() == UserType.BOT)
+            		{
+            			gameService.setRandomCategory(game);
+            		}
+            		else
+            		{
+            			game.setReadiness(Readiness.CATEGORY);
+            			gameService.updateGame(game);
+            		}
             	}
         	}
         	else

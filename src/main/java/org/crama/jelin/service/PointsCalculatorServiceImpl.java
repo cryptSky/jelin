@@ -6,6 +6,7 @@ import org.crama.jelin.model.Answer;
 import org.crama.jelin.model.GameRound;
 import org.crama.jelin.model.Question;
 import org.crama.jelin.model.QuestionResult;
+import org.crama.jelin.model.User;
 import org.crama.jelin.repository.AnswerRepository;
 import org.crama.jelin.repository.GameRoundRepository;
 import org.crama.jelin.repository.QuestionResultRepository;
@@ -37,7 +38,7 @@ public class PointsCalculatorServiceImpl implements PointsCalculatorService {
 	
 	private QuestionResult calculatePoints(GameRound round, Answer answer, int orderNumber)
 	{
-		int playerNumber = answer.getPlayerNumber();
+		User player = answer.getPlayer();
 		Question question = answer.getQuestion();
 				
 		int points = 0;
@@ -52,11 +53,12 @@ public class PointsCalculatorServiceImpl implements PointsCalculatorService {
 			case 3: points = 72;
 					break;
 			
-			default: break;
+			default: points = 0; 
+					 break;
 		}
 		
 		QuestionResult result = new QuestionResult(answer.getVariant(), points, question, 
-														round, playerNumber);
+														round, player);
 		
 		return result;
 	}

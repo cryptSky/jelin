@@ -5,11 +5,13 @@ import java.util.List;
 import org.crama.jelin.model.Answer;
 import org.crama.jelin.model.GameRound;
 import org.crama.jelin.model.Question;
+import org.crama.jelin.model.User;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -48,6 +50,21 @@ public class AnswerRepositoryImpl implements AnswerRepository {
 		criteria.addOrder(Order.asc("time"));
 		
 		return criteria.list();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<User> getUsersAnswered(GameRound round, Question question) {
+		
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Answer.class);
+		criteria.add(Restrictions.eq("round", round))
+			    .add(Restrictions.eq("question", question));
+		criteria.setProjection(Projections.property("player"));
+		
+		List<User> users = criteria.list();
+		
+		return users;
+		
 	}
 
 }

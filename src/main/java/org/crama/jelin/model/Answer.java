@@ -32,8 +32,9 @@ public class Answer implements Serializable {
 	@JoinColumn(name = "QUESTION_ID")
 	private Question question;
 	
-	@Column(name = "PLAYER_NUMBER")
-	private int playerNumber;
+	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JoinColumn(name = "PLAYER_ID")
+	private User player;
 	
 	@Column(name = "VARIANT")
 	private int variant;
@@ -46,11 +47,11 @@ public class Answer implements Serializable {
 		
 	}
 
-	public Answer(GameRound round, Question question, int playerNumber, int variant, int time) {
+	public Answer(GameRound round, Question question, User player, int variant, int time) {
 		super();
 		this.round = round;
 		this.question = question;
-		this.playerNumber = playerNumber;
+		this.player = player;
 		this.variant = variant;
 		this.time = time;
 	}
@@ -79,12 +80,12 @@ public class Answer implements Serializable {
 		this.question = question;
 	}
 
-	public int getPlayerNumber() {
-		return playerNumber;
+	public User getPlayer() {
+		return player;
 	}
 
-	public void setPlayerNumber(int playerNumber) {
-		this.playerNumber = playerNumber;
+	public void setPlayerNumber(User player) {
+		this.player = player;
 	}
 
 	public int getVariant() {

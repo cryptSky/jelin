@@ -170,8 +170,7 @@ public class GameServiceImpl implements GameService {
         int questionNumber = gameRound.getQuestionNumber(player);
         questionNumber--; 
         Question question = gameRound.getQuestion(questionNumber);
-        int playerNumber = game.getPlayerNumberByUser(player);
-        
+                
         if (player.getType() == UserType.HUMAN)
         {
         	int answerCount = gameRound.getHumanAnswerCount();
@@ -181,7 +180,7 @@ public class GameServiceImpl implements GameService {
        
         gameRoundRepository.updateRound(gameRound);
                 
-        Answer answer = new Answer(gameRound, question, playerNumber, variant, time);
+        Answer answer = new Answer(gameRound, question, player, variant, time);
         answerRepository.saveAnswer(answer);
       		
 	}
@@ -261,7 +260,11 @@ public class GameServiceImpl implements GameService {
 
 	@Override
 	public List<QuestionResult> getPersonalResults(Game game, User player) throws GameException {
-		return questionResultRepository.getPersonalResults(game, player);
+		List<QuestionResult> results = questionResultRepository.getPersonalResults(game, player);
+		QuestionResult lastResult = results.get(results.size()-1);
+		lastResult.setGotResult(true);
+		questionResultRepository.update(lastResult);
+		return results;
 	}
 
 	@Override

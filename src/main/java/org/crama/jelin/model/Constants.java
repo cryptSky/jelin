@@ -5,6 +5,12 @@ public class Constants {
 	public static final int QUESTION_NUMBER = 3;
 	public static final String BUNDLE_ID = "com.nt.Jelin"; 
 	public static final String P12_PASSWORD = "p124zI78KlmP";
+	
+	public static int categorySelectTimeoutSec = 20;
+	public static int answerSelectTimeoutSec = 20;
+	public static int questionSelectTimeoutSec = 20;
+	public static int resultSelectTimeoutSec = 20;
+	
 		
 	public enum UserType {
 		HUMAN(0),
@@ -149,6 +155,8 @@ public class Constants {
 	    	return result;
 	    }
 	}
+	
+	public static final int[] OFFLINE_TIMEOUT_SEC = {20, 20, 20, 20, 20};
 	
 	public enum NotificationType {
 		
