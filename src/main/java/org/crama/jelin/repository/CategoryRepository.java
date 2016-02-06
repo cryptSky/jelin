@@ -7,6 +7,7 @@ import org.crama.jelin.model.Group;
 
 
 public interface CategoryRepository {
+	
 	List<Group> getAllGroups();
 	
 	List<Category> getAllThemesFromGroup(int groupID);
@@ -18,5 +19,7 @@ public interface CategoryRepository {
 	List<Category> getChildThemesByParentId(int parentID);
 
 	Category getCategoryById(int categoryID);
+
+	Group getPulicGroup();
 		
 }

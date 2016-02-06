@@ -6,6 +6,7 @@ import org.crama.jelin.exception.GameException;
 import org.crama.jelin.model.Constants.ProcessStatus;
 import org.crama.jelin.model.Game;
 import org.crama.jelin.model.GameBot;
+import org.crama.jelin.model.SocialUser;
 import org.crama.jelin.model.User;
 import org.crama.jelin.model.UserModel;
 
@@ -44,5 +45,10 @@ public interface UserService {
 	void changeOthersNetStatus(User user, int status) throws GameException;
 
 	void createUsersInfoAndStatistics();
+
+	void remindPassword(String access) throws GameException;
+
+	User getPrincipal();
+
 
 }

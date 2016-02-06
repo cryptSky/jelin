@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.crama.jelin.model.User;
 import org.crama.jelin.model.UserSession;
-import org.crama.jelin.repository.UserSessionRepository;
+import org.crama.jelin.repository.impl.UserSessionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

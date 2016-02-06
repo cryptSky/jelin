@@ -11,11 +11,14 @@
 <security:http pattern="/icons/**" security="none"/>
 <security:http pattern="/avatar/**" security="none"/>
 <security:http pattern="/images/**" security="none"/>
+<security:http pattern="/bonus/**" security="none"/>
 
 <security:http create-session="stateless">
    <security:intercept-url pattern="/api/user/checkFree" access="permitAll" />
-   <security:intercept-url pattern="/api/user/" method="PUT" access="permitAll"/>
-   <security:intercept-url pattern="/api/user/" method="GET" access="hasRole('ROLE_USER')"/>
+   <security:intercept-url pattern="/api/user/recovery" access="permitAll" />
+   <security:intercept-url pattern="/api/user/login/social" access="permitAll" />
+   <security:intercept-url pattern="/api/user" method="PUT" access="permitAll"/>
+   <security:intercept-url pattern="/api/user" method="GET" access="hasRole('ROLE_USER')"/>
    <security:intercept-url pattern="/**" access="hasRole('ROLE_USER')"/>
    <security:http-basic />
    <security:csrf disabled="true"/>
@@ -25,12 +28,7 @@
    <security:authentication-provider user-service-ref="userDetailsService">
    	 
    </security:authentication-provider> 
-   <!-- <security:authentication-provider>
-   	 	<security:user-service>
-	         <security:user name="user" password="user1" authorities="ROLE_USER" />
-	         <security:user name="admin" password="admin1" authorities="ROLE_USER, ROLE_ADMIN" />
-         </security:user-service>
-   </security:authentication-provider> -->
+   
 </security:authentication-manager> 
 
 </beans>

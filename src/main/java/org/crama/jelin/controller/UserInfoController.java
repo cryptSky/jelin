@@ -3,8 +3,9 @@ package org.crama.jelin.controller;
 import org.crama.jelin.model.User;
 import org.crama.jelin.model.UserInfo;
 import org.crama.jelin.model.UserStatistics;
-import org.crama.jelin.service.UserDetailsServiceImpl;
 import org.crama.jelin.service.UserInfoService;
+import org.crama.jelin.service.UserService;
+import org.crama.jelin.service.impl.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,23 +20,32 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserInfoController {
 
 	@Autowired
-	private UserInfoService userInfoService;
+	private UserService userService;
 	
 	@Autowired
-	private UserDetailsServiceImpl userDetailsService;
+	private UserInfoService userInfoService;
+	
 	
 	@RequestMapping(value="/api/user/info", method=RequestMethod.GET)
 	@ResponseStatus(HttpStatus.OK)
-    public @ResponseBody UserInfo getUserInfo() {
-		User user = userDetailsService.getPrincipal();
-    	UserInfo userInfo = userInfoService.getUserInfo(user);
+    public @ResponseBody UserInfo getUserInfo(@RequestParam(required = false) Integer user) {
+		
+		User userObj = null;
+		if (user == null) {
+			userObj = userService.getPrincipal();
+		}
+		else {
+			userObj = userService.getUser(user);
+		}
+		
+    	UserInfo userInfo = userInfoService.getUserInfo(userObj);
 		return userInfo;
     }
 	
 	@RequestMapping(value="/api/user/info", method=RequestMethod.POST)
 	@ResponseStatus(HttpStatus.OK)
     public void updateUserInfo(@RequestBody UserInfo userInfo) {
-		User user = userDetailsService.getPrincipal();
+		User user = userService.getPrincipal();
 		userInfo.setUser(user);
     	userInfoService.updateUserInfo(userInfo);
 		
@@ -44,7 +54,7 @@ public class UserInfoController {
 	@RequestMapping(value="/api/user/info/image", method=RequestMethod.GET)
 	@ResponseStatus(HttpStatus.OK)
     public @ResponseBody String getUserAvatar() {
-		User user = userDetailsService.getPrincipal();
+		User user = userService.getPrincipal();
 		UserInfo userInfo = user.getUserInfo();
 		if (userInfo == null) {
 			return null;
@@ -56,19 +66,13 @@ public class UserInfoController {
 	@RequestMapping(value="/api/user/info/image", method=RequestMethod.POST)
 	@ResponseStatus(HttpStatus.OK)
     public void updateUserAvatar(@RequestParam String avatar) {
-		User user = userDetailsService.getPrincipal();
+		User user = userService.getPrincipal();
 		UserInfo userInfo = user.getUserInfo(); 
 		userInfo.setAvatar(avatar);
 		userInfoService.updateUserInfo(userInfo);
 		
     }
 	
-	//TODO
-	@RequestMapping(value="/api/user/stats", method=RequestMethod.GET)
-	@ResponseStatus(HttpStatus.OK)
-    public UserStatistics getUserStats() {
-		User user = userDetailsService.getPrincipal();
-		return new UserStatistics(user);
-	}
+	
 	
 }

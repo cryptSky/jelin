@@ -21,12 +21,12 @@
 	<root level="info">
     	<appender-ref ref="FILE" />
 	</root>
-	<!-- <root level="error">
+	 <root level="error">
     	<appender-ref ref="FILE" />
-	</root> -->
-	<root level="debug">
+	</root>
+	<!-- <root level="debug">
     	<appender-ref ref="FILE" />
-	</root> 
+	</root> --> 
 	
 	
 </configuration>

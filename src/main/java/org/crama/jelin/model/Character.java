@@ -15,9 +15,11 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
 @Table(name = "game_character")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Character implements Serializable {
 	
 	private static final long serialVersionUID = -7100638025931949913L;
@@ -29,17 +31,17 @@ public class Character implements Serializable {
 	@Column(name="SPECIAL", nullable=false)
 	private boolean special;
 	
-	@Column(name="ACRONS", nullable=false)
-	private int acrons;
+	@Column(name="ACORNS", nullable=false)
+	private int acorns;
 	
-	@Column(name="GOLD_ACRONS", nullable=false)
-	private int goldAcrons;
+	@Column(name="GOLD_ACORNS", nullable=false)
+	private int goldAcorns;
 	
 	@Column(name="NAME", nullable=false)
 	private String name;
 	
 	@Column(name="DESCRIPTION", nullable=true)
-	private String description;
+	private String desc;
 	
 	@OneToMany(mappedBy = "character", fetch = FetchType.LAZY, cascade=CascadeType.ALL)
 	private List<ImageLayer> imageLayerList;
@@ -52,14 +54,14 @@ public class Character implements Serializable {
 		
 	}
 	
-	public Character(int id, boolean special, int acrons, int goldAcrons, String name, String description) {
+	public Character(int id, boolean special, int acorns, int goldAcorns, String name, String description) {
 		super();
 		this.id = id;
 		this.special = special;
-		this.acrons = acrons;
-		this.goldAcrons = goldAcrons;
+		this.acorns = acorns;
+		this.goldAcorns = goldAcorns;
 		this.name = name;
-		this.description = description;
+		this.desc = description;
 	}
 	
 	public int getId() {
@@ -74,17 +76,17 @@ public class Character implements Serializable {
 	public void setSpecial(boolean special) {
 		this.special = special;
 	}
-	public int getAcrons() {
-		return acrons;
+	public int getAcorns() {
+		return acorns;
 	}
-	public void setAcrons(int acrons) {
-		this.acrons = acrons;
+	public void setAcorns(int acorns) {
+		this.acorns = acorns;
 	}
-	public int getGoldAcrons() {
-		return goldAcrons;
+	public int getGoldAcorns() {
+		return goldAcorns;
 	}
-	public void setGoldAcrons(int goldAcrons) {
-		this.goldAcrons = goldAcrons;
+	public void setGoldAcorns(int goldAcorns) {
+		this.goldAcorns = goldAcorns;
 	}
 	public String getName() {
 		return name;
@@ -92,11 +94,13 @@ public class Character implements Serializable {
 	public void setName(String name) {
 		this.name = name;
 	}
-	public String getDescription() {
-		return description;
+
+	public String getDesc() {
+		return desc;
 	}
-	public void setDescription(String description) {
-		this.description = description;
+
+	public void setDesc(String desc) {
+		this.desc = desc;
 	}
 
 	public Set<User> getUserSet() {
@@ -117,8 +121,8 @@ public class Character implements Serializable {
 
 	@Override
 	public String toString() {
-		return "Character [id=" + id + ", special=" + special + ", acrons=" + acrons + ", goldAcrons=" + goldAcrons
-				+ ", name=" + name + ", description=" + description + ", userSet=" + userSet + "]";
+		return "Character [id=" + id + ", special=" + special + ", acorns=" + acorns + ", goldAcorns=" + goldAcorns
+				+ ", name=" + name + ", description=" + desc + ", userSet=" + userSet + "]";
 	}
 
 	@Override

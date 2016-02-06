@@ -6,11 +6,9 @@ import java.util.List;
 import org.crama.jelin.exception.GameException;
 import org.crama.jelin.exception.RestError;
 import org.crama.jelin.model.Category;
-import org.crama.jelin.model.Constants;
 import org.crama.jelin.model.Constants.GameState;
 import org.crama.jelin.model.Constants.Readiness;
 import org.crama.jelin.model.Constants.UserType;
-import org.crama.jelin.model.Difficulty;
 import org.crama.jelin.model.Game;
 import org.crama.jelin.model.GameRound;
 import org.crama.jelin.model.Question;
@@ -21,7 +19,8 @@ import org.crama.jelin.service.CategoryService;
 import org.crama.jelin.service.GameInitService;
 import org.crama.jelin.service.GameService;
 import org.crama.jelin.service.OfflinePlayerChecker;
-import org.crama.jelin.service.UserDetailsServiceImpl;
+import org.crama.jelin.service.UserService;
+import org.crama.jelin.service.UserStatisticsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +48,10 @@ public class GameController {
 	private CategoryService categoryService;
 
 	@Autowired
-	private UserDetailsServiceImpl userDetailsService;
+	private UserService userService;
+	
+	@Autowired
+	private UserStatisticsService userStatisticsService;
 	
 	@Autowired
 	private OfflinePlayerChecker offlinePlayerChecker;
@@ -57,7 +59,7 @@ public class GameController {
 	@RequestMapping(value="/api/game/start", method=RequestMethod.POST)
 	@ResponseStatus(HttpStatus.OK)
     public boolean startGame() throws GameException {
-		User creator = userDetailsService.getPrincipal();
+		User creator = userService.getPrincipal();
 		        
         Game game = gameInitService.getCreatedGame(creator);
         if (game == null)
@@ -74,7 +76,7 @@ public class GameController {
 	@RequestMapping(value="/api/game/host", method=RequestMethod.POST)
 	@ResponseStatus(HttpStatus.OK)
     public boolean checkHost() throws GameException {
-		User player = userDetailsService.getPrincipal();
+		User player = userService.getPrincipal();
 		        
         Game game = gameInitService.getGame(player, GameState.IN_PROGRESS);
         if (game == null)
@@ -101,7 +103,7 @@ public class GameController {
 	@ResponseStatus(HttpStatus.OK)
     public String getReadiness() throws GameException {
 		
-		User player = userDetailsService.getPrincipal();
+		User player = userService.getPrincipal();
 		
 		Game game = gameInitService.getGame(player, GameState.IN_PROGRESS);
 		
@@ -124,7 +126,7 @@ public class GameController {
 	@RequestMapping(value="/api/game/categories", method=RequestMethod.GET)
 	@ResponseStatus(HttpStatus.OK)
 	public @ResponseBody List<Category> getGameCategories() throws GameException {
-		User player = userDetailsService.getPrincipal();
+		User player = userService.getPrincipal();
 		
 		Game game = gameInitService.getGame(player, GameState.IN_PROGRESS);
 		
@@ -163,7 +165,7 @@ public class GameController {
 	@RequestMapping(value="/api/game/category", method=RequestMethod.POST)
 	@ResponseStatus(HttpStatus.OK)
 	public void saveRoundCategory(@RequestParam int category) throws GameException {
-		User player = userDetailsService.getPrincipal();
+		User player = userService.getPrincipal();
 		
 		Game game = gameInitService.getGame(player, GameState.IN_PROGRESS);
 		
@@ -194,7 +196,7 @@ public class GameController {
 	@RequestMapping(value="/api/game/question", method=RequestMethod.GET, 
 			produces={"application/json; charset=UTF-8"})
 	public @ResponseBody Question getNextQuestion() throws GameException {
-		User player = userDetailsService.getPrincipal();
+		User player = userService.getPrincipal();
         
         Game game = gameInitService.getGame(player, GameState.IN_PROGRESS);
         if (game == null)
@@ -237,7 +239,7 @@ public class GameController {
 	
 	@RequestMapping(value="/api/game/answer", method=RequestMethod.POST)
 	public void answer(@RequestParam int variant, @RequestParam int time) throws GameException {
-		User player = userDetailsService.getPrincipal();
+		User player = userService.getPrincipal();
         
 		Game game = gameInitService.getGame(player, GameState.IN_PROGRESS);
         if (game == null)
@@ -281,7 +283,7 @@ public class GameController {
 	@RequestMapping(value="/api/game/results", method=RequestMethod.POST, 
 			produces={"application/json; charset=UTF-8"})
 	public @ResponseBody List<QuestionResult> getQuestionResult() throws GameException {
-		User player = userDetailsService.getPrincipal();
+		User player = userService.getPrincipal();
         
 		Game game = gameInitService.getGame(player, GameState.IN_PROGRESS);
         if (game == null)
@@ -300,7 +302,7 @@ public class GameController {
 		
         GameRound round = game.getRound();
         
-        round.setHumanAnswerCount(round.getHumanAnswerCount()+1);
+        round.setHumanAnswerCount(round.getHumanAnswerCount() + 1);
     	gameService.updateGameRound(round);
         
         List<QuestionResult> result = gameService.getPersonalResults(game, player);
@@ -347,7 +349,7 @@ public class GameController {
 	
 	@RequestMapping(value="/api/game/summary", method=RequestMethod.POST)
 	public @ResponseBody List<ScoreSummary> getScoreSummary() throws GameException {
-		User player = userDetailsService.getPrincipal();
+		User player = userService.getPrincipal();
         
 		Game game = gameInitService.getGame(player, GameState.IN_PROGRESS);
         if (game == null)
@@ -365,13 +367,14 @@ public class GameController {
         }
         
         List<ScoreSummary> summaries = gameService.getScoreSummary(game);
+        userStatisticsService.saveGameSummaryStats(summaries);
         
         return summaries;
 	}
 	
 	@RequestMapping(value="/api/game/close", method=RequestMethod.POST)
 	public void closeGame() throws GameException {
-		User creator = userDetailsService.getPrincipal();
+		User creator = userService.getPrincipal();
 		Game game = gameInitService.getGame(creator, null);
 		
 		gameInitService.checkGameCreated(game);

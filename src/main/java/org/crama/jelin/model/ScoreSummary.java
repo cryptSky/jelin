@@ -17,7 +17,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "score_summary")
-public class ScoreSummary implements Serializable {
+public class ScoreSummary implements Serializable, Comparable<ScoreSummary> {
 
 	private static final long serialVersionUID = -4895732224356779322L;
 	
@@ -93,5 +93,11 @@ public class ScoreSummary implements Serializable {
 
 	public void setAcrons(int acrons) {
 		this.acrons = acrons;
+	}
+
+	@Override
+	public int compareTo(ScoreSummary o) {
+		
+		return this.score - o.score;
 	}
 }

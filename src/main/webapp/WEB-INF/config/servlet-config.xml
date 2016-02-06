@@ -19,6 +19,8 @@
     			   location="/avatar/"/>
     <mvc:resources mapping="/images/**"
     			   location="/images/"/>
+    <mvc:resources mapping="/bonus/**"
+    			   location="/bonus/"/>
 				   
 	<bean class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
 		<property name="order" value="0"/>
@@ -50,6 +52,13 @@
 	<bean id="messageSource"
 		class="org.springframework.context.support.ResourceBundleMessageSource">
 		<property name="basename" value="error-messages" />
+	</bean>
+	
+	<bean 
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="location">
+			<value>/WEB-INF/classes/social.properties</value>
+		</property>
 	</bean>
 		
 </beans>

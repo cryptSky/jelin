@@ -44,4 +44,6 @@ public interface UserRepository {
 
 	void updateNetStatus(User user, NetStatus s);
 
+	User getByEmailAddress(String email);
+
 }

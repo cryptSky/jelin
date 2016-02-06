@@ -27,7 +27,7 @@ public class Group  implements Serializable {
 	private String name;
 	
 	@Column(name="DESCRIPTION", nullable=true)
-	private String description;
+	private String desc;
 	
 	public Group() {}
 	
@@ -35,7 +35,7 @@ public class Group  implements Serializable {
 		super();
 		this.id = id;
 		this.name = name;
-		this.description = description;
+		this.desc = description;
 	}
 
 	public int getId() {
@@ -54,24 +54,25 @@ public class Group  implements Serializable {
 		this.name = name;
 	}
 
-	public String getDescription() {
-		return description;
+	
+	public String getDesc() {
+		return desc;
 	}
 
-	public void setDescription(String description) {
-		this.description = description;
+	public void setDesc(String desc) {
+		this.desc = desc;
 	}
 
 	@Override
 	public String toString() {
-		return "Group [id=" + id + ", name=" + name + ", description=" + description + "]";
+		return "Group [id=" + id + ", name=" + name + ", description=" + desc + "]";
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((description == null) ? 0 : description.hashCode());
+		result = prime * result + ((desc == null) ? 0 : desc.hashCode());
 		result = prime * result + id;
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		return result;
@@ -86,10 +87,10 @@ public class Group  implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		Group other = (Group) obj;
-		if (description == null) {
-			if (other.description != null)
+		if (desc == null) {
+			if (other.desc != null)
 				return false;
-		} else if (!description.equals(other.description))
+		} else if (!desc.equals(other.desc))
 			return false;
 		if (id != other.id)
 			return false;

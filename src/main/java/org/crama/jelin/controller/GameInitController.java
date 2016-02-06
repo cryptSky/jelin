@@ -18,7 +18,7 @@ import org.crama.jelin.service.CategoryService;
 import org.crama.jelin.service.DifficultyService;
 import org.crama.jelin.service.GameInitService;
 import org.crama.jelin.service.OpponentSearchService;
-import org.crama.jelin.service.UserDetailsServiceImpl;
+import org.crama.jelin.service.UserActivityService;
 import org.crama.jelin.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,16 +45,18 @@ public class GameInitController {
 	private DifficultyService difficultyService;
 	@Autowired
 	private UserService userService;
-	@Autowired
-	private UserDetailsServiceImpl userDetailsService;
+	
 	@Autowired
 	private OpponentSearchService opponentSearchService;
-		
+
+	@Autowired
+	private UserActivityService userActivityService;
+	
 	@RequestMapping(value="/api/game", method=RequestMethod.PUT, params={"theme", "random"})
 	@ResponseStatus(HttpStatus.CREATED)
     public boolean setTheme(@RequestParam int theme, @RequestParam(required = false) boolean random) throws GameException {
 		   
-        User creator = userDetailsService.getPrincipal();
+        User creator = userService.getPrincipal();
         
         Category category = categoryService.getThemeById(theme);
         
@@ -92,7 +94,7 @@ public class GameInitController {
 	@ResponseStatus(HttpStatus.OK)
     public boolean updateDifficulty(@RequestParam int difficulty) throws GameException {
 		Difficulty diff = difficultyService.getDifficultyById(difficulty);
-		User creator = userDetailsService.getPrincipal();
+		User creator = userService.getPrincipal();
 		    
         //user is not null
         userService.checkUserAuthorized(creator);
@@ -123,7 +125,7 @@ public class GameInitController {
 	@RequestMapping(value = "/api/game/opponents", method = RequestMethod.GET)
 	public Set<UserJson> getOpponents() throws GameException {
 		
-		User user = userDetailsService.getPrincipal();
+		User user = userService.getPrincipal();
 		Game game = gameInitService.getGame(user, null);
 		
 		if (game == null) {
@@ -150,12 +152,6 @@ public class GameInitController {
 		gameInitService.checkGameRandom(game);
 		
 		
-		/*if (!userService.checkUserStatusIsEquals(creator, ProcessStatus.CALLING)) {
-        	//user is in process status free 
-	        throw new GameException(102, "User should be in status " + ProcessStatus.CALLING + " to get opponents. "
-	    			+ "User is in status: " + creator.getProcessStatus());
-        }*/
-		
 		Set<UserJson> opponents = gameInitService.getGameOpponents(game);
 		return opponents;
 	}
@@ -163,7 +159,7 @@ public class GameInitController {
 	@RequestMapping(value = "/api/game/opponents/kick", method = RequestMethod.POST)
 	public void removeOpponent(@RequestParam int user) throws GameException {
 		
-		User creator = userDetailsService.getPrincipal();
+		User creator = userService.getPrincipal();
 		Game game = gameInitService.getCreatedGame(creator);
 		
 		System.out.println(creator);
@@ -189,14 +185,16 @@ public class GameInitController {
 	}
 	@RequestMapping(value = "/api/game/userGameState", method = RequestMethod.GET)
 	public @ResponseBody String getUserGameStatus() {
-		User creator = userDetailsService.getPrincipal();
+
+		User creator = userService.getPrincipal();		
 		return creator.getProcessStatus().toString();
+
 	}
 	
 	@RequestMapping(value = "/api/game/invite", method = RequestMethod.POST, params={"user"})
 	public @ResponseBody String inviteUser(@RequestParam int user) throws GameException {
 		
-		User creator = userDetailsService.getPrincipal();
+		User creator = userService.getPrincipal();
 		Game game = gameInitService.getCreatedGame(creator);
 		
 		if (creator.getChoosenCharacter() == null) {
@@ -217,6 +215,10 @@ public class GameInitController {
 		gameInitService.checkNumOfOpponents(game);
 		
 		User opponent = userService.getUser(user);
+		//check if opponent exist
+		if (opponent == null) {
+			throw new GameException(103, "There is no user with id: " + opponent);
+		}
 		//5. check opponent net status is online or shadow
 		if (opponent.getNetStatus().equals(NetStatus.OFFLINE)) {
 			throw new GameException(103, "Opponent is OFFLINE");
@@ -228,16 +230,18 @@ public class GameInitController {
 	    			+ "Current status: " + opponent.getProcessStatus());
 		}
 		
-			
 		//invite user
 		InviteStatus inviteStatus = gameInitService.inviteUser(game, creator, opponent, false);
+		User opponentAfterInvite = userService.getUser(user);
+		userActivityService.saveInvite(opponentAfterInvite, inviteStatus);
 		return inviteStatus.toString();
+
 	}
 	
 	
 	@RequestMapping(value = "/api/game/invite/wait", method = RequestMethod.GET)
 	public boolean checkInviteStatus() throws GameException {
-		User user = userDetailsService.getPrincipal();
+		User user = userService.getPrincipal();
 		Game game = gameInitService.getCreatedGame(user);
 		
 		gameInitService.checkGameCreated(game);
@@ -250,7 +254,7 @@ public class GameInitController {
 	
 	@RequestMapping(value = "/api/game/invite", method = RequestMethod.GET)
 	public @ResponseBody Game getInvite() throws GameException {
-		User user = userDetailsService.getPrincipal();
+		User user = userService.getPrincipal();
 		System.out.println(user.getUsername());
 		//1. check if user state is inviting
 		if (!user.getProcessStatus().equals(ProcessStatus.INVITING)) {
@@ -266,7 +270,7 @@ public class GameInitController {
 	
 	@RequestMapping(value = "/api/game/invite/confirm", method = RequestMethod.POST)
 	public void confirmInvite() throws GameException {
-		User user = userDetailsService.getPrincipal();
+		User user = userService.getPrincipal();
 		Game game = gameInitService.getInviteGame(user);
 	
 		
@@ -295,7 +299,7 @@ public class GameInitController {
 	
 	@RequestMapping(value = "/api/game/invite/refuse", method = RequestMethod.POST)
 	public void refuseInvite() throws GameException {
-		User user = userDetailsService.getPrincipal();
+		User user = userService.getPrincipal();
 		Game game = gameInitService.getInviteGame(user);
 		
 		//1. check if user state is inviting
@@ -325,7 +329,7 @@ public class GameInitController {
 
 	public @ResponseBody String inviteRandomUser() throws GameException {
 
-		User creator = userDetailsService.getPrincipal();
+		User creator = userService.getPrincipal();
 		Game game = gameInitService.getCreatedGame(creator);
 		
 		if (game.getGameOpponents().size() == 3)

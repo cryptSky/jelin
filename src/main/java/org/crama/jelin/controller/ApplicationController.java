@@ -4,7 +4,7 @@ import org.crama.jelin.exception.ApplicationException;
 import org.crama.jelin.model.Constants.Language;
 import org.crama.jelin.model.User;
 import org.crama.jelin.model.UserSession;
-import org.crama.jelin.service.UserDetailsServiceImpl;
+import org.crama.jelin.service.UserService;
 import org.crama.jelin.service.UserSessionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,14 +21,14 @@ public class ApplicationController {
 	private UserSessionService userSessionService;
 	
 	@Autowired
-	private UserDetailsServiceImpl userDetailsService;
+	private UserService userService;
 	
 	@RequestMapping(value="/api/session", method=RequestMethod.POST)
 	@ResponseStatus(HttpStatus.OK)
 
 	public void setUpSession(@RequestParam int language, @RequestParam String deviceToken) throws ApplicationException
 	{
-		User currentUser = userDetailsService.getPrincipal();
+		User currentUser = userService.getPrincipal();
 		if (!Language.isMember(language))
 		{
 			throw new ApplicationException(100, String.format("Language with id = %d  is not supported by application. "

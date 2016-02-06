@@ -48,7 +48,7 @@ public class User implements Serializable {
 	@Column(name="USERNAME", nullable=false, unique=true)
 	private String username;
 	
-	@Column(name="EMAIL", nullable=false, unique=true)
+	@Column(name="EMAIL", nullable=true, unique=true)
 	private String email;
 	
 	@JsonIgnore
@@ -78,6 +78,7 @@ public class User implements Serializable {
     })
 	private Set<Character> characterSet = new HashSet<Character>();
 	
+	
 	@JsonIgnore
 	@ManyToOne(cascade=CascadeType.ALL, fetch = FetchType.EAGER) 
 	@JoinColumn(name = "CHARACTER_ID", nullable = true)
@@ -88,17 +89,14 @@ public class User implements Serializable {
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date lastGameTime;
 	
-	/*@JsonIgnore
-	@Column(name = "ACORNS")
-	private int acorns;
 	
 	@JsonIgnore
-	@Column(name = "GOLD_ACORNS")
-	private int goldAcorns;*/
-	
-	@JsonIgnore
-	@OneToMany(cascade=CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "user") 
+	@OneToMany(cascade=CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "user") 
 	private List<UserEnhancer> enhancerList = new ArrayList<UserEnhancer>();
+	
+	@JsonIgnore
+	@OneToMany(cascade=CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "user") 
+	private List<UserBonus> bonusList = new ArrayList<UserBonus>();
 	
 	@JsonIgnore
 	@OneToOne(mappedBy = "user", fetch = FetchType.LAZY, cascade=CascadeType.ALL)  
@@ -107,6 +105,14 @@ public class User implements Serializable {
 	@JsonIgnore
 	@OneToOne(mappedBy = "user", fetch = FetchType.LAZY, cascade=CascadeType.ALL)  
 	private UserStatistics userStatistics;
+	
+	@JsonIgnore
+	@OneToOne(mappedBy = "user", fetch = FetchType.LAZY, cascade=CascadeType.ALL)  
+	private UserDailyStats userDailyStats;
+	
+	@JsonIgnore
+	@OneToOne(mappedBy = "user", fetch = FetchType.LAZY, cascade=CascadeType.ALL)  
+	private UserActivity userActivity;
 	
 	@JsonIgnore
 	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -119,7 +125,22 @@ public class User implements Serializable {
     })
 	private Set<User> friendList = new HashSet<User>();
 	
+	@JsonIgnore
+	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JoinTable(name = "user_group", 
+    joinColumns = { 
+           @JoinColumn(name = "USER_ID")
+    }, 
+    inverseJoinColumns = { 
+           @JoinColumn(name = "GROUP_ID")
+    })
+	private Set<Group> groupSet = new HashSet<Group>();
 	
+	@JsonIgnore
+	@Temporal(TemporalType.DATE)
+	@Column(name = "REGISTER_DATE", nullable = false)
+	private Date registerDate;
+
 	
 	public User() {}
 	
@@ -127,10 +148,8 @@ public class User implements Serializable {
 		super();
 		this.username = username;
 		this.email = email;
-		this.userStatistics = new UserStatistics();
-		this.userStatistics.setUser(this);
-		this.userInfo = new UserInfo();
-		this.userInfo.setUser(this);
+		setCommon();
+		
 	}
 	
 	public User(int id, String username, String email) {
@@ -138,10 +157,31 @@ public class User implements Serializable {
 		this.id = id;
 		this.username = username;
 		this.email = email;
+		setCommon();
+		
+	}
+
+	public User(SocialUser socialUser) {
+		super();
+		this.username = socialUser.getFirstName() + socialUser.getLastName();
+		this.email = socialUser.getEmail();
+		setCommon();
+		
+	}
+	
+	
+	private void setCommon() {
+		this.userActivity = new UserActivity();
+		this.userActivity.setUser(this);
+		this.userDailyStats = new UserDailyStats();
+		this.userDailyStats.setUser(this);
 		this.userStatistics = new UserStatistics();
 		this.userStatistics.setUser(this);
 		this.userInfo = new UserInfo();
 		this.userInfo.setUser(this);
+		this.type = UserType.HUMAN;
+		this.netStatus = NetStatus.ONLINE;
+		this.processStatus = ProcessStatus.FREE;
 	}
 
 	public int getId() {
@@ -220,22 +260,6 @@ public class User implements Serializable {
 		this.lastGameTime = lastGameTime;
 	}
 	
-	/*public int getAcorns() {
-		return acorns;
-	}
-
-	public void setAcorns(int acorns) {
-		this.acorns = acorns;
-	}
-
-	public int getGoldAcorns() {
-		return goldAcorns;
-	}
-
-	public void setGoldAcorns(int goldAcorns) {
-		this.goldAcorns = goldAcorns;
-	}
-*/
 	public List<UserEnhancer> getEnhancerList() {
 		return enhancerList;
 	}
@@ -266,6 +290,46 @@ public class User implements Serializable {
 
 	public void setUserStatistics(UserStatistics userStatistics) {
 		this.userStatistics = userStatistics;
+	}
+
+	public UserDailyStats getUserDailyStats() {
+		return userDailyStats;
+	}
+
+	public void setUserDailyStats(UserDailyStats userDailyStats) {
+		this.userDailyStats = userDailyStats;
+	}
+
+	public List<UserBonus> getBonusList() {
+		return bonusList;
+	}
+
+	public void setBonusList(List<UserBonus> bonusList) {
+		this.bonusList = bonusList;
+	}
+
+	public UserActivity getUserActivity() {
+		return userActivity;
+	}
+
+	public void setUserActivity(UserActivity userActivity) {
+		this.userActivity = userActivity;
+	}
+
+	public Set<Group> getGroupSet() {
+		return groupSet;
+	}
+
+	public void setGroupSet(Set<Group> groupSet) {
+		this.groupSet = groupSet;
+	}
+
+	public Date getRegisterDate() {
+		return registerDate;
+	}
+
+	public void setRegisterDate(Date registerDate) {
+		this.registerDate = registerDate;
 	}
 
 	@Override
