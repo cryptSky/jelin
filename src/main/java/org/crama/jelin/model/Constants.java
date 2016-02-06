@@ -1,10 +1,12 @@
 package org.crama.jelin.model;
 
+import java.io.File;
 import java.time.LocalDate;
 import java.time.Month;
 
 public class Constants {
 	
+	//----settings-------
 	public static final String SHORT_GAME_NAME = "Jelin";
 	public static final String SITE_URL = "jelin.ru";
 	public static final String EMAIL = "vitalii.oleksiv@gmail.com";
@@ -13,9 +15,22 @@ public class Constants {
 	public static final LocalDate  EARLY_SIGNUP_END_DATE = LocalDate.of(2016, Month.MARCH, 1);
 	
 	public static final int QUESTION_NUMBER = 3;
+	//----settings-------
+	
+	
 	public static final String BUNDLE_ID = "com.nt.Jelin"; 
 	public static final String P12_PASSWORD = "p124zI78KlmP";
-		
+	
+	public static final String IMAGE_PATH = "avatar" + File.separator + "users" + File.separator;
+	
+	//social constants
+	public static final String GRAPH_URL = "https://graph.facebook.com/";
+	public static final String FACEBOOK_CLIENT_ID = "1693231397627775";
+	public static final String FACEBOOK_CLIENT_SECRET = "14d827d37c58cbb0aebc518bfc26dd8f";
+	public static final String TWITTER_CLIENT_ID = "a9jCAcsujg0WMxCEFo8j5l9xq";
+	public static final String TWITTER_CLIENT_SECRET = "OcqIAGVmNKp8t94g6OutorDvcqn1lfM9bfkUEKLnzWwmyC9Nyx";
+	public static final String VK_URL = "https://api.vk.com/method/users.get";
+	
 	public enum UserType {
 		HUMAN(0),
 		BOT(1);

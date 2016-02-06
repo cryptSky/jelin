@@ -84,6 +84,9 @@ public class UserServiceImpl implements UserService {
 			newUser.setProcessStatus(ProcessStatus.FREE);
 			newUser.setRegisterDate(new Date());
 			userRepository.saveUser(newUser);
+			
+			mailService.sendRegistrationEmail(newUser);
+			
 			return true;
 		}
 		else {
