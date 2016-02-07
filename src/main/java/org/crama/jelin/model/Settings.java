@@ -33,22 +33,25 @@ public class Settings {
 	private String url;
 	
 	@Column(name = "INVITE_TIMEOUT", nullable = false)
-	private String inviteTimeout;
+	private int inviteTimeout;
+	
+	@Column(name = "INVITE_CHECK_TIMEOUT", nullable = false)
+	private int inviteCheckTimeout;
 	
 	@Column(name = "NEXT_INVITE_ACTIVE_TIMEOUT", nullable = false)
-	private String nextInviteActiveTimeout;
+	private int nextInviteActiveTimeout;
 	
 	@Column(name = "NEXT_INVITE_SHADOW_TIMEOUT", nullable = false)
-	private String nextInviteShadowTimeout;
+	private int nextInviteShadowTimeout;
 	
 	@Column(name = "CATEGORY_TIMEOUT", nullable = false)
-	private String categoryTimeout;
+	private int categoryTimeout;
 	
 	@Column(name = "ROUND_NUMBER", nullable = false)
-	private String roundNumber;
+	private int roundNumber;
 	
 	@Column(name = "QUESTION_NUMBER", nullable = false)
-	private String questionNumber;
+	private int questionNumber;
 	
 	@Temporal(TemporalType.DATE)
 	@Column(name = "START_REGISTER_DATE", nullable = false)
@@ -114,55 +117,60 @@ public class Settings {
 		this.url = url;
 	}
 
-	public String getInviteTimeout() {
+	public int getInviteTimeout() {
 		return inviteTimeout;
 	}
 
-	public void setInviteTimeout(String inviteTimeout) {
+	public void setInviteTimeout(int inviteTimeout) {
 		this.inviteTimeout = inviteTimeout;
 	}
 
-	public String getNextInviteActiveTimeout() {
+	public int getInviteCheckTimeout() {
+		return inviteCheckTimeout;
+	}
+
+	public void setInviteCheckTimeout(int inviteCheckTimeout) {
+		this.inviteCheckTimeout = inviteCheckTimeout;
+	}
+
+	public int getNextInviteActiveTimeout() {
 		return nextInviteActiveTimeout;
 	}
 
-	public void setNextInviteActiveTimeout(String nextInviteActiveTimeout) {
+	public void setNextInviteActiveTimeout(int nextInviteActiveTimeout) {
 		this.nextInviteActiveTimeout = nextInviteActiveTimeout;
 	}
 
-	public String getNextInviteShadowTimeout() {
+	public int getNextInviteShadowTimeout() {
 		return nextInviteShadowTimeout;
 	}
 
-	public void setNextInviteShadowTimeout(String nextInviteShadowTimeout) {
+	public void setNextInviteShadowTimeout(int nextInviteShadowTimeout) {
 		this.nextInviteShadowTimeout = nextInviteShadowTimeout;
 	}
 
-	public String getCategoryTimeout() {
+	public int getCategoryTimeout() {
 		return categoryTimeout;
 	}
 
-	public void setCategoryTimeout(String categoryTimeout) {
+	public void setCategoryTimeout(int categoryTimeout) {
 		this.categoryTimeout = categoryTimeout;
 	}
 
-	public String getRoundNumber() {
+	public int getRoundNumber() {
 		return roundNumber;
 	}
 
-	public void setRoundNumber(String roundNumber) {
+	public void setRoundNumber(int roundNumber) {
 		this.roundNumber = roundNumber;
 	}
 
-	public String getQuestionNumber() {
+	public int getQuestionNumber() {
 		return questionNumber;
 	}
 
-	public void setQuestionNumber(String questionNumber) {
+	public void setQuestionNumber(int questionNumber) {
 		this.questionNumber = questionNumber;
 	}
-	
-	
-	
-	
+
 }

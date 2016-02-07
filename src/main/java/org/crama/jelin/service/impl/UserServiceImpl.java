@@ -9,6 +9,7 @@ import org.crama.jelin.model.Constants.ProcessStatus;
 import org.crama.jelin.model.Constants.UserType;
 import org.crama.jelin.model.Game;
 import org.crama.jelin.model.GameBot;
+import org.crama.jelin.model.Settings;
 import org.crama.jelin.model.User;
 import org.crama.jelin.model.UserActivity;
 import org.crama.jelin.model.UserDailyStats;
@@ -16,9 +17,9 @@ import org.crama.jelin.model.UserInfo;
 import org.crama.jelin.model.UserModel;
 import org.crama.jelin.model.UserRole;
 import org.crama.jelin.model.UserStatistics;
-import org.crama.jelin.repository.SocialUserRepository;
 import org.crama.jelin.repository.UserRepository;
 import org.crama.jelin.service.MailService;
+import org.crama.jelin.service.SettingsService;
 import org.crama.jelin.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -36,7 +37,8 @@ public class UserServiceImpl implements UserService {
 	private MailService mailService;
 	
 	@Autowired
-	private SocialUserRepository socialUserRepository;
+	private SettingsService settingsService;
+	
 	
 	@Override
 	public UserModel getUserModel(String username) {
@@ -85,7 +87,8 @@ public class UserServiceImpl implements UserService {
 			newUser.setRegisterDate(new Date());
 			userRepository.saveUser(newUser);
 			
-			mailService.sendRegistrationEmail(newUser);
+			Settings settings = settingsService.getSettings();
+			mailService.sendRegistrationEmail(newUser, settings);
 			
 			return true;
 		}
@@ -261,8 +264,8 @@ public class UserServiceImpl implements UserService {
 				throw new GameException(103, "User with given username or email is not registered");
 			}
 		}
-		
-		mailService.remindPassword(userModel);
+		Settings settings = settingsService.getSettings();
+		mailService.remindPassword(userModel, settings);
 		
 	}
 	

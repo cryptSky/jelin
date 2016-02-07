@@ -1,5 +1,7 @@
 package org.crama.jelin.service.impl;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -8,17 +10,20 @@ import org.crama.jelin.exception.GameException;
 import org.crama.jelin.model.Category;
 import org.crama.jelin.model.Constants.GameState;
 import org.crama.jelin.model.Constants.InviteStatus;
-import org.crama.jelin.model.Constants.NotificationType;
+import org.crama.jelin.model.Constants.NetStatus;
 import org.crama.jelin.model.Constants.ProcessStatus;
 import org.crama.jelin.model.Difficulty;
 import org.crama.jelin.model.Game;
 import org.crama.jelin.model.GameOpponent;
+import org.crama.jelin.model.Settings;
 import org.crama.jelin.model.User;
 import org.crama.jelin.model.json.UserJson;
 import org.crama.jelin.repository.GameInitRepository;
 import org.crama.jelin.repository.UserRepository;
 import org.crama.jelin.service.GameInitService;
+import org.crama.jelin.service.SettingsService;
 import org.crama.jelin.service.UserService;
+import org.crama.jelin.util.DateConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,16 +32,19 @@ public class GameInitServiceImpl implements GameInitService {
 
 	@Autowired
 	private GameInitRepository gameInitRepository;
+	
 	@Autowired
 	private UserRepository userRepository;
+	
 	@Autowired
 	private UserService userService;
+	
+	@Autowired
+	private SettingsService settingsService;
+	
 	// @Autowired
 	// private PushNotificationService pushNotificationService;
 		
-	//TODO get it out from here and change to 8 and 2
-	public static final int TIMEOUT = 20;
-	public static final int CHECK_TIMEOUT = 5;
 	
 	
 	@Override
@@ -162,13 +170,16 @@ public class GameInitServiceImpl implements GameInitService {
 		
 		Game updatedGame = null;
 		
+		Settings settings = settingsService.getSettings();
+		
 		boolean invitationHandled = false;
-		int numOfChecks = TIMEOUT / CHECK_TIMEOUT;
+		int inviteCheckTimeout = settings.getInviteCheckTimeout();
+		int numOfChecks = settings.getInviteTimeout() / inviteCheckTimeout;
 		for (int i = 0; i < numOfChecks; i++) {
 			// check status every CHECK_TIMEOUT seconds
 			try {
 				//1000 milliseconds is one second
-			    Thread.sleep(1000 * CHECK_TIMEOUT);                 
+			    Thread.sleep(1000 * inviteCheckTimeout);                 
 			} catch(InterruptedException ex) {
 				System.out.println("Interrupted Exception");
 			    Thread.currentThread().interrupt();
@@ -379,6 +390,45 @@ public class GameInitServiceImpl implements GameInitService {
 		else {
 			return gameInitRepository.getGame(creator, state);
 		}
+	}
+
+	@Override
+	public boolean checkLastRejectTime(User opponent) {
+		
+		InviteStatus lastResponse = opponent.getUserActivity().getLastInviteResponse();
+		if (lastResponse.equals(InviteStatus.ACCEPTED)) {
+			return true;
+		}
+		
+		Date lastInviteDate = opponent.getUserActivity().getLastInvite();
+		
+		if (lastInviteDate == null) {
+			return true;
+		}
+		
+		LocalDateTime lastInviteLocalTime = DateConverter.toLocalDateTime(lastInviteDate); 
+		
+		Settings settings = settingsService.getSettings();
+		
+		NetStatus opponentStatus = opponent.getNetStatus();
+		int timeoutMin = 0;
+		if (opponentStatus.equals(NetStatus.ONLINE)) {
+			timeoutMin = settings.getNextInviteActiveTimeout();
+		}
+		else if (opponentStatus.equals(NetStatus.SHADOW)) {
+			timeoutMin = settings.getNextInviteShadowTimeout();
+		}
+		
+		LocalDateTime now = LocalDateTime.now();
+		long minutes = lastInviteLocalTime.until(now, ChronoUnit.MINUTES);
+		System.out.println("minutes since last invite: " + minutes + ", timeoutMin: " + timeoutMin);
+		if (minutes < timeoutMin) {
+			return false;
+		}
+		else {
+			return true;
+		}
+		
 	}
 	
 }

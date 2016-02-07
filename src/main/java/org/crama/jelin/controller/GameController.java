@@ -14,10 +14,12 @@ import org.crama.jelin.model.GameRound;
 import org.crama.jelin.model.Question;
 import org.crama.jelin.model.QuestionResult;
 import org.crama.jelin.model.ScoreSummary;
+import org.crama.jelin.model.Settings;
 import org.crama.jelin.model.User;
 import org.crama.jelin.service.CategoryService;
 import org.crama.jelin.service.GameInitService;
 import org.crama.jelin.service.GameService;
+import org.crama.jelin.service.SettingsService;
 import org.crama.jelin.service.UserService;
 import org.crama.jelin.service.UserStatisticsService;
 import org.slf4j.Logger;
@@ -51,6 +53,9 @@ public class GameController {
 	
 	@Autowired
 	private UserStatisticsService userStatisticsService;
+	
+	@Autowired
+	private SettingsService settingsService;
 	
 	@RequestMapping(value="/api/game/start", method=RequestMethod.POST)
 	@ResponseStatus(HttpStatus.OK)
@@ -143,24 +148,21 @@ public class GameController {
         	throw new GameException(514, "Game Readiness is: " + game.getReadiness().toString() + ". Should be: CATEGORY");
         }
         
-        /*//if player is bot
-        if (player.getType().equals(UserType.BOT)) {
-        	
+       
+        Category theme = game.getTheme();
+        List<Category> categories = categoryService.getAllCategoriesFromThemes(theme.getId());
+        if (categories.size() == 1) {
+        	gameService.saveRoundCategory(game, categories.get(0));
+        	return new ArrayList<Category>();
         }
-        else {*/
-	        Category theme = game.getTheme();
-	        List<Category> categories = categoryService.getAllCategoriesFromThemes(theme.getId());
-	        if (categories.size() == 1) {
-	        	gameService.saveRoundCategory(game, categories.get(0));
-	        	return new ArrayList<Category>();
-	        }
-	        return categories;
-        //}
+        return categories;
+        
 	}
 	
+	//TODO update api doc: choose random category if category id is not present  
 	@RequestMapping(value="/api/game/category", method=RequestMethod.POST)
 	@ResponseStatus(HttpStatus.OK)
-	public void saveRoundCategory(@RequestParam int category) throws GameException {
+	public void saveRoundCategory(@RequestParam(required = false) Integer category) throws GameException {
 		User player = userService.getPrincipal();
 		
 		Game game = gameInitService.getGame(player, GameState.IN_PROGRESS);
@@ -181,9 +183,20 @@ public class GameController {
         	throw new GameException(515, "Game Readiness is: " + game.getReadiness().toString() + ". Should be: CATEGORY");
         }
         
-        Category categoryObj = categoryService.getCategoryById(category);
-        
-        gameService.saveRoundCategory(game, categoryObj);
+        //choose random category
+        if (category == null) {
+        	gameService.setRandomCategory(game);
+        	
+        }
+        else { 
+	        Category categoryObj = categoryService.getCategoryById(category);
+	        
+	        if (categoryObj == null) {
+	        	throw new GameException(515, "Category with given id is not exist");
+	        }
+	        
+	        gameService.saveRoundCategory(game, categoryObj);
+        }
         
 	}
 
@@ -260,7 +273,8 @@ public class GameController {
         	gameService.processBotsAnswers(game);
         	
         	int questionNumber = round.getQuestionNumber(player) - 1;
-        	Question question = round.getQuestion(questionNumber);
+        	Settings settings = settingsService.getSettings();
+        	Question question = round.getQuestion(questionNumber, settings.getQuestionNumber());
         	
         	gameService.finishQuestionStep(round, question);
         	
@@ -301,12 +315,13 @@ public class GameController {
         
         List<QuestionResult> result = gameService.getPersonalResults(game, player);
         
+        Settings settings = settingsService.getSettings();
         // if all humans already called /api/game/results after their answers
         if (game.getHumanPlayersCount() == round.getHumanAnswerCount())
         {
         	round.setHumanAnswerCount(0);
         	gameService.updateGameRound(round);
-        	if (round.endOfRound())
+        	if (round.endOfRound(settings.getQuestionNumber()))
         	{
         		boolean hasNextRound = gameService.nextRound(game);
             	if (!hasNextRound)

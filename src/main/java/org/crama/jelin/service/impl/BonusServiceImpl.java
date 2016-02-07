@@ -13,6 +13,7 @@ import org.crama.jelin.model.Constants.PromocodeStatus;
 import org.crama.jelin.model.Constants.Status;
 import org.crama.jelin.model.Enhancer;
 import org.crama.jelin.model.Group;
+import org.crama.jelin.model.Settings;
 import org.crama.jelin.model.User;
 import org.crama.jelin.model.UserBonus;
 import org.crama.jelin.model.UserEnhancer;
@@ -20,6 +21,7 @@ import org.crama.jelin.model.UserStatistics;
 import org.crama.jelin.repository.BonusRepository;
 import org.crama.jelin.repository.UserRepository;
 import org.crama.jelin.service.BonusService;
+import org.crama.jelin.service.SettingsService;
 import org.crama.jelin.util.DateConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,6 +34,9 @@ public class BonusServiceImpl implements BonusService {
 	
 	@Autowired
 	private UserRepository userRepository;
+	
+	@Autowired
+	private SettingsService settingsService;
 	
 	@Override
 	public PromocodeStatus checkPromocode(String code, User user) {
@@ -72,9 +77,10 @@ public class BonusServiceImpl implements BonusService {
 		System.out.println(registerDate + ", " + registerDate.getClass());
 		LocalDate localRegisterDate = DateConverter.toLocalDate(registerDate);
 		
-		//TODO change it for server config attributes
-		LocalDate bonusStartDate = Constants.EARLY_SIGNUP_START_DATE;
-		LocalDate bonusEndDate = Constants.EARLY_SIGNUP_END_DATE;
+		Settings settings = settingsService.getSettings(); 
+		
+		LocalDate bonusStartDate = DateConverter.toLocalDate(settings.getStartRegisterDate());
+		LocalDate bonusEndDate = DateConverter.toLocalDate(settings.getEndRegisterDate());
 		
 		if (localRegisterDate.isAfter(bonusStartDate) && localRegisterDate.isBefore(bonusEndDate)) {
 			

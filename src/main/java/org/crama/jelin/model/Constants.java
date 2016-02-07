@@ -7,14 +7,15 @@ import java.time.Month;
 public class Constants {
 	
 	//----settings-------
-	public static final String SHORT_GAME_NAME = "Jelin";
-	public static final String SITE_URL = "jelin.ru";
-	public static final String EMAIL = "vitalii.oleksiv@gmail.com";
 	
-	public static final LocalDate  EARLY_SIGNUP_START_DATE = LocalDate.of(2016, Month.JANUARY, 1);
-	public static final LocalDate  EARLY_SIGNUP_END_DATE = LocalDate.of(2016, Month.MARCH, 1);
+	//public static final String SHORT_GAME_NAME = "Jelin";
+	//public static final String SITE_URL = "jelin.ru";
+	//public static final String EMAIL = "vitalii.oleksiv@gmail.com";
 	
-	public static final int QUESTION_NUMBER = 3;
+	//public static final LocalDate  EARLY_SIGNUP_START_DATE = LocalDate.of(2016, Month.JANUARY, 1);
+	//public static final LocalDate  EARLY_SIGNUP_END_DATE = LocalDate.of(2016, Month.MARCH, 1);
+	
+	//public static final int QUESTION_NUMBER = 3;
 	//----settings-------
 	
 	

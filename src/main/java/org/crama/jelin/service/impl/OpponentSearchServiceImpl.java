@@ -43,7 +43,12 @@ public class OpponentSearchServiceImpl implements OpponentSearchService {
 	public User findOpponent(Game game) {
 		
 		// stage 1: search users who are shadow and free
-		List<User> shadowAndFree = userService.getUsersShadowAndFree(); 
+		List<User> shadowAndFree = userService.getUsersShadowAndFree();
+		for (User user: new ArrayList<User>(shadowAndFree)) {
+			if (!gameInitService.checkLastRejectTime(user)) {
+				shadowAndFree.remove(user);
+			}
+		}
 		User opponent = findUser(shadowAndFree, game.getTheme(), game.getDifficulty(), true);
 		if (opponent != null){
 			return opponent;
@@ -51,6 +56,11 @@ public class OpponentSearchServiceImpl implements OpponentSearchService {
 		
 		// stage2: search users who are online and free, and haven't played a lot
 		List<User> onlineAndFree = userService.getUsersOnlineAndFree();
+		for (User user: new ArrayList<User>(onlineAndFree)) {
+			if (!gameInitService.checkLastRejectTime(user)) {
+				onlineAndFree.remove(user);
+			}
+		}
 		opponent = findUser(onlineAndFree, game.getTheme(), game.getDifficulty(), false);
 		if (opponent != null){
 			return opponent;
@@ -58,7 +68,12 @@ public class OpponentSearchServiceImpl implements OpponentSearchService {
 		
 		// stage3: search users who are online and calling, except game creator itself
 		User exceptPlayer = game.getCreator();
-		List<User> onlineAndCalling = userService.getUsersOnlineAndCalling(exceptPlayer); 
+		List<User> onlineAndCalling = userService.getUsersOnlineAndCalling(exceptPlayer);
+		for (User user: new ArrayList<User>(onlineAndCalling)) {
+			if (!gameInitService.checkLastRejectTime(user)) {
+				onlineAndCalling.remove(user);
+			}
+		}
 		opponent = findUser(onlineAndCalling, game.getTheme(), game.getDifficulty(), true);
 		if (opponent != null){
 			return opponent;

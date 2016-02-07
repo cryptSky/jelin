@@ -11,6 +11,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 import org.crama.jelin.exception.GameException;
 import org.crama.jelin.model.Constants;
+import org.crama.jelin.model.Settings;
 import org.crama.jelin.model.SocialUser;
 import org.crama.jelin.model.User;
 import org.crama.jelin.model.UserModel;
@@ -18,6 +19,7 @@ import org.crama.jelin.model.UserRole;
 import org.crama.jelin.repository.SocialUserRepository;
 import org.crama.jelin.repository.UserRepository;
 import org.crama.jelin.service.MailService;
+import org.crama.jelin.service.SettingsService;
 import org.crama.jelin.service.SocialUserService;
 import org.crama.jelin.util.EmailValidator;
 import org.crama.jelin.util.RandomPasswordGenerator;
@@ -36,6 +38,9 @@ public class SocialUserServiceImpl implements SocialUserService {
 	
 	@Autowired
 	private MailService mailService;
+	
+	@Autowired
+	private SettingsService settingsService;
 	
 	@Override
 	public UserModel loginSocialUser(SocialUser socialUser) throws GameException {
@@ -155,7 +160,8 @@ public class SocialUserServiceImpl implements SocialUserService {
 		socialUser.setUser(user);
 		socialUserRepository.saveSocialUser(socialUser);
 		
-		mailService.sendRegistrationEmail(user);
+		Settings settings = settingsService.getSettings();
+		mailService.sendRegistrationEmail(user, settings);
 		
 		return userModel;
 	}

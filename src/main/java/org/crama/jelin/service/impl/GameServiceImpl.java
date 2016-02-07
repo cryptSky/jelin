@@ -21,6 +21,7 @@ import org.crama.jelin.model.GameRound;
 import org.crama.jelin.model.Question;
 import org.crama.jelin.model.QuestionResult;
 import org.crama.jelin.model.ScoreSummary;
+import org.crama.jelin.model.Settings;
 import org.crama.jelin.model.User;
 import org.crama.jelin.repository.AnswerRepository;
 import org.crama.jelin.repository.GameOpponentRepository;
@@ -34,6 +35,7 @@ import org.crama.jelin.service.GameBotService;
 import org.crama.jelin.service.GameService;
 import org.crama.jelin.service.PointsCalculatorService;
 import org.crama.jelin.service.QuestionService;
+import org.crama.jelin.service.SettingsService;
 import org.crama.jelin.service.UserActivityService;
 import org.crama.jelin.service.UserStatisticsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,14 +84,17 @@ public class GameServiceImpl implements GameService {
 	@Autowired
 	private UserStatisticsService userStatisticsService;
 	
+	@Autowired
+	private SettingsService settingsService;
+	
 	@Override
 	@Transactional
 	public void startGame(Game game) throws GameException {
 		List<User> hosts = setUpHosts(game);
 						
 		List<GameRound> gameRounds = new ArrayList<GameRound>();
-
-		for (int round = 0; round < 4; round++)
+		Settings settings = settingsService.getSettings();
+		for (int round = 0; round < settings.getRoundNumber(); round++)
 		{
 			GameRound gameRound = new GameRound(game, round, hosts.get(round));
 			gameRounds.add(gameRound);
@@ -172,7 +177,10 @@ public class GameServiceImpl implements GameService {
 		GameRound gameRound = game.getRound();
 		gameRound.setCategory(category);
 		
-		List<Question> questions = questionService.getRandomQuestionList(category, game.getDifficulty(), Constants.QUESTION_NUMBER);
+		Settings settings = settingsService.getSettings();
+		
+		List<Question> questions = questionService.getRandomQuestionList(category, game.getDifficulty(), 
+				settings.getQuestionNumber());
 		
 		for (Question q: questions) {
 			gameRound.addQuestion(q);
@@ -189,7 +197,9 @@ public class GameServiceImpl implements GameService {
 		GameRound gameRound = game.getRound();
         int questionNumber = gameRound.getQuestionNumber(player);
         questionNumber--; 
-        Question question = gameRound.getQuestion(questionNumber);
+        
+        Settings settings = settingsService.getSettings();
+        Question question = gameRound.getQuestion(questionNumber, settings.getQuestionNumber());
         int playerNumber = game.getPlayerNumberByUser(player);
         
         if (player.getType() == UserType.HUMAN)
@@ -210,8 +220,8 @@ public class GameServiceImpl implements GameService {
 	public Question getNextQuestion(Game game, User player) {
 		GameRound gameRound = game.getRound();
         int questionNumber = gameRound.getQuestionNumber(player);
-                        
-        Question question = gameRound.getQuestion(questionNumber);
+        Settings settings = settingsService.getSettings();                
+        Question question = gameRound.getQuestion(questionNumber, settings.getQuestionNumber());
         if (question == null)
         {
         	return null;
