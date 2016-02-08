@@ -26,6 +26,7 @@ import org.crama.jelin.model.Constants.Readiness;
 import org.crama.jelin.model.Constants.UserType;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 
 /*@NamedNativeQueries({
@@ -83,6 +84,7 @@ public class Game implements Serializable {
 	
 	
 	@JsonIgnore
+	@JsonManagedReference
 	@OneToMany(mappedBy = "game", fetch = FetchType.LAZY, cascade=CascadeType.ALL)
 	private Set<GameOpponent> gameInvitationOpponents = new HashSet<GameOpponent>();
 	
@@ -256,6 +258,7 @@ public class Game implements Serializable {
 		return result;
 	}
 	
+	@JsonIgnore
 	public List<User> getHumans()
 	{
 		List<User> humans = new ArrayList<User>();

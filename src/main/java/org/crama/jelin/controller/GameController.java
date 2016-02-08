@@ -159,7 +159,7 @@ public class GameController {
         
 	}
 	
-	//TODO update api doc: choose random category if category id is not present  
+	  
 	@RequestMapping(value="/api/game/category", method=RequestMethod.POST)
 	@ResponseStatus(HttpStatus.OK)
 	public void saveRoundCategory(@RequestParam(required = false) Integer category) throws GameException {

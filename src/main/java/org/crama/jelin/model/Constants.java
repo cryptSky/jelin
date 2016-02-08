@@ -25,11 +25,16 @@ public class Constants {
 	public static final String IMAGE_PATH = "avatar" + File.separator + "users" + File.separator;
 	
 	//social constants
+	//facebook
 	public static final String GRAPH_URL = "https://graph.facebook.com/";
 	public static final String FACEBOOK_CLIENT_ID = "1693231397627775";
 	public static final String FACEBOOK_CLIENT_SECRET = "14d827d37c58cbb0aebc518bfc26dd8f";
-	public static final String TWITTER_CLIENT_ID = "a9jCAcsujg0WMxCEFo8j5l9xq";
-	public static final String TWITTER_CLIENT_SECRET = "OcqIAGVmNKp8t94g6OutorDvcqn1lfM9bfkUEKLnzWwmyC9Nyx";
+	//twitter
+	public static final String TWITTER_ACCOUNT_VERIFY_URL = "https://api.twitter.com/1.1/account/verify_credentials.json";
+	public static final String TWITTER_API_HOST = "api.twitter.com";
+	public static final String TWITTER_CLIENT_ID = "27XxB9wPaP8aK0lo6bHWibiuj";
+	public static final String TWITTER_CLIENT_SECRET = "73mdj12K7jihrUlj55Wbtibv2Sl2ENObkSnpro7OAayv2f6zH2";
+	//vk
 	public static final String VK_URL = "https://api.vk.com/method/users.get";
 	
 	public enum UserType {

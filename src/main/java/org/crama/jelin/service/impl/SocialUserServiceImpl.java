@@ -24,6 +24,13 @@ import org.crama.jelin.service.SocialUserService;
 import org.crama.jelin.util.EmailValidator;
 import org.crama.jelin.util.RandomPasswordGenerator;
 import org.json.JSONObject;
+import org.scribe.builder.ServiceBuilder;
+import org.scribe.builder.api.TwitterApi;
+import org.scribe.model.OAuthRequest;
+import org.scribe.model.Response;
+import org.scribe.model.Token;
+import org.scribe.model.Verb;
+import org.scribe.oauth.OAuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -161,7 +168,8 @@ public class SocialUserServiceImpl implements SocialUserService {
 		socialUserRepository.saveSocialUser(socialUser);
 		
 		Settings settings = settingsService.getSettings();
-		mailService.sendRegistrationEmail(user, settings);
+		//TODO send email
+		//mailService.sendRegistrationEmail(user, settings);
 		
 		return userModel;
 	}
@@ -183,7 +191,8 @@ public class SocialUserServiceImpl implements SocialUserService {
 		}
 		//TODO
 		else if (providerId.equals("twitter")) {
-			return true;
+			return checkTwitter(socialUser);
+			
 		}
 		else if (providerId.equals("vk")) {
 			String requestURL = Constants.VK_URL  + "?access_token=" + socialUser.getAccessToken();
@@ -206,6 +215,38 @@ public class SocialUserServiceImpl implements SocialUserService {
 		return false;
 	}
 	
+	private boolean checkTwitter(SocialUser user) {
+		 // Enter your consumer key and secret below
+        OAuthService service = new ServiceBuilder()
+                .provider(TwitterApi.class)
+                .apiKey(Constants.TWITTER_CLIENT_ID)
+                .apiSecret(Constants.TWITTER_CLIENT_SECRET)
+                .build();
+        
+        // Set your access token
+        Token accessToken = new Token(user.getAccessToken(), user.getSecret());
+        
+        OAuthRequest request = new OAuthRequest(Verb.GET, Constants.TWITTER_ACCOUNT_VERIFY_URL);
+        request.addHeader("version", "HTTP/1.1");
+        request.addHeader("host", Constants.TWITTER_API_HOST);
+        request.setConnectionKeepAlive(true);
+        
+        service.signRequest(accessToken, request);
+        
+        Response response = request.send();
+        
+        JSONObject jsonResponse = new JSONObject(response.getBody());
+        System.out.println(jsonResponse);
+		String twitterUserId = jsonResponse.getString("id_str");
+		System.out.println("Twitter user id: " + twitterUserId);
+		if (user.getProviderUserId().equals(twitterUserId)) {
+			System.out.println("Twitter user verified!");
+			return true;
+		}
+        
+		return false;
+	}
+
 	private String sendGetRequest(String requestURL) {
 		String result = null;
 		HttpClient client = HttpClientBuilder.create().build();	

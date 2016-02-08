@@ -127,9 +127,10 @@ public class UserController {
 	
 	
 	
-    @RequestMapping(value="/api/user/login/social", method=RequestMethod.PUT)
+    @RequestMapping(value="/api/user/social/login", method=RequestMethod.PUT)
     public @ResponseBody UserModel socialLogin(@RequestBody SocialUser socialUser) 
     		throws GameException {
+    	System.out.println("Login social user: " + socialUser);
 		UserModel userModel = socialUserService.loginSocialUser(socialUser);
 		if (userModel != null) {
 			User user = userService.getUserByUsername(userModel.getUsername());

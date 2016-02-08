@@ -18,7 +18,7 @@ import org.springframework.stereotype.Repository;
 @Repository("gameOpponentRepository")
 public class GameOpponentRepositoryImpl implements GameOpponentRepository {
 
-	public static final String GET_PLAYER_GAME = "SELECT g FROM Game g JOIN g.gameOpponents o " +
+	public static final String GET_PLAYER_GAME = "SELECT g FROM Game g JOIN g.gameInvitationOpponents o " +
 			"WHERE g.gameState <> :gameState " +
 			"AND o.user = :user " +
 			"AND o.inviteStatus = :inviteStatus";

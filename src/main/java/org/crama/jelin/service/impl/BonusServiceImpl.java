@@ -73,14 +73,15 @@ public class BonusServiceImpl implements BonusService {
 	@Override
 	public List<Bonus> getEarlyRegisterBonuses(User user) {
 		//check if user registered within early register interval
+		
 		Date registerDate = new Date(user.getRegisterDate().getTime());
 		System.out.println(registerDate + ", " + registerDate.getClass());
 		LocalDate localRegisterDate = DateConverter.toLocalDate(registerDate);
 		
 		Settings settings = settingsService.getSettings(); 
 		
-		LocalDate bonusStartDate = DateConverter.toLocalDate(settings.getStartRegisterDate());
-		LocalDate bonusEndDate = DateConverter.toLocalDate(settings.getEndRegisterDate());
+		LocalDate bonusStartDate = DateConverter.toLocalDate(new Date(settings.getStartRegisterDate().getTime()));
+		LocalDate bonusEndDate = DateConverter.toLocalDate(new Date(settings.getEndRegisterDate().getTime()));
 		
 		if (localRegisterDate.isAfter(bonusStartDate) && localRegisterDate.isBefore(bonusEndDate)) {
 			

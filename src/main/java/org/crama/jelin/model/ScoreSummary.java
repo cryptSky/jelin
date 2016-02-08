@@ -42,6 +42,12 @@ public class ScoreSummary implements Serializable, Comparable<ScoreSummary> {
 	@Column(name = "ACRONS")
 	private int acrons;
 	
+	@Column(name = "CORRECT_ANSWERS")
+	private int correctAnswers;
+	
+	@Column(name = "WRONG_ANSWERS")
+	private int wrongAnswers;
+	
 	public ScoreSummary()
 	{
 		
@@ -93,6 +99,22 @@ public class ScoreSummary implements Serializable, Comparable<ScoreSummary> {
 
 	public void setAcrons(int acrons) {
 		this.acrons = acrons;
+	}
+	
+	public int getCorrectAnswers() {
+		return correctAnswers;
+	}
+
+	public void setCorrectAnswers(int correctAnswers) {
+		this.correctAnswers = correctAnswers;
+	}
+
+	public int getWrongAnswers() {
+		return wrongAnswers;
+	}
+
+	public void setWrongAnswers(int wrongAnswers) {
+		this.wrongAnswers = wrongAnswers;
 	}
 
 	@Override

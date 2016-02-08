@@ -45,7 +45,6 @@ public class UserStatisticController {
 	}
 	
 	
-	//TODO add to API
 	@RequestMapping(value="/api/user/acorns/buy", method=RequestMethod.POST)
 	@ResponseStatus(HttpStatus.OK)
     public void buyGoldAcorns(@RequestParam Integer acorns) {
@@ -55,8 +54,8 @@ public class UserStatisticController {
 		
 	}
 	
-	//TODO add to API 
-	@RequestMapping(value="/api/user/social/invite", method=RequestMethod.GET)
+	
+	@RequestMapping(value="/api/user/social/invite", method=RequestMethod.POST)
 	@ResponseStatus(HttpStatus.OK)
     public void socialInvite() {
 		User user = userService.getPrincipal();
@@ -64,8 +63,8 @@ public class UserStatisticController {
 		
 	}
 	
-	//TODO add to API 
-	@RequestMapping(value="/api/user/social/share", method=RequestMethod.GET)
+	 
+	@RequestMapping(value="/api/user/social/share", method=RequestMethod.POST)
 	@ResponseStatus(HttpStatus.OK)
     public void socialShare() {
 		User user = userService.getPrincipal();

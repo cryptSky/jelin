@@ -88,7 +88,8 @@ public class UserServiceImpl implements UserService {
 			userRepository.saveUser(newUser);
 			
 			Settings settings = settingsService.getSettings();
-			mailService.sendRegistrationEmail(newUser, settings);
+			//TODO send email
+			//mailService.sendRegistrationEmail(newUser, settings);
 			
 			return true;
 		}
@@ -265,7 +266,8 @@ public class UserServiceImpl implements UserService {
 			}
 		}
 		Settings settings = settingsService.getSettings();
-		mailService.remindPassword(userModel, settings);
+		//TODO send email
+		//mailService.remindPassword(userModel, settings);
 		
 	}
 	

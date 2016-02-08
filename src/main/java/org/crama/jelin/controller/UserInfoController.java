@@ -69,7 +69,6 @@ public class UserInfoController {
     	
     }
 	
-	//TODO change API
 	@RequestMapping(value="/api/user/info/image", method=RequestMethod.POST)
 	@ResponseStatus(HttpStatus.OK)
     public void uploadAvatar(@RequestParam(value="avatar", required=true) MultipartFile avatar) throws GameException {
