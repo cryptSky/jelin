@@ -114,11 +114,13 @@ public class UserInterestsRepositoryImpl implements UserInterestsRepository {
 			{
 				ui.setGamesPlayed(ui.getGamesPlayed() + 1);
 				session.update(ui);
+				session.flush();
 			}
 			else
 			{
 				ui = new UserInterests(user, theme, diff, 1);
 				session.save(ui);
+				session.flush();
 			}
 			
 		}

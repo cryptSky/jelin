@@ -1,6 +1,5 @@
 package org.crama.jelin.service.impl;
 
-import java.util.Date;
 import java.util.Properties;
 
 import javax.mail.Authenticator;
@@ -13,6 +12,8 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 import org.crama.jelin.model.Constants;
+import org.crama.jelin.model.Settings;
+import org.crama.jelin.model.User;
 import org.crama.jelin.model.UserModel;
 import org.crama.jelin.service.MailService;
 import org.springframework.stereotype.Service;
@@ -59,26 +60,50 @@ public class MailServiceImpl implements MailService {
 	}
 
 	@Override
-	public void remindPassword(UserModel userModel) {
+	public void remindPassword(UserModel userModel, Settings settings) {
 		
-		String from = Constants.EMAIL;
+		String from = settings.getEmail();
 		String to = userModel.getEmail();
-		String subject = Constants.SHORT_GAME_NAME + " Password Reset";
+		String subject = settings.getShortName() + " Password Reset";
 		StringBuilder body = new StringBuilder();
 		body.append("Hello " + userModel.getUsername() + "! \n");
 		body.append("\n");
 		body.append("Your password: " + userModel.getPassword() + "\n");
 		body.append("\n");
-		body.append("If you need any help or would like to know more about " + Constants.SHORT_GAME_NAME + 
-				", please visit " + Constants.SITE_URL + "\n");
+		body.append("If you need any help or would like to know more about " + settings.getShortName() + 
+				", please visit " + settings.getUrl() + "\n");
 		body.append("\n");
 		body.append("Thanks! \n");
-		body.append(Constants.SHORT_GAME_NAME);
+		body.append(settings.getShortName());
 		
 		System.out.println(from);
 		System.out.println(to);
 		System.out.println(subject);
 		System.out.println(body.toString());
+		
+		this.sendEmail(from, to, subject, body.toString());
+		
+	}
+
+	@Override
+	public void sendRegistrationEmail(User user, Settings settings) {
+		
+		String from = settings.getEmail();
+		String to = user.getEmail();
+		String subject = settings.getShortName() + " Username Details";
+		
+		StringBuilder body = new StringBuilder();
+		body.append("Hello " + user.getUsername() + "! \n");
+		body.append("\n");
+		body.append("Your email address has the following associated username:\n");
+		body.append("\n");
+		body.append(user.getUsername() + "\n");
+		body.append("\n");
+		body.append("If you need any help or would like to know more about " + settings.getShortName() + 
+				", please visit " + settings.getUrl() + "\n");
+		body.append("\n");
+		body.append("Thanks! \n");
+		body.append(settings.getShortName());
 		
 		this.sendEmail(from, to, subject, body.toString());
 		

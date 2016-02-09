@@ -8,7 +8,6 @@ import java.util.Random;
 import org.crama.jelin.exception.GameException;
 import org.crama.jelin.model.Answer;
 import org.crama.jelin.model.Category;
-import org.crama.jelin.model.Constants;
 import org.crama.jelin.model.Constants.GameState;
 import org.crama.jelin.model.Constants.InviteStatus;
 import org.crama.jelin.model.Constants.NetStatus;
@@ -22,6 +21,7 @@ import org.crama.jelin.model.GameRound;
 import org.crama.jelin.model.Question;
 import org.crama.jelin.model.QuestionResult;
 import org.crama.jelin.model.ScoreSummary;
+import org.crama.jelin.model.Settings;
 import org.crama.jelin.model.User;
 import org.crama.jelin.repository.AnswerRepository;
 import org.crama.jelin.repository.GameOpponentRepository;
@@ -37,6 +37,7 @@ import org.crama.jelin.service.GameService;
 import org.crama.jelin.service.OfflinePlayerChecker;
 import org.crama.jelin.service.PointsCalculatorService;
 import org.crama.jelin.service.QuestionService;
+import org.crama.jelin.service.SettingsService;
 import org.crama.jelin.service.UserActivityService;
 import org.crama.jelin.service.UserStatisticsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -90,6 +91,10 @@ public class GameServiceImpl implements GameService {
 	
 	@Autowired 
 	private UserInterestsRepository userInterestsRepository; 
+
+	@Autowired
+	private SettingsService settingsService;
+
 	
 	@Override
 	@Transactional
@@ -98,7 +103,8 @@ public class GameServiceImpl implements GameService {
 						
 		List<GameRound> gameRounds = new ArrayList<GameRound>();
 
-		for (int round = 0; round < Constants.ROUND_NUMBER; round++)
+		Settings settings = settingsService.getSettings();
+		for (int round = 0; round < settings.getRoundNumber(); round++)
 		{
 			GameRound gameRound = new GameRound(game, round, hosts.get(round));
 			gameRounds.add(gameRound);
@@ -228,7 +234,8 @@ public class GameServiceImpl implements GameService {
         	processBotsAnswers(game);
         	
         	int questionNumber = round.getQuestionNumber(player) - 1;
-        	Question question = round.getQuestion(questionNumber);
+        	Settings settings = settingsService.getSettings();
+        	Question question = round.getQuestion(questionNumber, settings.getQuestionNumber());
         	
         	finishQuestionStep(round, question);
         	
@@ -277,13 +284,15 @@ public class GameServiceImpl implements GameService {
         userRepository.updateUser(user);
         updateGame(game);
         
+        Settings settings = settingsService.getSettings();
+        
          // if all online/shadow humans already called /api/game/results after their answers
 		if ((callerIsOnline && game.allActiveHasReadiness(Readiness.RESULT)) ||
         		(!callerIsOnline && game.allHasReadiness(Readiness.RESULT)))
         {					
 			round.setHumanAnswerCount(0);
 	    	updateGameRound(round);
-	    	if (round.endOfRound())
+	    	if (round.endOfRound(settings.getQuestionNumber()))
 	    	{
 	    		boolean hasNextRound = nextRound(game);
 	        	if (!hasNextRound)
@@ -344,7 +353,10 @@ public class GameServiceImpl implements GameService {
 		GameRound gameRound = game.getRound();
 		gameRound.setCategory(category);
 		
-		List<Question> questions = questionService.getRandomQuestionList(category, game.getDifficulty(), Constants.QUESTION_NUMBER);
+		Settings settings = settingsService.getSettings();
+		
+		List<Question> questions = questionService.getRandomQuestionList(category, game.getDifficulty(), 
+				settings.getQuestionNumber());
 		
 		for (Question q: questions) {
 			gameRound.addQuestion(q);
@@ -376,8 +388,8 @@ public class GameServiceImpl implements GameService {
 	private Question getNextQuestion(Game game, User player) {
 		GameRound gameRound = game.getRound();
         int questionNumber = gameRound.getQuestionNumber(player);
-                        
-        Question question = gameRound.getQuestion(questionNumber);
+        Settings settings = settingsService.getSettings();                
+        Question question = gameRound.getQuestion(questionNumber, settings.getQuestionNumber());
         if (question == null)
         {
         	return null;
@@ -407,8 +419,10 @@ public class GameServiceImpl implements GameService {
 		GameRound gameRound = game.getRound();
         int questionNumber = gameRound.getQuestionNumber(player);
         questionNumber--; 
-        Question question = gameRound.getQuestion(questionNumber);
-                
+        
+        Settings settings = settingsService.getSettings();
+        Question question = gameRound.getQuestion(questionNumber, settings.getQuestionNumber());
+               
         if (player.getType() == UserType.HUMAN)
         {
         	int answerCount = gameRound.getHumanAnswerCount();
@@ -431,8 +445,16 @@ public class GameServiceImpl implements GameService {
 	}
 
 	@Override
-	public List<ScoreSummary> getScoreSummary(Game game) {
+	public List<ScoreSummary> getScoreSummary(Game game, User player) {
+		player.setReadiness(Readiness.SUMMARY);
+        userRepository.updateUser(player);
+                
 		List<ScoreSummary> summary = scoreSummaryRepository.getSummaryByGame(game);
+		
+		if (game.allActiveHasReadiness(Readiness.SUMMARY))
+		{
+			finishGame(game);
+		}
 		
 		return summary;
 	}
@@ -450,6 +472,7 @@ public class GameServiceImpl implements GameService {
 		userInterestsRepository.updateInterests(game);
 		
 		game.setGameState(GameState.ENDED);
+		// game.setReadiness(Readiness.END);
 		updateGame(game);
 		
 		for (User player: game.getHumans())
@@ -461,12 +484,6 @@ public class GameServiceImpl implements GameService {
 		
 		gameRepository.cleanUpGame(game);
 					
-	}
-	
-	@Override
-	@Transactional
-	public OfflinePlayerChecker getOfflineChecker() {
-		return offlinePlayerChecker;
 	}
 	
 	private ArrayList<User> setUpHosts(Game game)
@@ -573,8 +590,10 @@ public class GameServiceImpl implements GameService {
 		{
 			int playerNumber = i + 1;
 			User player = game.getUserByPlayerNumber(playerNumber);
+			
+			Settings settings = settingsService.getSettings();
 			long wrongAnswers = questionResultRepository.getWrongAnswerCount(game, player);
-			long rightAnswers = Constants.ROUND_NUMBER*Constants.QUESTION_NUMBER - wrongAnswers;
+			long rightAnswers = settings.getRoundNumber()*settings.getQuestionNumber() - wrongAnswers;
 			ScoreSummary summary = new ScoreSummary(scores[i], player, game, wrongAnswers, rightAnswers);
 			
 			scoreSummaryRepository.saveSummary(summary);

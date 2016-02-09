@@ -1,5 +1,9 @@
 package org.crama.jelin.controller;
 
+import java.io.IOException;
+
+import org.crama.jelin.exception.GameException;
+import org.crama.jelin.exception.RestError;
 import org.crama.jelin.model.User;
 import org.crama.jelin.model.UserInfo;
 import org.crama.jelin.model.UserStatistics;
@@ -8,6 +12,7 @@ import org.crama.jelin.service.UserService;
 import org.crama.jelin.service.impl.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -15,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 public class UserInfoController {
@@ -65,14 +71,27 @@ public class UserInfoController {
 	
 	@RequestMapping(value="/api/user/info/image", method=RequestMethod.POST)
 	@ResponseStatus(HttpStatus.OK)
-    public void updateUserAvatar(@RequestParam String avatar) {
+    public void uploadAvatar(@RequestParam(value="avatar", required=true) MultipartFile avatar) throws GameException {
 		User user = userService.getPrincipal();
-		UserInfo userInfo = user.getUserInfo(); 
-		userInfo.setAvatar(avatar);
-		userInfoService.updateUserInfo(userInfo);
+		
+		userInfoService.validateFile(avatar);
+		
+		try {
+			userInfoService.uploadAvatar(avatar, user);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		
     }
 	
-	
+	@ExceptionHandler
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+	public @ResponseBody RestError handleException(GameException ge) {
+		System.out.println("User Info Controller: Game Exception");
+		
+		RestError re = new RestError(HttpStatus.BAD_REQUEST, ge.getCode(), ge.getMessage());
+		
+        return re;
+    }
 	
 }

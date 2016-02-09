@@ -43,8 +43,8 @@ public class GameInitRepositoryImpl implements GameInitRepository {
 	
 	public static final String GET_INVITE_GAME = "SELECT g FROM Game g JOIN g.gameInvitationOpponents o " +
 			"WHERE g.gameState = :gameState " +
-			"AND o.user = :user " +
-			"AND o.inviteStatus = :inviteStatus";
+			"AND o.user = :user "+ 
+			"AND (o.inviteStatus = :accepted OR o.inviteStatus = :open)";
 	
 	public static final String GET_GAME_OPPONENT = "FROM GameOpponent " +
 			"WHERE game = :game "
@@ -99,7 +99,9 @@ public class GameInitRepositoryImpl implements GameInitRepository {
 		Query query = sessionFactory.getCurrentSession().createQuery(GET_INVITE_GAME);
 		query.setParameter("gameState", GameState.CREATED);
 		query.setParameter("user", user);
-		query.setParameter("inviteStatus", InviteStatus.OPEN);
+		query.setParameter("accepted", InviteStatus.ACCEPTED);
+		query.setParameter("open", InviteStatus.OPEN);
+		
 		Game inviteGame = (Game)query.uniqueResult();
 		System.out.println(inviteGame);
 		return inviteGame;

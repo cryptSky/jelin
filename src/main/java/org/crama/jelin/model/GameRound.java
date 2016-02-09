@@ -2,10 +2,7 @@ package org.crama.jelin.model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -19,10 +16,8 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import org.crama.jelin.model.Constants.NetStatus;
 import org.crama.jelin.model.Constants.Readiness;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
+
 import org.springframework.transaction.annotation.Transactional;
 
 
@@ -213,11 +208,11 @@ public class GameRound implements Serializable {
 		this.player4QuestionNumber = player4QuestionNumber;
 	}
 
+
 	@Transactional
-	public Question getQuestion(int index)
+	public Question getQuestion(int index, int questionNumber)
 	{
-		if (index < Constants.QUESTION_NUMBER && index < questions.size() && index >= 0)
-		{
+		if (index < questionNumber && index < questions.size() && index >= 0) {
 			return questions.get(index);
 		}
 		else return null;
@@ -244,43 +239,12 @@ public class GameRound implements Serializable {
 	}
 	
 	@Transactional
-	public Question currentQuestion()
-	{		
-		int maxQuestionNumber = getMaxQuestionNumber();
-	    Question question = this.getQuestion(maxQuestionNumber);			
-		return question;
-	}
-	
-	@Transactional
 	public int currentQuestionNumber()
 	{		
 		int maxQuestionNumber = getMaxQuestionNumber();
 	    			
 		return maxQuestionNumber;
 	}
-	
-	/*@Transactional
-	private int getMinQuestionNumber()
-	{
-		int playerCount = game.getPlayersCount();
-		int minQuestionNumber = -1;
-		if (playerCount == 2)
-		{
-			minQuestionNumber = Math.min(getPlayer1QuestionNumber(), getPlayer2QuestionNumber());					 
-		}
-		else if (playerCount == 3)
-		{
-			minQuestionNumber = Math.min(Math.min(getPlayer1QuestionNumber(), getPlayer2QuestionNumber()),
-					 									getPlayer3QuestionNumber());
-
-		} else if (playerCount == 4)
-		{
-			minQuestionNumber = Math.min(Math.min(getPlayer1QuestionNumber(), getPlayer2QuestionNumber()),
-					 Math.min(getPlayer3QuestionNumber(), getPlayer4QuestionNumber()));
-		}
-		
-		return minQuestionNumber;
-	}*/
 	
 	@Transactional
 	private int getMaxQuestionNumber()
@@ -342,25 +306,26 @@ public class GameRound implements Serializable {
 		}
 	}
 	
+
 	@Transactional
-	public boolean endOfRound()
+	public boolean endOfRound(int questionNumber)
 	{
 		boolean result = false;
 		int playerCount = game.getPlayersCount();
 		if (playerCount == 2)
 		{
-			result = getPlayer1QuestionNumber() == Constants.QUESTION_NUMBER &&
+			result = getPlayer1QuestionNumber() == questionNumber &&
 					 getPlayer1QuestionNumber() == getPlayer2QuestionNumber();
 		}
 		else if (playerCount == 3)
 		{
-			result = getPlayer1QuestionNumber() == Constants.QUESTION_NUMBER &&
+			result = getPlayer1QuestionNumber() == questionNumber &&
 					 getPlayer1QuestionNumber() == getPlayer2QuestionNumber() &&
 					 getPlayer2QuestionNumber() == getPlayer3QuestionNumber();
 		}
 		else if (playerCount == 4)
 		{
-			result = getPlayer1QuestionNumber() == Constants.QUESTION_NUMBER &&
+			result = getPlayer1QuestionNumber() == questionNumber &&
 					 getPlayer1QuestionNumber() == getPlayer2QuestionNumber() &&
 					 getPlayer2QuestionNumber() == getPlayer3QuestionNumber() &&
 					 getPlayer3QuestionNumber() == getPlayer4QuestionNumber();

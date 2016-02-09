@@ -230,6 +230,11 @@ public class GameInitController {
 	    			+ "Current status: " + opponent.getProcessStatus());
 		}
 		
+		//check opponent last invite reject time
+		if (!gameInitService.checkLastRejectTime(opponent)) {
+			throw new GameException(510, "There is not enough time passed since the last invite was rejected by this opponent");
+		}
+		
 		//invite user
 		InviteStatus inviteStatus = gameInitService.inviteUser(game, creator, opponent, false);
 		User opponentAfterInvite = userService.getUser(user);

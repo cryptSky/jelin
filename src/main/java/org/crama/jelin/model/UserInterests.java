@@ -37,6 +37,11 @@ public class UserInterests implements Serializable {
 	@Column(name="GAMES_PLAYED", nullable=false)
 	private int gamesPlayed;
 
+	public UserInterests()
+	{
+		
+	}
+	
 	public UserInterests(User user, Category theme, Difficulty difficulty, int gamesPlayed) {
 		super();
 		this.user = user;

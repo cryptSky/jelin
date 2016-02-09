@@ -102,7 +102,7 @@ public class ScoreSummary implements Serializable, Comparable<ScoreSummary> {
 	public void setAcrons(int acrons) {
 		this.acrons = acrons;
 	}
-
+	
 	public long getCorrectAnswers() {
 		return correctAnswers;
 	}

@@ -1,23 +1,43 @@
 package org.crama.jelin.model;
 
-import java.time.LocalDate;
-import java.time.Month;
+import java.io.File;
 
 public class Constants {
 	
-	public static final String SHORT_GAME_NAME = "Jelin";
-	public static final String SITE_URL = "jelin.ru";
-	public static final String EMAIL = "vitalii.oleksiv@gmail.com";
+	//----settings-------
 	
-	public static final LocalDate  EARLY_SIGNUP_START_DATE = LocalDate.of(2016, Month.JANUARY, 1);
-	public static final LocalDate  EARLY_SIGNUP_END_DATE = LocalDate.of(2016, Month.MARCH, 1);
+	//public static final String SHORT_GAME_NAME = "Jelin";
+	//public static final String SITE_URL = "jelin.ru";
+	//public static final String EMAIL = "vitalii.oleksiv@gmail.com";
 	
+	//public static final LocalDate  EARLY_SIGNUP_START_DATE = LocalDate.of(2016, Month.JANUARY, 1);
+	//public static final LocalDate  EARLY_SIGNUP_END_DATE = LocalDate.of(2016, Month.MARCH, 1);
+	
+	//public static final int QUESTION_NUMBER = 3;
+	//----settings-------
+	
+
 	public static final int QUESTION_NUMBER = 1;
 	public static final int ROUND_NUMBER = 1;
 	
 	public static final String BUNDLE_ID = "com.nt.Jelin"; 
 	public static final String P12_PASSWORD = "p124zI78KlmP";
 	
+	public static final String IMAGE_PATH = "avatar" + File.separator + "users" + File.separator;
+	
+	//social constants
+	//facebook
+	public static final String GRAPH_URL = "https://graph.facebook.com/";
+	public static final String FACEBOOK_CLIENT_ID = "1693231397627775";
+	public static final String FACEBOOK_CLIENT_SECRET = "14d827d37c58cbb0aebc518bfc26dd8f";
+	//twitter
+	public static final String TWITTER_ACCOUNT_VERIFY_URL = "https://api.twitter.com/1.1/account/verify_credentials.json";
+	public static final String TWITTER_API_HOST = "api.twitter.com";
+	public static final String TWITTER_CLIENT_ID = "27XxB9wPaP8aK0lo6bHWibiuj";
+	public static final String TWITTER_CLIENT_SECRET = "73mdj12K7jihrUlj55Wbtibv2Sl2ENObkSnpro7OAayv2f6zH2";
+	//vk
+	public static final String VK_URL = "https://api.vk.com/method/users.get";
+
 	public enum UserType {
 		HUMAN(0),
 		BOT(1);
@@ -104,7 +124,8 @@ public class Constants {
 		QUESTION(1),
 		ANSWER(2),
 		RESULT(3),
-		SUMMARY(4);
+		SUMMARY(4),
+		END(5);
 		
 		private final int value;
 		

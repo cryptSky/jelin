@@ -9,8 +9,6 @@ import org.crama.jelin.model.Category;
 import org.crama.jelin.model.Constants.GameState;
 import org.crama.jelin.model.Constants.NetStatus;
 import org.crama.jelin.model.Constants.Readiness;
-import org.crama.jelin.model.Constants.UserType;
-import org.crama.jelin.repository.UserRepository;
 import org.crama.jelin.model.Game;
 import org.crama.jelin.model.GameRound;
 import org.crama.jelin.model.Question;
@@ -20,9 +18,9 @@ import org.crama.jelin.model.User;
 import org.crama.jelin.service.CategoryService;
 import org.crama.jelin.service.GameInitService;
 import org.crama.jelin.service.GameService;
-import org.crama.jelin.service.OfflinePlayerChecker;
 import org.crama.jelin.service.UserService;
 import org.crama.jelin.service.UserStatisticsService;
+import org.hibernate.Hibernate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,6 +52,7 @@ public class GameController {
 	
 	@Autowired
 	private UserStatisticsService userStatisticsService;
+	
 	
 	@RequestMapping(value="/api/game/start", method=RequestMethod.POST)
 	@ResponseStatus(HttpStatus.OK)
@@ -149,7 +148,8 @@ public class GameController {
 	        	throw new GameException(514, "Game not found! User " + player.getUsername() + " is not playing any game"); 
 	        }
         }
-                
+        
+             
         //check if player is host
         if (game.getRound().getHost().getId() != player.getId()) {
         	throw new GameException(514, "User is not a host for current round");
@@ -167,12 +167,13 @@ public class GameController {
 	       	return new ArrayList<Category>();
 	    }
 	    return categories;
-       
+
 	}
 	
+	  
 	@RequestMapping(value="/api/game/category", method=RequestMethod.POST)
 	@ResponseStatus(HttpStatus.OK)
-	public void saveRoundCategory(@RequestParam int category) throws GameException {
+	public void saveRoundCategory(@RequestParam(required = false) Integer category) throws GameException {
 		User player = userService.getPrincipal();
 		if (player.getNetStatus() == NetStatus.OFFLINE)
         {
@@ -197,9 +198,20 @@ public class GameController {
         	throw new GameException(515, "Game Readiness is: " + game.getReadiness().toString() + ". Should be: CATEGORY");
         }
         
-        Category categoryObj = categoryService.getCategoryById(category);
-             
-        gameService.saveRoundCategory(game, categoryObj);
+        //choose random category
+        if (category == null) {
+        	gameService.setRandomCategory(game);
+        	
+        }
+        else { 
+	        Category categoryObj = categoryService.getCategoryById(category);
+	        
+	        if (categoryObj == null) {
+	        	throw new GameException(515, "Category with given id is not exist");
+	        }
+	        
+	        gameService.saveRoundCategory(game, categoryObj);
+        }
         
 	}
 
@@ -265,7 +277,7 @@ public class GameController {
         }
         
         gameService.processAnswer(game, player, variant, time);
-       
+      
 	}
 	
 	@RequestMapping(value="/api/game/results", method=RequestMethod.POST, 
@@ -293,7 +305,7 @@ public class GameController {
         }
 		
         List<QuestionResult>  result = gameService.processResult(game, player);
-        
+
         return result;
 	}
 	
@@ -320,7 +332,8 @@ public class GameController {
         	throw new GameException(519, "Game Readiness is: " + game.getReadiness().toString() + ". Should be: SUMMARY");
         }
         
-        List<ScoreSummary> summaries = gameService.getScoreSummary(game);
+                
+        List<ScoreSummary> summaries = gameService.getScoreSummary(game, player);
         userStatisticsService.saveGameSummaryStats(summaries);
         
         return summaries;

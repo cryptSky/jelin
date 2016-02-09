@@ -9,7 +9,6 @@ import org.crama.jelin.model.Group;
 import org.crama.jelin.model.User;
 
 public interface CategoryService {
-	List<Group> getAllGroups();
 	
 	List<Category> getAllThemesFromGroup(int groupID);
 	

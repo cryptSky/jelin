@@ -40,7 +40,10 @@ public class SocialUser implements Serializable {
 
 	@Column(name = "ACCESS_TOKEN", nullable = false)
 	private String accessToken;
-	  
+	
+	@Column(name = "SECRET", nullable = false)
+	private String secret;
+	
 	@Column(name = "FIRST_NAME", nullable = false)
 	private String firstName;
 	  
@@ -109,6 +112,14 @@ public class SocialUser implements Serializable {
 		this.accessToken = accessToken;
 	}
 
+	public String getSecret() {
+		return secret;
+	}
+
+	public void setSecret(String secret) {
+		this.secret = secret;
+	}
+
 	public String getFirstName() {
 		return firstName;
 	}
@@ -140,6 +151,15 @@ public class SocialUser implements Serializable {
 	public void setPhone(String phone) {
 		this.phone = phone;
 	}
+
+	@Override
+	public String toString() {
+		return "SocialUser [id=" + id + ", user=" + user + ", providerId=" + providerId + ", providerUserId="
+				+ providerUserId + ", accessToken=" + accessToken + ", secret=" + secret + ", firstName=" + firstName
+				+ ", lastName=" + lastName + ", email=" + email + ", phone=" + phone + "]";
+	}
+	
+	
 
 	/*public int getAge() {
 		return age;

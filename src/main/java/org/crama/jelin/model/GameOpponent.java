@@ -1,7 +1,6 @@
 package org.crama.jelin.model;
 
 import java.io.Serializable;
-import org.crama.jelin.model.Constants.InviteStatus;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -13,6 +12,10 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+
+import org.crama.jelin.model.Constants.InviteStatus;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Entity
 @Table(name = "game_opponent")
@@ -29,6 +32,7 @@ public class GameOpponent implements Serializable {
     @JoinColumn(name = "USER_ID")
 	private User user;
 	
+	@JsonBackReference
 	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "GAME_ID")
 	private Game game;

@@ -89,8 +89,7 @@ public class User implements Serializable {
 	@Column(name = "LAST_GAME_TIME", columnDefinition="DATETIME")
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date lastGameTime;
-	
-	
+		
 	@JsonIgnore
 	@OneToMany(cascade=CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "user") 
 	private List<UserEnhancer> enhancerList = new ArrayList<UserEnhancer>();

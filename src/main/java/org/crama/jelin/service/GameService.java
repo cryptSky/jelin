@@ -4,9 +4,7 @@ import java.util.List;
 
 import org.crama.jelin.exception.GameException;
 import org.crama.jelin.model.Category;
-import org.crama.jelin.model.Constants.Readiness;
 import org.crama.jelin.model.Game;
-import org.crama.jelin.model.GameRound;
 import org.crama.jelin.model.Question;
 import org.crama.jelin.model.QuestionResult;
 import org.crama.jelin.model.ScoreSummary;
@@ -25,13 +23,11 @@ public interface GameService {
 	
 	void saveRoundCategory(Game game, Category categoryObj) throws GameException;
 	
-	List<ScoreSummary> getScoreSummary(Game game);
+	List<ScoreSummary> getScoreSummary(Game game, User player);
 	
 	List<QuestionResult> getPersonalResults(Game game, User player) throws GameException;
 		
 	Game getGameByPlayer(User player);
-	
-	OfflinePlayerChecker getOfflineChecker();
 	
 	void updateGame(Game game);
 	

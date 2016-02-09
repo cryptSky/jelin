@@ -28,6 +28,7 @@ import org.crama.jelin.model.Constants.UserType;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 
 /*@NamedNativeQueries({
@@ -85,6 +86,7 @@ public class Game implements Serializable {
 	
 	
 	@JsonIgnore
+	@JsonManagedReference
 	@OneToMany(mappedBy = "game", fetch = FetchType.LAZY, cascade=CascadeType.ALL)
 	private Set<GameOpponent> gameInvitationOpponents = new HashSet<GameOpponent>();
 	
@@ -192,19 +194,12 @@ public class Game implements Serializable {
 	public Set<GameOpponent> getGameOpponents() {
 		
 		Set<GameOpponent> gameOpponents = new HashSet<GameOpponent>();
-		try
-		{
 		for (GameOpponent opponent: getGameInvitationOpponents())
 		{
 			if (opponent.getInviteStatus() == InviteStatus.ACCEPTED)
 			{
 				gameOpponents.add(opponent);
 			}
-		}
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
 		}
 		return gameOpponents;
 	}
@@ -271,6 +266,7 @@ public class Game implements Serializable {
 	}
 	
 	@Transactional
+	@JsonIgnore
 	public List<User> getHumans()
 	{
 		List<User> humans = new ArrayList<User>();
@@ -379,25 +375,6 @@ public class Game implements Serializable {
 		
 		return result;
 	}
-	
-	@Transactional
-	public User updatePlayerNetStatus(User user)
-	{
-		User result = null;
-		List<User> humans = getHumans();
-		for (User player : humans)
-		{
-			if (player.getId() == user.getId())
-			{
-				player.setNetStatus(user.getNetStatus());
-				return player;
-			}			
-		}
-		
-		return result;
-		
-	}
-	
 	
 	@Override
 	public String toString() {

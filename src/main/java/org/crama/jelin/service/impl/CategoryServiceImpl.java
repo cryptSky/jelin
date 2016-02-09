@@ -20,11 +20,6 @@ public class CategoryServiceImpl implements CategoryService {
 	private CategoryRepository categoryRepository;
 	
 	@Override
-	public List<Group> getAllGroups() {
-		return categoryRepository.getAllGroups();
-	}
-
-	@Override
 	public List<Category> getAllThemesFromGroup(int groupID) {
 		return categoryRepository.getAllThemesFromGroup(groupID);
 	}

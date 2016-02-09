@@ -26,17 +26,6 @@ public class PointsCalculatorServiceImpl implements PointsCalculatorService {
 	@Autowired
 	private QuestionResultRepository questionResultRepository;
 	
-	@Override
-	public void calculate(GameRound round) {
-		
-		for (Question question: round.getQuestions())
-		{
-			calculateQuestion(round, question);			
-			gameRoundRepository.updateRound(round);
-		}
-	
-	}
-	
 	private QuestionResult calculatePoints(GameRound round, Answer answer, int orderNumber)
 	{
 		User player = answer.getPlayer();
