@@ -3,6 +3,7 @@ package org.crama.jelin.repository.impl;
 import java.util.List;
 
 import org.crama.jelin.model.Answer;
+import org.crama.jelin.model.Game;
 import org.crama.jelin.model.GameRound;
 import org.crama.jelin.model.Question;
 import org.crama.jelin.model.User;
@@ -55,16 +56,17 @@ public class AnswerRepositoryImpl implements AnswerRepository {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<User> getUsersAnswered(GameRound round, Question question) {
-		
+	public List<Answer> getAnswersByGame(Game game) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Answer.class);
-		criteria.add(Restrictions.eq("round", round))
-			    .add(Restrictions.eq("question", question));
-		criteria.setProjection(Projections.property("player"));
+		criteria.add(Restrictions.eq("game", game));
 		
-		List<User> users = criteria.list();
-		
-		return users;
+		return criteria.list();
+	}
+
+	@Override
+	public void update(Answer answer) {
+		Session session = sessionFactory.getCurrentSession();	
+		session.update(answer);
 		
 	}
 

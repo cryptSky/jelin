@@ -1,4 +1,4 @@
-package org.crama.jelin.repository.impl;
+package org.crama.jelin.repository;
 
 import java.util.List;
 

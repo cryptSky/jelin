@@ -22,8 +22,10 @@ import javax.persistence.Table;
 
 import org.crama.jelin.model.Constants.GameState;
 import org.crama.jelin.model.Constants.InviteStatus;
+import org.crama.jelin.model.Constants.NetStatus;
 import org.crama.jelin.model.Constants.Readiness;
 import org.crama.jelin.model.Constants.UserType;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -177,6 +179,7 @@ public class Game implements Serializable {
 		this.initDate = initDate;
 	}
 
+	@Transactional
 	public Readiness getReadiness() {
 		return readiness;
 	}
@@ -185,15 +188,23 @@ public class Game implements Serializable {
 		this.readiness = readiness;
 	}
 
+	@Transactional
 	public Set<GameOpponent> getGameOpponents() {
 		
 		Set<GameOpponent> gameOpponents = new HashSet<GameOpponent>();
-		for (GameOpponent opponent: gameInvitationOpponents)
+		try
+		{
+		for (GameOpponent opponent: getGameInvitationOpponents())
 		{
 			if (opponent.getInviteStatus() == InviteStatus.ACCEPTED)
 			{
 				gameOpponents.add(opponent);
 			}
+		}
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
 		}
 		return gameOpponents;
 	}
@@ -203,6 +214,7 @@ public class Game implements Serializable {
 		return getGameOpponents().size() + 1;
 	}
 	
+	@Transactional
 	public int getHumanPlayersCount()
 	{
 		int count = 0;
@@ -222,6 +234,7 @@ public class Game implements Serializable {
 		return count;		
 	}
 	
+	@Transactional
 	public User getUserByPlayerNumber(int playerNumber) {
 		if (playerNumber == 1)
 		{
@@ -238,6 +251,7 @@ public class Game implements Serializable {
 		return null;
 	}
 	
+	@Transactional
 	public int getPlayerNumberByUser(User player)
 	{
 		int result = -1;
@@ -256,6 +270,7 @@ public class Game implements Serializable {
 		return result;
 	}
 	
+	@Transactional
 	public List<User> getHumans()
 	{
 		List<User> humans = new ArrayList<User>();
@@ -277,11 +292,119 @@ public class Game implements Serializable {
 		
 	}
 	
+	@Transactional
+	public List<User> getOfflinePlayers()
+	{
+		List<User> result = new ArrayList<User>();
+		List<User> humans = getHumans();
+		
+		for (User player : humans)
+		{
+			if (player.getNetStatus() == NetStatus.OFFLINE)
+			{
+				result.add(player);
+			}
+		}
+		
+		return result;
+	}
+	
+	@Transactional
+	public boolean hasActivePlayers()
+	{
+		boolean result = false;
+		List<User> humans = getHumans();
+		for (User player : humans)
+		{
+			if (player.getNetStatus() != NetStatus.OFFLINE)
+			{
+				result = true;
+				break;
+			}
+		}
+		
+		return result;		
+	}
+	
+	@Transactional
+	public boolean hasActivePlayersExceptPlayer(User player)
+	{
+		boolean result = false;
+		List<User> humans = getHumans();
+		for (User user : humans)
+		{
+			if (user.getNetStatus() != NetStatus.OFFLINE && user.getId() != player.getId())
+			{
+				result = true;
+				break;
+			}
+		}
+		
+		return result;		
+	}
+	
+	@Transactional
+	public boolean allActiveHasReadiness(Readiness readiness) {
+		boolean result = true;
+		List<User> humans = getHumans();
+		
+		for (User user : humans)
+		{
+			if (user.getNetStatus() == NetStatus.ONLINE)
+			{
+				if (user.getReadiness() != readiness)
+				{
+					result = false;
+					break;
+				}				
+			}
+		}
+		
+		return result;
+	}
+
+	@Transactional
+	public boolean allHasReadiness(Readiness readiness) {
+		boolean result = true;
+		List<User> humans = getHumans();
+		
+		for (User user : humans)
+		{
+			if (user.getReadiness() != readiness)
+			{
+				result = false;
+				break;
+			}			
+		}
+		
+		return result;
+	}
+	
+	@Transactional
+	public User updatePlayerNetStatus(User user)
+	{
+		User result = null;
+		List<User> humans = getHumans();
+		for (User player : humans)
+		{
+			if (player.getId() == user.getId())
+			{
+				player.setNetStatus(user.getNetStatus());
+				return player;
+			}			
+		}
+		
+		return result;
+		
+	}
+	
+	
 	@Override
 	public String toString() {
 		return "Game [id=" + id + ", theme=" + theme + ", isRandom=" + random + ", gameState=" + gameState
 				+ ", difficulty=" + difficulty + "]";
 	}
+
 	
-	
+		
 }

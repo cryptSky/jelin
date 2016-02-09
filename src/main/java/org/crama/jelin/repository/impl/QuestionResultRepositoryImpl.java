@@ -28,16 +28,11 @@ public class QuestionResultRepositoryImpl implements QuestionResultRepository {
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<QuestionResult> getPersonalResults(Game game, User player) throws GameException {
+	public List<QuestionResult> getPersonalResults(Game game, User player) {
 		GameRound round = game.getRound();
-		int playerNumber = game.getPlayerNumberByUser(player);
-		if (playerNumber < 1 || playerNumber > 4)
-		{
-			throw new GameException(0, "Invalid player number!");
-		}
-		
+				
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(QuestionResult.class);
-		Criterion plNum = Restrictions.eq("playerNumber", playerNumber);
+		Criterion plNum = Restrictions.eq("player", player);
 		Criterion gr = Restrictions.eq("gameRound", round);
 		criteria.add(Restrictions.and(plNum, gr));
 		
@@ -60,18 +55,26 @@ public class QuestionResultRepositoryImpl implements QuestionResultRepository {
 		
 	}
 
+	@Override
+	public long getWrongAnswerCount(Game game, User user) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(QuestionResult.class);
+		criteria.add(Restrictions.eq("game", game))
+			    .add(Restrictions.eq("player", user))
+				.add(Restrictions.eq("score", 0));
+		criteria.setProjection(Projections.rowCount());
+		
+		long result = (long) criteria.uniqueResult();
+		
+		return result;
+	}
+
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<User> getPlayersWithoutResult(GameRound round, Question question) {
-		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Answer.class);
-		criteria.add(Restrictions.eq("round", round))
-			    .add(Restrictions.eq("question", question))
-				.add(Restrictions.eq("gotResult", false));
-		criteria.setProjection(Projections.property("player"));
+	public List<QuestionResult> getQuestionResultsByGame(Game game) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(QuestionResult.class);
+		criteria.add(Restrictions.eq("game", game));
 		
-		List<User> users = criteria.list();
-		
-		return users;
+		return criteria.list();
 	}
 	
 }

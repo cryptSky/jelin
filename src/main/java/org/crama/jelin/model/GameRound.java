@@ -19,6 +19,12 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import org.crama.jelin.model.Constants.NetStatus;
+import org.crama.jelin.model.Constants.Readiness;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+import org.springframework.transaction.annotation.Transactional;
+
 
 @Entity
 @Table(name = "game_round")
@@ -207,9 +213,10 @@ public class GameRound implements Serializable {
 		this.player4QuestionNumber = player4QuestionNumber;
 	}
 
+	@Transactional
 	public Question getQuestion(int index)
 	{
-		if (index < Constants.QUESTION_NUMBER && index < questions.size())
+		if (index < Constants.QUESTION_NUMBER && index < questions.size() && index >= 0)
 		{
 			return questions.get(index);
 		}
@@ -229,23 +236,14 @@ public class GameRound implements Serializable {
 		this.humanAnswerCount = answerCount;
 	}
 	
+	@Transactional
 	public boolean alreadyGotQuestion(User player)
 	{
-		int questionNumber = getQuestionNumber(player);
-		int playerCount = game.getPlayersCount();
-		int maxQuestionNumber = getMaxQuestionNumber();
-		int minQuestionNumber = getMinQuestionNumber();
-		
-		if (questionNumber == maxQuestionNumber && questionNumber > minQuestionNumber)
-		{
-			return true;
-		}
-		else
-		{
-			return false;
-		}
+		boolean result = player.getReadiness() == Readiness.ANSWER;
+		return result;
 	}
 	
+	@Transactional
 	public Question currentQuestion()
 	{		
 		int maxQuestionNumber = getMaxQuestionNumber();
@@ -253,6 +251,15 @@ public class GameRound implements Serializable {
 		return question;
 	}
 	
+	@Transactional
+	public int currentQuestionNumber()
+	{		
+		int maxQuestionNumber = getMaxQuestionNumber();
+	    			
+		return maxQuestionNumber;
+	}
+	
+	/*@Transactional
 	private int getMinQuestionNumber()
 	{
 		int playerCount = game.getPlayersCount();
@@ -273,8 +280,9 @@ public class GameRound implements Serializable {
 		}
 		
 		return minQuestionNumber;
-	}
+	}*/
 	
+	@Transactional
 	private int getMaxQuestionNumber()
 	{
 		int playerCount = game.getPlayersCount();
@@ -297,6 +305,7 @@ public class GameRound implements Serializable {
 		return maxQuestionNumber;
 	}
 	
+	@Transactional
 	public int getQuestionNumber(User player)
 	{
 		int id = game.getPlayerNumberByUser(player);
@@ -316,6 +325,7 @@ public class GameRound implements Serializable {
 		return result;
 	}
 	
+	@Transactional
 	public void setQuestionNumber(User player, int qnumber)
 	{
 		int id = game.getPlayerNumberByUser(player);
@@ -332,31 +342,7 @@ public class GameRound implements Serializable {
 		}
 	}
 	
-	public boolean allHumanGotQuestion()
-	{
-		List<User> humans = getGame().getHumans();
-		Set<Integer> set = new HashSet<Integer>();
-		for (User human: humans)
-		{
-			int playerNumber = getGame().getPlayerNumberByUser(human);
-			switch (playerNumber)
-			{
-				case 1: set.add(getPlayer1QuestionNumber());
-						break;
-				case 2: set.add(getPlayer2QuestionNumber());
-						break;
-				case 3: set.add(getPlayer3QuestionNumber());
-						break;
-				case 4: set.add(getPlayer4QuestionNumber());
-						break;
-			}
-		}
-		
-		boolean result = set.size() == 1;
-		
-		return result;
-	}
-	
+	@Transactional
 	public boolean endOfRound()
 	{
 		boolean result = false;
@@ -383,6 +369,7 @@ public class GameRound implements Serializable {
 		return result;
 	}
 	
+	@Transactional
 	public void writeResult(QuestionResult result)
 	{
 		User player = result.getPlayer();

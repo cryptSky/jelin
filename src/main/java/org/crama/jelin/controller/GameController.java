@@ -7,8 +7,10 @@ import org.crama.jelin.exception.GameException;
 import org.crama.jelin.exception.RestError;
 import org.crama.jelin.model.Category;
 import org.crama.jelin.model.Constants.GameState;
+import org.crama.jelin.model.Constants.NetStatus;
 import org.crama.jelin.model.Constants.Readiness;
 import org.crama.jelin.model.Constants.UserType;
+import org.crama.jelin.repository.UserRepository;
 import org.crama.jelin.model.Game;
 import org.crama.jelin.model.GameRound;
 import org.crama.jelin.model.Question;
@@ -53,9 +55,6 @@ public class GameController {
 	@Autowired
 	private UserStatisticsService userStatisticsService;
 	
-	@Autowired
-	private OfflinePlayerChecker offlinePlayerChecker;
-	
 	@RequestMapping(value="/api/game/start", method=RequestMethod.POST)
 	@ResponseStatus(HttpStatus.OK)
     public boolean startGame() throws GameException {
@@ -68,7 +67,7 @@ public class GameController {
         }
        
         gameService.startGame(game);
-        
+                
         return true;
 		
 	}		
@@ -77,7 +76,11 @@ public class GameController {
 	@ResponseStatus(HttpStatus.OK)
     public boolean checkHost() throws GameException {
 		User player = userService.getPrincipal();
-		        
+		if (player.getNetStatus() == NetStatus.OFFLINE)
+        {
+        	throw new GameException(512, "Your user is OFFLINE. Please, check Readiness to make it online.");
+        }
+		
         Game game = gameInitService.getGame(player, GameState.IN_PROGRESS);
         if (game == null)
         {
@@ -86,7 +89,7 @@ public class GameController {
 	        {
 	        	throw new GameException(512, "Game not found! User " + player.getUsername() + " is not playing any game"); 
 	        }
-        }
+        }        
        		        
         if (game.getRound().getHost().getId() == player.getId())
         {
@@ -104,6 +107,11 @@ public class GameController {
     public String getReadiness() throws GameException {
 		
 		User player = userService.getPrincipal();
+		if (player.getNetStatus() == NetStatus.OFFLINE)
+		{
+			player.setNetStatus(NetStatus.ONLINE);
+			userService.changeNetStatus(player, NetStatus.ONLINE.getValue()); 
+		}
 		
 		Game game = gameInitService.getGame(player, GameState.IN_PROGRESS);
 		
@@ -127,6 +135,10 @@ public class GameController {
 	@ResponseStatus(HttpStatus.OK)
 	public @ResponseBody List<Category> getGameCategories() throws GameException {
 		User player = userService.getPrincipal();
+		if (player.getNetStatus() == NetStatus.OFFLINE)
+        {
+        	throw new GameException(512, "Your user is OFFLINE. Please, check Readiness to make it online.");
+        }
 		
 		Game game = gameInitService.getGame(player, GameState.IN_PROGRESS);
 		
@@ -137,7 +149,7 @@ public class GameController {
 	        	throw new GameException(514, "Game not found! User " + player.getUsername() + " is not playing any game"); 
 	        }
         }
-        
+                
         //check if player is host
         if (game.getRound().getHost().getId() != player.getId()) {
         	throw new GameException(514, "User is not a host for current round");
@@ -147,25 +159,25 @@ public class GameController {
         	throw new GameException(514, "Game Readiness is: " + game.getReadiness().toString() + ". Should be: CATEGORY");
         }
         
-        /*//if player is bot
-        if (player.getType().equals(UserType.BOT)) {
-        	
-        }
-        else {*/
-	        Category theme = game.getTheme();
-	        List<Category> categories = categoryService.getAllCategoriesFromThemes(theme.getId());
-	        if (categories.size() == 1) {
-	        	gameService.saveRoundCategory(game, categories.get(0));
-	        	return new ArrayList<Category>();
-	        }
-	        return categories;
-        //}
+        Category theme = game.getTheme();
+	    List<Category> categories = categoryService.getAllCategoriesFromThemes(theme.getId());
+	    if (categories.size() == 1) {
+	    	gameService.saveRoundCategory(game, categories.get(0));
+	    	
+	       	return new ArrayList<Category>();
+	    }
+	    return categories;
+       
 	}
 	
 	@RequestMapping(value="/api/game/category", method=RequestMethod.POST)
 	@ResponseStatus(HttpStatus.OK)
 	public void saveRoundCategory(@RequestParam int category) throws GameException {
 		User player = userService.getPrincipal();
+		if (player.getNetStatus() == NetStatus.OFFLINE)
+        {
+        	throw new GameException(512, "Your user is OFFLINE. Please, check Readiness to make it online.");
+        }
 		
 		Game game = gameInitService.getGame(player, GameState.IN_PROGRESS);
 		
@@ -186,7 +198,7 @@ public class GameController {
         }
         
         Category categoryObj = categoryService.getCategoryById(category);
-        
+             
         gameService.saveRoundCategory(game, categoryObj);
         
 	}
@@ -197,7 +209,11 @@ public class GameController {
 			produces={"application/json; charset=UTF-8"})
 	public @ResponseBody Question getNextQuestion() throws GameException {
 		User player = userService.getPrincipal();
-        
+		if (player.getNetStatus() == NetStatus.OFFLINE)
+        {
+        	throw new GameException(512, "Your user is OFFLINE. Please, check Readiness to make it online.");
+        }
+		
         Game game = gameInitService.getGame(player, GameState.IN_PROGRESS);
         if (game == null)
         {
@@ -219,20 +235,8 @@ public class GameController {
         	throw new GameException(516, "User already got his new question in this round but other players haven't got it yet");
         }
         
-        
-        Question question = gameService.getNextQuestion(game, player);
-        if (question == null)
-        {
-        	throw new GameException(516, "There is no next question in this round!");
-        }
-        
-        if (round.allHumanGotQuestion())
-        {
-        	game.setReadiness(Readiness.ANSWER);
-        	gameService.updateGame(game);
-        	
-        	offlinePlayerChecker.setUpTimeout(game, Readiness.ANSWER);
-        }
+           
+        Question question = gameService.processQuestion(game, player);
             	
         return question;
 	}
@@ -240,7 +244,11 @@ public class GameController {
 	@RequestMapping(value="/api/game/answer", method=RequestMethod.POST)
 	public void answer(@RequestParam int variant, @RequestParam int time) throws GameException {
 		User player = userService.getPrincipal();
-        
+		if (player.getNetStatus() == NetStatus.OFFLINE)
+        {
+        	throw new GameException(512, "Your user is OFFLINE. Please, check Readiness to make it online.");
+        }
+		
 		Game game = gameInitService.getGame(player, GameState.IN_PROGRESS);
         if (game == null)
         {
@@ -257,26 +265,6 @@ public class GameController {
         }
         
         gameService.processAnswer(game, player, variant, time);
-        
-        GameRound round = game.getRound();
-        
-        // if all Humans already answered
-        if (game.getHumanPlayersCount() == round.getHumanAnswerCount())
-        {        	
-        	gameService.processBotsAnswers(game);
-        	
-        	int questionNumber = round.getQuestionNumber(player) - 1;
-        	Question question = round.getQuestion(questionNumber);
-        	
-        	gameService.finishQuestionStep(round, question);
-        	
-        	round.setHumanAnswerCount(0);
-        	gameService.updateGameRound(round);
-        	
-        	game.setReadiness(Readiness.RESULT);
-        	gameService.updateGame(game);
-        	      	        	        	     	
-        }
        
 	}
 	
@@ -284,7 +272,11 @@ public class GameController {
 			produces={"application/json; charset=UTF-8"})
 	public @ResponseBody List<QuestionResult> getQuestionResult() throws GameException {
 		User player = userService.getPrincipal();
-        
+		if (player.getNetStatus() == NetStatus.OFFLINE)
+        {
+        	throw new GameException(512, "Your user is OFFLINE. Please, check Readiness to make it online.");
+        }
+		
 		Game game = gameInitService.getGame(player, GameState.IN_PROGRESS);
         if (game == null)
         {
@@ -300,57 +292,19 @@ public class GameController {
         	throw new GameException(518, "Game Readiness is: " + game.getReadiness().toString() + ". Should be: RESULT");
         }
 		
-        GameRound round = game.getRound();
+        List<QuestionResult>  result = gameService.processResult(game, player);
         
-        round.setHumanAnswerCount(round.getHumanAnswerCount() + 1);
-    	gameService.updateGameRound(round);
-        
-        List<QuestionResult> result = gameService.getPersonalResults(game, player);
-                
-        // if all humans already called /api/game/results after their answers
-        if (game.getHumanPlayersCount() == round.getHumanAnswerCount())
-        {
-        	round.setHumanAnswerCount(0);
-        	gameService.updateGameRound(round);
-        	if (round.endOfRound())
-        	{
-        		boolean hasNextRound = gameService.nextRound(game);
-            	if (!hasNextRound)
-            	{       	
-            		game.setReadiness(Readiness.SUMMARY);
-                	gameService.updateGame(game);
-                	
-            		gameService.finishGame(game);
-    		
-            	} 
-            	else
-            	{
-            		// if next round host is bot, set category
-            		if (game.getRound().getHost().getType() == UserType.BOT)
-            		{
-            			gameService.setRandomCategory(game);
-            		}
-            		else
-            		{
-            			game.setReadiness(Readiness.CATEGORY);
-            			gameService.updateGame(game);
-            		}
-            	}
-        	}
-        	else
-        	{
-        		game.setReadiness(Readiness.QUESTION);
-        		gameService.updateGame(game);
-        	}
-        }
-                
         return result;
 	}
 	
 	@RequestMapping(value="/api/game/summary", method=RequestMethod.POST)
 	public @ResponseBody List<ScoreSummary> getScoreSummary() throws GameException {
 		User player = userService.getPrincipal();
-        
+		if (player.getNetStatus() == NetStatus.OFFLINE)
+        {
+        	throw new GameException(512, "Your user is OFFLINE. Please, check Readiness to make it online.");
+        }
+		
 		Game game = gameInitService.getGame(player, GameState.IN_PROGRESS);
         if (game == null)
         {

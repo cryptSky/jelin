@@ -41,7 +41,7 @@ public class GameInitRepositoryImpl implements GameInitRepository {
 	public static final String GET_INVITE_STATUS = "FROM InviteStatus " +
 			"WHERE status = :status ";
 	
-	public static final String GET_INVITE_GAME = "SELECT g FROM Game g JOIN g.gameOpponents o " +
+	public static final String GET_INVITE_GAME = "SELECT g FROM Game g JOIN g.gameInvitationOpponents o " +
 			"WHERE g.gameState = :gameState " +
 			"AND o.user = :user " +
 			"AND o.inviteStatus = :inviteStatus";

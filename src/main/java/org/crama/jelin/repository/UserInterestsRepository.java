@@ -2,6 +2,7 @@ package org.crama.jelin.repository;
 
 import java.util.List;
 
+import org.crama.jelin.model.Game;
 import org.crama.jelin.model.User;
 
 public interface UserInterestsRepository {
@@ -13,5 +14,5 @@ public interface UserInterestsRepository {
 	
 	List<User> getUsersByThemeAndDifficultyFromUsers(List<User> users, int themeID, int difficultyID);
 	
-	
+	void updateInterests(Game game);
 }

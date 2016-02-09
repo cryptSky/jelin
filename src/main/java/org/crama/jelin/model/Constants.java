@@ -12,16 +12,12 @@ public class Constants {
 	public static final LocalDate  EARLY_SIGNUP_START_DATE = LocalDate.of(2016, Month.JANUARY, 1);
 	public static final LocalDate  EARLY_SIGNUP_END_DATE = LocalDate.of(2016, Month.MARCH, 1);
 	
-	public static final int QUESTION_NUMBER = 3;
+	public static final int QUESTION_NUMBER = 1;
+	public static final int ROUND_NUMBER = 1;
+	
 	public static final String BUNDLE_ID = "com.nt.Jelin"; 
 	public static final String P12_PASSWORD = "p124zI78KlmP";
 	
-	public static int categorySelectTimeoutSec = 20;
-	public static int answerSelectTimeoutSec = 20;
-	public static int questionSelectTimeoutSec = 20;
-	public static int resultSelectTimeoutSec = 20;
-	
-		
 	public enum UserType {
 		HUMAN(0),
 		BOT(1);
@@ -183,7 +179,7 @@ public class Constants {
 	    }
 	}
 	
-	public static final int[] OFFLINE_TIMEOUT_SEC = {20, 20, 20, 20, 20};
+	public static final int[] OFFLINE_TIMEOUT_SEC = {30, 30, 30, 30, 30};
 	
 	public enum NotificationType {
 		

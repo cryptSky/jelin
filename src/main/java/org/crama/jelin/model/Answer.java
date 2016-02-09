@@ -33,6 +33,10 @@ public class Answer implements Serializable {
 	private Question question;
 	
 	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JoinColumn(name = "GAME_ID")
+	private Game game;
+	
+	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JoinColumn(name = "PLAYER_ID")
 	private User player;
 	
@@ -49,6 +53,7 @@ public class Answer implements Serializable {
 
 	public Answer(GameRound round, Question question, User player, int variant, int time) {
 		super();
+		this.game = round.getGame();
 		this.round = round;
 		this.question = question;
 		this.player = player;
@@ -102,6 +107,18 @@ public class Answer implements Serializable {
 
 	public void setTime(int time) {
 		this.time = time;
+	}
+
+	public Game getGame() {
+		return game;
+	}
+
+	public void setGame(Game game) {
+		this.game = game;
+	}
+
+	public void setPlayer(User player) {
+		this.player = player;
 	}
 	
 	

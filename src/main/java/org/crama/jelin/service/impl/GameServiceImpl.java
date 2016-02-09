@@ -11,6 +11,7 @@ import org.crama.jelin.model.Category;
 import org.crama.jelin.model.Constants;
 import org.crama.jelin.model.Constants.GameState;
 import org.crama.jelin.model.Constants.InviteStatus;
+import org.crama.jelin.model.Constants.NetStatus;
 import org.crama.jelin.model.Constants.ProcessStatus;
 import org.crama.jelin.model.Constants.Readiness;
 import org.crama.jelin.model.Constants.UserType;
@@ -28,10 +29,12 @@ import org.crama.jelin.repository.GameRepository;
 import org.crama.jelin.repository.GameRoundRepository;
 import org.crama.jelin.repository.QuestionResultRepository;
 import org.crama.jelin.repository.ScoreSummaryRepository;
+import org.crama.jelin.repository.UserInterestsRepository;
 import org.crama.jelin.repository.UserRepository;
 import org.crama.jelin.service.CategoryService;
 import org.crama.jelin.service.GameBotService;
 import org.crama.jelin.service.GameService;
+import org.crama.jelin.service.OfflinePlayerChecker;
 import org.crama.jelin.service.PointsCalculatorService;
 import org.crama.jelin.service.QuestionService;
 import org.crama.jelin.service.UserActivityService;
@@ -82,6 +85,12 @@ public class GameServiceImpl implements GameService {
 	@Autowired
 	private UserStatisticsService userStatisticsService;
 	
+	@Autowired
+	private OfflinePlayerChecker offlinePlayerChecker;
+	
+	@Autowired 
+	private UserInterestsRepository userInterestsRepository; 
+	
 	@Override
 	@Transactional
 	public void startGame(Game game) throws GameException {
@@ -89,7 +98,7 @@ public class GameServiceImpl implements GameService {
 						
 		List<GameRound> gameRounds = new ArrayList<GameRound>();
 
-		for (int round = 0; round < 4; round++)
+		for (int round = 0; round < Constants.ROUND_NUMBER; round++)
 		{
 			GameRound gameRound = new GameRound(game, round, hosts.get(round));
 			gameRounds.add(gameRound);
@@ -100,20 +109,19 @@ public class GameServiceImpl implements GameService {
 		game.setReadiness(Readiness.CATEGORY);
 		
 		gameRoundRepository.saveOrUpdateRounds(gameRounds);
-		gameRepository.updateGame(game);
-		
+		updateGame(game);
 		
 		if (hosts.get(0).getType() == UserType.BOT)
 		{
-			setRandomCategory(game);
-			
+			setRandomCategory(game);			
 		}
 		
 		gameRoundRepository.saveOrUpdateRounds(gameRounds);
-		gameRepository.updateGame(game);
+		updateGame(game);
 		
 		User creator = game.getCreator();
 		creator.setProcessStatus(ProcessStatus.INGAME);
+		creator.setReadiness(Readiness.CATEGORY);
 		userRepository.updateUser(creator);
 		
 		userActivityService.saveUserGameActivity(creator);
@@ -124,16 +132,343 @@ public class GameServiceImpl implements GameService {
 			if (opponent.getInviteStatus().equals(InviteStatus.ACCEPTED)) {
 				User player = opponent.getUser();
 				player.setProcessStatus(ProcessStatus.INGAME);
+				
+				player.setReadiness(Readiness.CATEGORY);
+				
 				userRepository.updateUser(player);
 				
 				userActivityService.saveUserGameActivity(player);
 			}
 		}
 		
+		offlinePlayerChecker.setUpTimeout(game, Readiness.CATEGORY);	
+				
+	}
+	
+	@Override
+	@Transactional
+	public Question processQuestion(Game game, User user) throws GameException {
 		
+		boolean callerIsOnline = user.getNetStatus() != NetStatus.OFFLINE;
+		if (!callerIsOnline)
+		{
+			user = userRepository.getUser(user.getId());
+			game = gameRepository.reloadGame(game);
+			
+		}
+			
+		Question question = getNextQuestion(game, user);
+        if (question == null)
+        {
+        	throw new GameException(516, "There is no next question in this round!");
+        }
+        	
+        user.setReadiness(Readiness.QUESTION);
+        userRepository.updateUser(user);
+        updateGame(game);
+       
+        if ((callerIsOnline && game.allActiveHasReadiness(Readiness.QUESTION)) ||
+				(!callerIsOnline && game.allHasReadiness(Readiness.QUESTION)))
+        {
+			if (callerIsOnline)
+			{
+				for (User player: game.getOfflinePlayers())
+				{
+					getNextQuestion(game, player);			
+				}
+			}
+			
+			game.setReadiness(Readiness.ANSWER);
+        	updateGame(game);
+        	
+        	if (callerIsOnline || (!callerIsOnline && game.hasActivePlayersExceptPlayer(user)))
+        	{
+        		offlinePlayerChecker.setUpTimeout(game, Readiness.ANSWER);
+        	}
+        }
 		
+		return question;
 	}
 
+	@Override
+	@Transactional
+	public void processAnswer(Game game, User player, int variant, int time) {
+		
+		boolean callerIsOnline = player.getNetStatus() != NetStatus.OFFLINE; 
+		if (!callerIsOnline)
+		{
+			player = userRepository.getUser(player.getId());
+			game = gameRepository.reloadGame(game);
+		}
+		
+		processUserAnswer(game, player, variant, time);
+		
+		player.setReadiness(Readiness.ANSWER);
+        userRepository.updateUser(player);
+        updateGame(game);
+		
+        GameRound round = game.getRound();
+        List<User> offlineUsers = game.getOfflinePlayers();
+           
+        if (callerIsOnline && ( game.allActiveHasReadiness(Readiness.ANSWER)) ||
+        		(!callerIsOnline && game.allHasReadiness(Readiness.ANSWER)))
+        {   
+        	// check if process answer is called by online platers and not from offline checker
+        	if (callerIsOnline)
+        	{
+        		// process offline users
+        		for (User offPlayer: offlineUsers)
+        		{
+        			// wrong answer for offline users
+        			processUserAnswer(game, offPlayer, -1, 0);
+        		}
+        	}
+        	
+        	// process bots
+        	processBotsAnswers(game);
+        	
+        	int questionNumber = round.getQuestionNumber(player) - 1;
+        	Question question = round.getQuestion(questionNumber);
+        	
+        	finishQuestionStep(round, question);
+        	
+        	round.setHumanAnswerCount(0);
+        	updateGameRound(round);
+        	
+        	game.setReadiness(Readiness.RESULT);
+        	updateGame(game);
+        	
+        	if (callerIsOnline || (!callerIsOnline && game.hasActivePlayersExceptPlayer(player)))
+        	{
+        		offlinePlayerChecker.setUpTimeout(game, Readiness.RESULT);
+        	}
+        	        	        	      	        	        	     	
+        }		
+	}
+
+	@Override
+	@Transactional
+	public List<QuestionResult> processResult(Game game, User player) throws GameException {
+		GameRound round = game.getRound();        
+        round.setHumanAnswerCount(round.getHumanAnswerCount() + 1);
+    	updateGameRound(round);
+    	        
+        List<QuestionResult> result = getPersonalResults(game, player);
+                
+        processResultNow(game, player);      
+        
+        return result;		
+	}
+	
+	
+	@Transactional
+	private void processResultNow(Game game, User user) throws GameException
+	{
+		boolean callerIsOnline = user.getNetStatus() != NetStatus.OFFLINE;
+		if (!callerIsOnline)
+		{
+			user = userRepository.getUser(user.getId());
+			game = gameRepository.reloadGame(game);
+		}
+		
+		GameRound round = game.getRound();
+				
+		user.setReadiness(Readiness.RESULT);
+        userRepository.updateUser(user);
+        updateGame(game);
+        
+         // if all online/shadow humans already called /api/game/results after their answers
+		if ((callerIsOnline && game.allActiveHasReadiness(Readiness.RESULT)) ||
+        		(!callerIsOnline && game.allHasReadiness(Readiness.RESULT)))
+        {					
+			round.setHumanAnswerCount(0);
+	    	updateGameRound(round);
+	    	if (round.endOfRound())
+	    	{
+	    		boolean hasNextRound = nextRound(game);
+	        	if (!hasNextRound)
+	        	{       	
+	        		game.setReadiness(Readiness.SUMMARY);
+	            	updateGame(game);
+	            	
+	        		saveScores(game);
+	        		
+	        		offlinePlayerChecker.setUpTimeout(game, Readiness.SUMMARY);
+			
+	        	} 
+	        	else
+	        	{
+	        		// if next round host is bot or offline user, set category
+	        		if (game.getRound().getHost().getType() == UserType.BOT || (game.getRound().getHost().getType() == UserType.HUMAN &&
+	        				game.getRound().getHost().getNetStatus() == NetStatus.OFFLINE))
+	        		{
+	        			setRandomCategory(game);
+	        		}
+	        		else
+	        		{
+	        			game.setReadiness(Readiness.CATEGORY);
+	        			updateGame(game);
+	        			
+	        			offlinePlayerChecker.setUpTimeout(game, Readiness.CATEGORY);
+	          		}
+	        		
+	        		setUpAllIntoCategoryReadiness(game);
+	        		
+	        	}
+	    	}
+	    	else
+	    	{
+	    		game.setReadiness(Readiness.QUESTION);
+	    		updateGame(game);
+	    		
+	    		setUpAllIntoCategoryReadiness(game);
+	    		
+	    		if (callerIsOnline || (!callerIsOnline && game.hasActivePlayersExceptPlayer(user)))
+	    		{
+	    			offlinePlayerChecker.setUpTimeout(game, Readiness.QUESTION);
+	    		}
+			}    	
+        }
+	}
+	
+	@Override
+	public Game getGameByPlayer(User player) {
+		
+		return gameOpponentRepository.getGameByPlayer(player);
+	}
+
+	@Override
+	@Transactional
+	public void saveRoundCategory(Game game, Category category) throws GameException {
+				
+		GameRound gameRound = game.getRound();
+		gameRound.setCategory(category);
+		
+		List<Question> questions = questionService.getRandomQuestionList(category, game.getDifficulty(), Constants.QUESTION_NUMBER);
+		
+		for (Question q: questions) {
+			gameRound.addQuestion(q);
+		}
+		
+		gameRoundRepository.updateRound(gameRound);
+		
+		game.setReadiness(Readiness.QUESTION);
+		updateGame(game);
+		
+		if (game.hasActivePlayers())
+		{
+			offlinePlayerChecker.setUpTimeout(game, Readiness.QUESTION);
+		}
+		
+	}
+	
+	private void setUpAllIntoCategoryReadiness(Game game)
+	{
+		List<User> humans = game.getHumans();
+		for (User human: humans)
+		{
+			human.setReadiness(Readiness.CATEGORY);
+			userRepository.updateUser(human);
+		}
+		updateGame(game);
+	}
+	
+	private Question getNextQuestion(Game game, User player) {
+		GameRound gameRound = game.getRound();
+        int questionNumber = gameRound.getQuestionNumber(player);
+                        
+        Question question = gameRound.getQuestion(questionNumber);
+        if (question == null)
+        {
+        	return null;
+        }
+         
+        questionNumber++;
+        gameRound.setQuestionNumber(player, questionNumber);
+        gameRoundRepository.updateRound(gameRound);
+        
+        return question;
+  	}
+	
+	@Override
+	@Transactional
+	public void setRandomCategory(Game game) throws GameException {
+		Category category = categoryService.getRandomCategoryFromTheme(game.getTheme());
+		if (category == null)
+		{
+			throw new GameException(0, "There is no category in this theme!");
+		}
+		
+		saveRoundCategory(game, category);
+		
+	}
+	
+	private void processUserAnswer(Game game, User player, int variant, int time) {
+		GameRound gameRound = game.getRound();
+        int questionNumber = gameRound.getQuestionNumber(player);
+        questionNumber--; 
+        Question question = gameRound.getQuestion(questionNumber);
+                
+        if (player.getType() == UserType.HUMAN)
+        {
+        	int answerCount = gameRound.getHumanAnswerCount();
+        	answerCount++;
+        	gameRound.setHumanAnswerCount(answerCount);
+        }
+       
+        gameRoundRepository.updateRound(gameRound);
+                
+        Answer answer = new Answer(gameRound, question, player, variant, time);
+        answerRepository.saveAnswer(answer);
+      		
+	}
+
+	
+	@Override
+	public List<QuestionResult> getPersonalResults(Game game, User player) throws GameException {
+		List<QuestionResult> results = questionResultRepository.getPersonalResults(game, player);
+		return results;
+	}
+
+	@Override
+	public List<ScoreSummary> getScoreSummary(Game game) {
+		List<ScoreSummary> summary = scoreSummaryRepository.getSummaryByGame(game);
+		
+		return summary;
+	}
+	
+	@Override
+	@Transactional
+	public void updateGame(Game game) {
+		gameRepository.updateGame(game);		
+	}
+	
+	@Override
+	@Transactional
+	public void finishGame(Game game) {
+				
+		userInterestsRepository.updateInterests(game);
+		
+		game.setGameState(GameState.ENDED);
+		updateGame(game);
+		
+		for (User player: game.getHumans())
+		{
+			player.setProcessStatus(ProcessStatus.FREE);
+			player.setReadiness(Readiness.CATEGORY);
+			userRepository.updateUser(player);
+		}
+		
+		gameRepository.cleanUpGame(game);
+					
+	}
+	
+	@Override
+	@Transactional
+	public OfflinePlayerChecker getOfflineChecker() {
+		return offlinePlayerChecker;
+	}
+	
 	private ArrayList<User> setUpHosts(Game game)
 	{
 		int playersCount = game.getGameOpponents().size() + 1;
@@ -161,70 +496,7 @@ public class GameServiceImpl implements GameService {
 		return hostOrder;		
 	}
 
-	@Override
-	public Game getGameByPlayer(User player) {
-		
-		return gameOpponentRepository.getGameByPlayer(player);
-	}
-
-	@Override
-	public void saveRoundCategory(Game game, Category category) throws GameException {
-		GameRound gameRound = game.getRound();
-		gameRound.setCategory(category);
-		
-		List<Question> questions = questionService.getRandomQuestionList(category, game.getDifficulty(), Constants.QUESTION_NUMBER);
-		
-		for (Question q: questions) {
-			gameRound.addQuestion(q);
-		}
-		
-		gameRoundRepository.updateRound(gameRound);
-		game.setReadiness(Readiness.QUESTION);
-		updateGame(game);
-		
-	}
-
-	@Override
-	public void processAnswer(Game game, User player, int variant, int time) {
-		GameRound gameRound = game.getRound();
-        int questionNumber = gameRound.getQuestionNumber(player);
-        questionNumber--; 
-        Question question = gameRound.getQuestion(questionNumber);
-                
-        if (player.getType() == UserType.HUMAN)
-        {
-        	int answerCount = gameRound.getHumanAnswerCount();
-        	answerCount++;
-        	gameRound.setHumanAnswerCount(answerCount);
-        }
-       
-        gameRoundRepository.updateRound(gameRound);
-                
-        Answer answer = new Answer(gameRound, question, player, variant, time);
-        answerRepository.saveAnswer(answer);
-      		
-	}
-
-	@Override
-	public Question getNextQuestion(Game game, User player) {
-		GameRound gameRound = game.getRound();
-        int questionNumber = gameRound.getQuestionNumber(player);
-                        
-        Question question = gameRound.getQuestion(questionNumber);
-        if (question == null)
-        {
-        	return null;
-        }
-         
-        questionNumber++;
-        gameRound.setQuestionNumber(player, questionNumber);
-        gameRoundRepository.updateRound(gameRound);
-        
-        return question;
-  	}
-
-	@Override
-	public void processBotsAnswers(Game game) {
+	private void processBotsAnswers(Game game) {
 		
     	for (GameOpponent opponent: game.getGameOpponents())
     	{
@@ -237,7 +509,7 @@ public class GameServiceImpl implements GameService {
     			int botChoice = gameBotService.getBotChoice(bot, question);
     			int botTime = gameBotService.getBotTime(bot, question);
     			
-    			processAnswer(game, user, botChoice, botTime);
+    			processUserAnswer(game, user, botChoice, botTime);
     		}
     	}
 
@@ -259,8 +531,7 @@ public class GameServiceImpl implements GameService {
 		}
 	}
 	
-	@Override
-	public boolean nextRound(Game game) {
+	private boolean nextRound(Game game) {
 		GameRound nextRound = getNextRound(game);
 		if (nextRound == null)
 		{
@@ -273,27 +544,8 @@ public class GameServiceImpl implements GameService {
 		return true;		
 	}
 
-	@Override
-	public void finishQuestionStep(GameRound round, Question question) {
+	private void finishQuestionStep(GameRound round, Question question) {
 		pointsCalculatorService.calculateQuestion(round, question);		
-	}
-
-	@Override
-	public List<QuestionResult> getPersonalResults(Game game, User player) throws GameException {
-		List<QuestionResult> results = questionResultRepository.getPersonalResults(game, player);
-		QuestionResult lastResult = results.get(results.size()-1);
-		lastResult.setGotResult(true);
-		questionResultRepository.update(lastResult);
-		return results;
-	}
-
-	@Override
-	public void finishGame(Game game) {
-		saveScores(game);		
-				
-		// game.setGameState(GameState.ENDED);
-		// updateGame(game);
-		
 	}
 
 	private void saveScores(Game game)
@@ -321,46 +573,16 @@ public class GameServiceImpl implements GameService {
 		{
 			int playerNumber = i + 1;
 			User player = game.getUserByPlayerNumber(playerNumber);
-			ScoreSummary summary = new ScoreSummary(scores[i], player, game);
+			long wrongAnswers = questionResultRepository.getWrongAnswerCount(game, player);
+			long rightAnswers = Constants.ROUND_NUMBER*Constants.QUESTION_NUMBER - wrongAnswers;
+			ScoreSummary summary = new ScoreSummary(scores[i], player, game, wrongAnswers, rightAnswers);
 			
 			scoreSummaryRepository.saveSummary(summary);
 		}
 	}
 	
-	@Override
-	public List<ScoreSummary> getScoreSummary(Game game) {
-		List<ScoreSummary> summary = scoreSummaryRepository.getSummaryByGame(game);
-		
-		return summary;
-	}
-
-	@Override
-	public void updateGame(Game game) {
-		gameRepository.updateGame(game);
-		
-	}
-	
-	@Override
-	public void updateGameRound(GameRound round) {
+	private void updateGameRound(GameRound round) {
 		gameRoundRepository.updateRound(round);
-		
-	}
-
-	@Override
-	public void setRandomCategory(Game game) throws GameException {
-		Category category = categoryService.getRandomCategoryFromTheme(game.getTheme());
-		if (category == null)
-		{
-			throw new GameException(0, "There is no category in this theme!");
-		}
-		
-		saveRoundCategory(game, category);
-		
-	}
-
-	@Override
-	public void finishRound(GameRound round) {
-		pointsCalculatorService.calculate(round);
 		
 	}
 
