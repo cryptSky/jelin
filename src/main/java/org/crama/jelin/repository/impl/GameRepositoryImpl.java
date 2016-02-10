@@ -15,6 +15,8 @@ import org.crama.jelin.repository.GameRoundRepository;
 import org.crama.jelin.repository.QuestionResultRepository;
 import org.crama.jelin.repository.ScoreSummaryRepository;
 import org.hibernate.Criteria;
+import org.hibernate.LockMode;
+import org.hibernate.LockOptions;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -53,7 +55,6 @@ public class GameRepositoryImpl implements GameRepository {
 		
 		Session session = sessionFactory.getCurrentSession();	
 		session.update(game);
-		
 	}
 
 	@Override
@@ -128,6 +129,13 @@ public class GameRepositoryImpl implements GameRepository {
 		{
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	public void lock(Game game) {
+		Session session = sessionFactory.getCurrentSession();	
+		session.buildLockRequest(LockOptions.NONE).lock(game);
+		
 	}	
 
 }

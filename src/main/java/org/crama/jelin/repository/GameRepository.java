@@ -11,4 +11,6 @@ public interface GameRepository {
 	void cleanUpGame(Game game);
 	
 	Game reloadGame(Game game);
+
+	void lock(Game game);
 }

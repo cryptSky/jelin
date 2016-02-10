@@ -49,5 +49,7 @@ public interface UserRepository {
 	User getByEmailAddress(String email);
 	
 	List<User> getPlayersNotWithReadiness(Readiness readiness, Game game);
+
+	void lock(User user);
 	
 }

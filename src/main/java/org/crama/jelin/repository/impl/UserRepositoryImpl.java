@@ -17,6 +17,7 @@ import org.crama.jelin.model.UserRole;
 import org.crama.jelin.model.UserSession;
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
+import org.hibernate.LockOptions;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -136,7 +137,7 @@ public class UserRepositoryImpl implements UserRepository {
 		System.out.println("update user");
 		Session session = sessionFactory.getCurrentSession();	
 		session.update(user);
-		
+				
 	}
 
 	@SuppressWarnings("unchecked")
@@ -216,10 +217,12 @@ public class UserRepositoryImpl implements UserRepository {
 	@Override
 	@Transactional
 	public void updateNetStatus(User user, NetStatus s) {
-		Query query = sessionFactory.getCurrentSession().createQuery(UPDATE_USERS_NET_STATUS);
+		Session session = sessionFactory.getCurrentSession();
+		Query query = session.createQuery(UPDATE_USERS_NET_STATUS);
 		query.setParameter("status", s);
 		query.setParameter("id", user.getId());
 		query.executeUpdate();
+		session.flush();
 	}
 
 	@Override
@@ -246,6 +249,13 @@ public class UserRepositoryImpl implements UserRepository {
 				.add(Restrictions.eq("type", UserType.HUMAN))
 				.add(Restrictions.eq("netStatus", NetStatus.ONLINE));
 		return criteria.list();
+	}
+
+	@Override
+	public void lock(User user) {
+		Session session = sessionFactory.getCurrentSession();
+		session.buildLockRequest(LockOptions.NONE).lock(user);
+		
 	}
 
 	

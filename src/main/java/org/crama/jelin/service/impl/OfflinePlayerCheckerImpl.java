@@ -47,18 +47,17 @@ public class OfflinePlayerCheckerImpl implements OfflinePlayerChecker {
 					if (gameRepository.getReadiness(game) != condition)
 		            {
 		              	offlineWorker.cancel(false);
-		              	System.out.println("All users are online! Canceled offlineWorker task. Shutdowning scheduler...");
+		              	System.out.println("[Game " + game.getId() + "]: All users who were online before are online now! Canceled offlineWorker task. Shutdowning scheduler...");
 		               	scheduler.shutdown();	
 		            }
 					else
 					{
-						System.out.println("Readiness is still " + condition.toString() +". Will check again in " + countdownPeriod + " seconds.");
+						System.out.println("[Game " + game.getId() + "] Readiness is still " + condition.toString() +". Will check again in " + countdownPeriod + " seconds.");
 					}
 				}
 				else
 				{
-					//offlineWorker.get();
-					System.out.println("Offline users processed. Shutdowning scheduler...");					
+					System.out.println("[Game " + game.getId() + "] Offline users processed. Shutdowning scheduler...");					
 					scheduler.shutdown();
 					
 				}

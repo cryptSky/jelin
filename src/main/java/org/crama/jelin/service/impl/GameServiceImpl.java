@@ -160,6 +160,8 @@ public class GameServiceImpl implements GameService {
 		{
 			user = userRepository.getUser(user.getId());
 			game = gameRepository.reloadGame(game);
+			userRepository.lock(user);
+			gameRepository.lock(game);
 			
 		}
 			
@@ -205,6 +207,8 @@ public class GameServiceImpl implements GameService {
 		{
 			player = userRepository.getUser(player.getId());
 			game = gameRepository.reloadGame(game);
+			userRepository.lock(player);
+			gameRepository.lock(game);
 		}
 		
 		processUserAnswer(game, player, variant, time);
@@ -276,6 +280,8 @@ public class GameServiceImpl implements GameService {
 		{
 			user = userRepository.getUser(user.getId());
 			game = gameRepository.reloadGame(game);
+			userRepository.lock(user);
+			gameRepository.lock(game);
 		}
 		
 		GameRound round = game.getRound();

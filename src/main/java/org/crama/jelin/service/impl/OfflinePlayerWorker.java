@@ -22,7 +22,7 @@ import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-@Service
+@Service("offlinePlayerWorker")
 public class OfflinePlayerWorker implements Runnable {
 
 	private Game game;
@@ -119,8 +119,7 @@ public class OfflinePlayerWorker implements Runnable {
 							{
 								player.setNetStatus(NetStatus.OFFLINE);
 								userRepository.updateNetStatus(player, NetStatus.OFFLINE);
-								gameService.updateGame(game);
-								
+																
 								gameService.processQuestion(game, player);
 								System.out.println("[QUESTION] Processing next question for user " + player.getUsername()+ ". He is offline.");								
 							}
@@ -129,8 +128,7 @@ public class OfflinePlayerWorker implements Runnable {
 							{
 								player.setNetStatus(NetStatus.OFFLINE);
 								userRepository.updateNetStatus(player, NetStatus.OFFLINE);
-								gameService.updateGame(game);
-								
+																
 								gameService.processAnswer(game, player, -1, 0);
 								System.out.println("[ANSWER] Processing answer for user " + player.getUsername()+ ". He is offline.");
 								
@@ -141,8 +139,7 @@ public class OfflinePlayerWorker implements Runnable {
 							{
 								player.setNetStatus(NetStatus.OFFLINE);
 								userRepository.updateNetStatus(player, NetStatus.OFFLINE);
-								gameService.updateGame(game);
-								
+																
 								gameService.processResult(game, player);									
 								System.out.println("[RESULT] Processing result for user " + player.getUsername()+ ". He is offline.");
 							}
@@ -153,7 +150,6 @@ public class OfflinePlayerWorker implements Runnable {
 			
 		}
 		
-		gameService.updateGame(game);
 	}
 	
 }
