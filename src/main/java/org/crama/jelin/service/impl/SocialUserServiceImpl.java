@@ -189,7 +189,7 @@ public class SocialUserServiceImpl implements SocialUserService {
 			}
 			
 		}
-		//TODO
+		
 		else if (providerId.equals("twitter")) {
 			return checkTwitter(socialUser);
 			
