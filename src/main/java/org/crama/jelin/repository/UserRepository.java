@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.crama.jelin.model.Constants.Language;
 import org.crama.jelin.model.Constants.NetStatus;
+import org.crama.jelin.model.Constants.Readiness;
+import org.crama.jelin.model.Game;
 import org.crama.jelin.model.User;
 import org.crama.jelin.model.UserModel;
 import org.crama.jelin.model.UserRole;
@@ -45,5 +47,9 @@ public interface UserRepository {
 	void updateNetStatus(User user, NetStatus s);
 
 	User getByEmailAddress(String email);
+	
+	List<User> getPlayersNotWithReadiness(Readiness readiness, Game game);
 
+	void lock(User user);
+	
 }

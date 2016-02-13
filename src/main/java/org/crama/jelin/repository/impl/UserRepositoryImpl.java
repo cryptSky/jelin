@@ -1,17 +1,23 @@
 package org.crama.jelin.repository.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.transaction.Transactional;
 
 import org.crama.jelin.model.Constants.NetStatus;
 import org.crama.jelin.model.Constants.ProcessStatus;
+import org.crama.jelin.model.Constants.Readiness;
+import org.crama.jelin.model.Constants.UserType;
+import org.crama.jelin.model.Game;
 import org.crama.jelin.repository.UserRepository;
 import org.crama.jelin.model.User;
 import org.crama.jelin.model.UserModel;
 import org.crama.jelin.model.UserRole;
+import org.crama.jelin.model.UserSession;
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
+import org.hibernate.LockOptions;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -131,7 +137,7 @@ public class UserRepositoryImpl implements UserRepository {
 		System.out.println("update user");
 		Session session = sessionFactory.getCurrentSession();	
 		session.update(user);
-		
+				
 	}
 
 	@SuppressWarnings("unchecked")
@@ -211,10 +217,12 @@ public class UserRepositoryImpl implements UserRepository {
 	@Override
 	@Transactional
 	public void updateNetStatus(User user, NetStatus s) {
-		Query query = sessionFactory.getCurrentSession().createQuery(UPDATE_USERS_NET_STATUS);
+		Session session = sessionFactory.getCurrentSession();
+		Query query = session.createQuery(UPDATE_USERS_NET_STATUS);
 		query.setParameter("status", s);
 		query.setParameter("id", user.getId());
 		query.executeUpdate();
+		session.flush();
 	}
 
 	@Override
@@ -223,6 +231,31 @@ public class UserRepositoryImpl implements UserRepository {
 		query.setParameter("email", email);
 		User user = (User)query.uniqueResult();
 		return user;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	@Transactional
+	public List<User> getPlayersNotWithReadiness(Readiness readiness, Game game) {
+		List<Integer> ids = new ArrayList<Integer>();
+		for (User player: game.getHumans())
+		{
+			ids.add(player.getId());
+		}
+		
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(User.class);
+		criteria.add(Restrictions.in("id", ids))
+				.add(Restrictions.ne("readiness", readiness))
+				.add(Restrictions.eq("type", UserType.HUMAN))
+				.add(Restrictions.eq("netStatus", NetStatus.ONLINE));
+		return criteria.list();
+	}
+
+	@Override
+	public void lock(User user) {
+		Session session = sessionFactory.getCurrentSession();
+		session.buildLockRequest(LockOptions.NONE).lock(user);
+		
 	}
 
 	

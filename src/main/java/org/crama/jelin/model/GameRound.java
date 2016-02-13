@@ -2,10 +2,7 @@ package org.crama.jelin.model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -18,6 +15,10 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+
+import org.crama.jelin.model.Constants.Readiness;
+
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Entity
@@ -207,9 +208,11 @@ public class GameRound implements Serializable {
 		this.player4QuestionNumber = player4QuestionNumber;
 	}
 
-	public Question getQuestion(int index, int questionNumber) {
-		
-		if (index < questionNumber && index < questions.size()) {
+
+	@Transactional
+	public Question getQuestion(int index, int questionNumber)
+	{
+		if (index < questionNumber && index < questions.size() && index >= 0) {
 			return questions.get(index);
 		}
 		else return null;
@@ -228,45 +231,45 @@ public class GameRound implements Serializable {
 		this.humanAnswerCount = answerCount;
 	}
 	
+	@Transactional
 	public boolean alreadyGotQuestion(User player)
 	{
-		int questionNumber = getQuestionNumber(player);
+		boolean result = player.getReadiness() == Readiness.ANSWER;
+		return result;
+	}
+	
+	@Transactional
+	public int currentQuestionNumber()
+	{		
+		int maxQuestionNumber = getMaxQuestionNumber();
+	    			
+		return maxQuestionNumber;
+	}
+	
+	@Transactional
+	private int getMaxQuestionNumber()
+	{
 		int playerCount = game.getPlayersCount();
 		int maxQuestionNumber = -1;
-		int minQuestionNumber = -1;
 		if (playerCount == 2)
 		{
-			maxQuestionNumber = Math.max(getPlayer1QuestionNumber(), getPlayer2QuestionNumber());
-			minQuestionNumber = Math.min(getPlayer1QuestionNumber(), getPlayer2QuestionNumber());					 
+			maxQuestionNumber = Math.max(getPlayer1QuestionNumber(), getPlayer2QuestionNumber());					 
 		}
 		else if (playerCount == 3)
 		{
 			maxQuestionNumber = Math.max(Math.max(getPlayer1QuestionNumber(), getPlayer2QuestionNumber()),
 					 									getPlayer3QuestionNumber());
-
-			minQuestionNumber = Math.min(Math.min(getPlayer1QuestionNumber(), getPlayer2QuestionNumber()),
-					 									getPlayer3QuestionNumber());
-
 		} else if (playerCount == 4)
 		{
 			maxQuestionNumber = Math.max(Math.max(getPlayer1QuestionNumber(), getPlayer2QuestionNumber()),
 					 Math.max(getPlayer3QuestionNumber(), getPlayer4QuestionNumber()));
-
-			minQuestionNumber = Math.min(Math.min(getPlayer1QuestionNumber(), getPlayer2QuestionNumber()),
-					 Math.min(getPlayer3QuestionNumber(), getPlayer4QuestionNumber()));
+		
 		}
 		
-		
-		if (questionNumber == maxQuestionNumber && questionNumber > minQuestionNumber)
-		{
-			return true;
-		}
-		else
-		{
-			return false;
-		}
+		return maxQuestionNumber;
 	}
 	
+	@Transactional
 	public int getQuestionNumber(User player)
 	{
 		int id = game.getPlayerNumberByUser(player);
@@ -286,6 +289,7 @@ public class GameRound implements Serializable {
 		return result;
 	}
 	
+	@Transactional
 	public void setQuestionNumber(User player, int qnumber)
 	{
 		int id = game.getPlayerNumberByUser(player);
@@ -302,31 +306,8 @@ public class GameRound implements Serializable {
 		}
 	}
 	
-	public boolean allHumanGotQuestion()
-	{
-		List<User> humans = getGame().getHumans();
-		Set<Integer> set = new HashSet<Integer>();
-		for (User human: humans)
-		{
-			int playerNumber = getGame().getPlayerNumberByUser(human);
-			switch (playerNumber)
-			{
-				case 1: set.add(getPlayer1QuestionNumber());
-						break;
-				case 2: set.add(getPlayer2QuestionNumber());
-						break;
-				case 3: set.add(getPlayer3QuestionNumber());
-						break;
-				case 4: set.add(getPlayer4QuestionNumber());
-						break;
-			}
-		}
-		
-		boolean result = set.size() == 1;
-		
-		return result;
-	}
-	
+
+	@Transactional
 	public boolean endOfRound(int questionNumber)
 	{
 		boolean result = false;
@@ -353,9 +334,12 @@ public class GameRound implements Serializable {
 		return result;
 	}
 	
+	@Transactional
 	public void writeResult(QuestionResult result)
 	{
-		switch(result.getPlayerNumber())
+		User player = result.getPlayer();
+		int playerNumber = game.getPlayerNumberByUser(player);
+		switch(playerNumber)
 		{
 			case 1: setPlayer1Points(getPlayer1Points() + result.getScore()); 
 					break;

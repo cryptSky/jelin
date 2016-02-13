@@ -28,6 +28,7 @@ import javax.persistence.TemporalType;
 import org.crama.jelin.model.Constants.Language;
 import org.crama.jelin.model.Constants.NetStatus;
 import org.crama.jelin.model.Constants.ProcessStatus;
+import org.crama.jelin.model.Constants.Readiness;
 import org.crama.jelin.model.Constants.UserType;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -88,8 +89,7 @@ public class User implements Serializable {
 	@Column(name = "LAST_GAME_TIME", columnDefinition="DATETIME")
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date lastGameTime;
-	
-	
+		
 	@JsonIgnore
 	@OneToMany(cascade=CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "user") 
 	private List<UserEnhancer> enhancerList = new ArrayList<UserEnhancer>();
@@ -140,6 +140,10 @@ public class User implements Serializable {
 	@Temporal(TemporalType.DATE)
 	@Column(name = "REGISTER_DATE", nullable = false)
 	private Date registerDate;
+	
+	@JsonIgnore
+	@Column(name = "Readiness")
+	private Readiness readiness;
 
 	
 	public User() {}
@@ -274,6 +278,14 @@ public class User implements Serializable {
 
 	public void setUserInfo(UserInfo userInfo) {
 		this.userInfo = userInfo;
+	}
+
+	public Readiness getReadiness() {
+		return readiness;
+	}
+
+	public void setReadiness(Readiness readiness) {
+		this.readiness = readiness;
 	}
 
 	public Set<User> getFriendList() {

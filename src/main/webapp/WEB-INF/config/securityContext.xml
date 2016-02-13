@@ -16,7 +16,7 @@
 <security:http create-session="stateless">
    <security:intercept-url pattern="/api/user/checkFree" access="permitAll" />
    <security:intercept-url pattern="/api/user/recovery" access="permitAll" />
-   <security:intercept-url pattern="/api/user/login/social" access="permitAll" />
+   <security:intercept-url pattern="/api/user/social/login" access="permitAll" />
    <security:intercept-url pattern="/api/user" method="PUT" access="permitAll"/>
    <security:intercept-url pattern="/api/user" method="GET" access="hasRole('ROLE_USER')"/>
    <security:intercept-url pattern="/**" access="hasRole('ROLE_USER')"/>

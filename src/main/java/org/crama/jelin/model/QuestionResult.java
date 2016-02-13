@@ -43,21 +43,28 @@ public class QuestionResult implements Serializable {
 	private GameRound gameRound;
 	
 	@JsonIgnore
-	@Column(name = "PLAYER_NUMBER")
-	private int playerNumber;
+	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JoinColumn(name = "GAME_ID")
+	private Game game;
+	
+	@JsonIgnore
+	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JoinColumn(name = "PLAYER_ID")
+	private User player;
 	
 	public QuestionResult()
 	{
 		
 	}
 
-	public QuestionResult(int answer, int score, Question question, GameRound gameRound, int playerNumber) {
+	public QuestionResult(int answer, int score, Question question, GameRound gameRound, User player) {
 		super();
+		this.game = gameRound.getGame();
 		this.answer = answer;
 		this.score = score;
 		this.question = question;
 		this.gameRound = gameRound;
-		this.playerNumber = playerNumber;
+		this.player = player;
 	}
 
 	public int getId() {
@@ -100,13 +107,21 @@ public class QuestionResult implements Serializable {
 		this.gameRound = gameRound;
 	}
 
-	public int getPlayerNumber() {
-		return playerNumber;
+	public Game getGame() {
+		return game;
 	}
 
-	public void setPlayerNumber(int playerNumber) {
-		this.playerNumber = playerNumber;
+	public void setGame(Game game) {
+		this.game = game;
 	}
-	
-	
+
+	public User getPlayer() {
+		return player;
+	}
+
+	public void setPlayer(User player) {
+		this.player = player;
+	}
+
+
 }

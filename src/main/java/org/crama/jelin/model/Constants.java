@@ -1,8 +1,6 @@
 package org.crama.jelin.model;
 
 import java.io.File;
-import java.time.LocalDate;
-import java.time.Month;
 
 public class Constants {
 	
@@ -18,6 +16,9 @@ public class Constants {
 	//public static final int QUESTION_NUMBER = 3;
 	//----settings-------
 	
+
+	public static final int QUESTION_NUMBER = 1;
+	public static final int ROUND_NUMBER = 1;
 	
 	public static final String BUNDLE_ID = "com.nt.Jelin"; 
 	public static final String P12_PASSWORD = "p124zI78KlmP";
@@ -36,7 +37,7 @@ public class Constants {
 	public static final String TWITTER_CLIENT_SECRET = "73mdj12K7jihrUlj55Wbtibv2Sl2ENObkSnpro7OAayv2f6zH2";
 	//vk
 	public static final String VK_URL = "https://api.vk.com/method/users.get";
-	
+
 	public enum UserType {
 		HUMAN(0),
 		BOT(1);
@@ -123,7 +124,8 @@ public class Constants {
 		QUESTION(1),
 		ANSWER(2),
 		RESULT(3),
-		SUMMARY(4);
+		SUMMARY(4),
+		END(5);
 		
 		private final int value;
 		
@@ -197,6 +199,8 @@ public class Constants {
 	    	return result;
 	    }
 	}
+	
+	public static final int[] OFFLINE_TIMEOUT_SEC = {30, 30, 30, 30, 30};
 	
 	public enum NotificationType {
 		

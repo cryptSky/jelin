@@ -396,6 +396,11 @@ public class GameInitServiceImpl implements GameInitService {
 	public boolean checkLastRejectTime(User opponent) {
 		
 		InviteStatus lastResponse = opponent.getUserActivity().getLastInviteResponse();
+		if (lastResponse == null)
+		{
+			return true;
+		}
+		
 		if (lastResponse.equals(InviteStatus.ACCEPTED)) {
 			return true;
 		}

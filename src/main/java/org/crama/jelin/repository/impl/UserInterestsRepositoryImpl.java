@@ -2,12 +2,22 @@ package org.crama.jelin.repository.impl;
 
 import java.util.List;
 
+import org.crama.jelin.model.Category;
+import org.crama.jelin.model.Difficulty;
+import org.crama.jelin.model.Game;
 import org.crama.jelin.model.User;
+import org.crama.jelin.model.UserInterests;
+import org.crama.jelin.model.Constants.NetStatus;
+import org.crama.jelin.model.Constants.UserType;
 import org.crama.jelin.repository.UserInterestsRepository;
+import org.hibernate.Criteria;
 import org.hibernate.Query;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository("userInterestsRepository")
 public class UserInterestsRepositoryImpl implements UserInterestsRepository {
@@ -85,6 +95,36 @@ public class UserInterestsRepositoryImpl implements UserInterestsRepository {
 		List<User> usr = query.list();
 	    		
 		return usr;
+	}
+
+	@Override
+	@Transactional
+	public void updateInterests(Game game) {
+		Session session = sessionFactory.getCurrentSession();
+		Category theme = game.getTheme();
+		Difficulty diff = game.getDifficulty();
+		for (User user: game.getHumans())
+		{
+			Criteria criteria = session.createCriteria(UserInterests.class);
+			criteria.add(Restrictions.eq("user", user))
+					.add(Restrictions.eq("theme", theme))
+					.add(Restrictions.eq("difficulty", diff));
+			UserInterests ui = (UserInterests) criteria.uniqueResult();
+			if (ui != null)
+			{
+				ui.setGamesPlayed(ui.getGamesPlayed() + 1);
+				session.update(ui);
+				session.flush();
+			}
+			else
+			{
+				ui = new UserInterests(user, theme, diff, 1);
+				session.save(ui);
+				session.flush();
+			}
+			
+		}
+		
 	}
 
 }

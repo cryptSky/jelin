@@ -8,6 +8,7 @@ import java.util.Random;
 
 import org.crama.jelin.exception.GameException;
 import org.crama.jelin.model.Category;
+import org.crama.jelin.model.Constants.UserType;
 import org.crama.jelin.model.Difficulty;
 import org.crama.jelin.model.Game;
 import org.crama.jelin.model.GameBot;
@@ -45,7 +46,7 @@ public class OpponentSearchServiceImpl implements OpponentSearchService {
 		// stage 1: search users who are shadow and free
 		List<User> shadowAndFree = userService.getUsersShadowAndFree();
 		for (User user: new ArrayList<User>(shadowAndFree)) {
-			if (!gameInitService.checkLastRejectTime(user)) {
+			if (user.getType() == UserType.HUMAN && !gameInitService.checkLastRejectTime(user)) {
 				shadowAndFree.remove(user);
 			}
 		}
@@ -57,7 +58,7 @@ public class OpponentSearchServiceImpl implements OpponentSearchService {
 		// stage2: search users who are online and free, and haven't played a lot
 		List<User> onlineAndFree = userService.getUsersOnlineAndFree();
 		for (User user: new ArrayList<User>(onlineAndFree)) {
-			if (!gameInitService.checkLastRejectTime(user)) {
+			if (user.getType() == UserType.HUMAN && !gameInitService.checkLastRejectTime(user)) {
 				onlineAndFree.remove(user);
 			}
 		}
@@ -70,7 +71,7 @@ public class OpponentSearchServiceImpl implements OpponentSearchService {
 		User exceptPlayer = game.getCreator();
 		List<User> onlineAndCalling = userService.getUsersOnlineAndCalling(exceptPlayer);
 		for (User user: new ArrayList<User>(onlineAndCalling)) {
-			if (!gameInitService.checkLastRejectTime(user)) {
+			if (user.getType() == UserType.HUMAN && !gameInitService.checkLastRejectTime(user)) {
 				onlineAndCalling.remove(user);
 			}
 		}

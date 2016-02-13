@@ -30,6 +30,7 @@ public class GameRoundRepositoryImpl implements GameRoundRepository {
 		{
 			Session session = sessionFactory.getCurrentSession();	
 			session.saveOrUpdate(round);
+						
 		}		
 
 	}
@@ -37,9 +38,9 @@ public class GameRoundRepositoryImpl implements GameRoundRepository {
 	@Override
 	@Transactional
 	public void updateRound(GameRound round) {
-		Session session = sessionFactory.getCurrentSession();	
+		Session session = sessionFactory.getCurrentSession();
 		session.update(round);
-		
+						
 	}
 
 	

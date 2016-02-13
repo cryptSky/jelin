@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import org.crama.jelin.model.UserSession;
+import org.crama.jelin.repository.UserSessionRepository;
 
 import java.util.List;
 
