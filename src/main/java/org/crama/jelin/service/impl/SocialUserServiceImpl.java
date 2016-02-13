@@ -23,6 +23,9 @@ import org.crama.jelin.service.SettingsService;
 import org.crama.jelin.service.SocialUserService;
 import org.crama.jelin.util.EmailValidator;
 import org.crama.jelin.util.RandomPasswordGenerator;
+import org.eclipse.jetty.http.HttpStatus;
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.scribe.builder.ServiceBuilder;
 import org.scribe.builder.api.TwitterApi;
@@ -180,7 +183,9 @@ public class SocialUserServiceImpl implements SocialUserService {
 
 			String requestURL = Constants.GRAPH_URL  + "me?access_token=" + socialUser.getAccessToken();
 			String responseStr = sendGetRequest(requestURL);
+			
 			JSONObject jsonResponse = new JSONObject(responseStr);
+			
 			String facebookUserId = jsonResponse.getString("id");
 			System.out.println("Facebook user id: " + facebookUserId);
 			if (socialUser.getProviderUserId().equals(facebookUserId)) {
@@ -199,6 +204,8 @@ public class SocialUserServiceImpl implements SocialUserService {
 			String responseStr = sendGetRequest(requestURL);
 			System.out.println("VK user: " + responseStr);
 			JSONObject jsonResponse = new JSONObject(responseStr);
+			
+			
 			String vkUserId = jsonResponse.getString("id");
 			System.out.println("VK user id: " + vkUserId);
 			if (socialUser.getProviderUserId().equals(vkUserId)) {
@@ -215,7 +222,7 @@ public class SocialUserServiceImpl implements SocialUserService {
 		return false;
 	}
 	
-	private boolean checkTwitter(SocialUser user) {
+	private boolean checkTwitter(SocialUser user) throws JSONException, GameException {
 		 // Enter your consumer key and secret below
         OAuthService service = new ServiceBuilder()
                 .provider(TwitterApi.class)
@@ -237,24 +244,45 @@ public class SocialUserServiceImpl implements SocialUserService {
         
         JSONObject jsonResponse = new JSONObject(response.getBody());
         System.out.println(jsonResponse);
-		String twitterUserId = jsonResponse.getString("id_str");
-		System.out.println("Twitter user id: " + twitterUserId);
-		if (user.getProviderUserId().equals(twitterUserId)) {
-			System.out.println("Twitter user verified!");
-			return true;
-		}
+        
+        System.out.println(response.getCode());
+        int responseCode = response.getCode();
+        if (responseCode == HttpStatus.OK_200) {
+        	
+    		String twitterUserId = jsonResponse.getString("id_str");
+    		System.out.println("Twitter user id: " + twitterUserId);
+    		if (user.getProviderUserId().equals(twitterUserId)) {
+    			System.out.println("Twitter user verified!");
+    			return true;
+    		}
+        }
+        else {
+        	
+        	JSONArray errorsArray = jsonResponse.getJSONArray("errors");
+        	JSONObject error = (JSONObject)errorsArray.get(0);
+        	throw new GameException(error.getInt("code"), error.getString("message"));
+    		
+        }
         
 		return false;
 	}
 
-	private String sendGetRequest(String requestURL) {
+	private String sendGetRequest(String requestURL) throws GameException {
 		String result = null;
 		HttpClient client = HttpClientBuilder.create().build();	
 		try {
 			HttpGet getRequest = new HttpGet(requestURL);
 			
 			HttpResponse response = client.execute(getRequest);
+			int statusCode = response.getStatusLine().getStatusCode();
+			
 			result = EntityUtils.toString(response.getEntity());
+			System.out.println(result);
+			
+			if (statusCode != HttpStatus.OK_200) {
+				throw new GameException(117, "Social service returned error. Check access token");
+			}
+			
 		} catch (ClientProtocolException e) {
 			e.printStackTrace();
 		} catch (IOException e) {

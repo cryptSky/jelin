@@ -134,6 +134,7 @@ public class UserController {
 		UserModel userModel = socialUserService.loginSocialUser(socialUser);
 		if (userModel != null) {
 			User user = userService.getUserByUsername(userModel.getUsername());
+			System.out.println(user);
 			userActivityService.saveUserLoginActivity(user);
 		}
 		return userModel;

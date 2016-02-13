@@ -167,7 +167,7 @@ public class User implements Serializable {
 
 	public User(SocialUser socialUser) {
 		super();
-		this.username = socialUser.getFirstName() + socialUser.getLastName();
+		this.username = socialUser.getFirstName() + socialUser.getLastName() + socialUser.getProviderUserId();
 		this.email = socialUser.getEmail();
 		setCommon();
 		
