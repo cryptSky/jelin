@@ -125,7 +125,7 @@ public class Constants {
 		ANSWER(2),
 		RESULT(3),
 		SUMMARY(4),
-		END(5);
+		PENDING(5);
 		
 		private final int value;
 		

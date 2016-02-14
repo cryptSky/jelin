@@ -1,6 +1,4 @@
 package org.crama.jelin.service.impl;
-/*
-package org.crama.jelin.service;
 
 import java.io.File;
 import java.io.InputStream;
@@ -16,9 +14,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.crama.jelin.model.User;
 import org.crama.jelin.model.UserSession;
+import org.crama.jelin.service.PushNotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.relayrides.pushy.apns.*;
+import org.crama.jelin.service.UserSessionService;
 
 import com.relayrides.pushy.apns.util.*;
 
@@ -155,4 +155,3 @@ public class PushNotificationServiceImpl implements PushNotificationService {
 
 }
 
-*/

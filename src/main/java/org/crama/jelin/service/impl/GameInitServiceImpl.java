@@ -11,6 +11,7 @@ import org.crama.jelin.model.Category;
 import org.crama.jelin.model.Constants.GameState;
 import org.crama.jelin.model.Constants.InviteStatus;
 import org.crama.jelin.model.Constants.NetStatus;
+import org.crama.jelin.model.Constants.NotificationType;
 import org.crama.jelin.model.Constants.ProcessStatus;
 import org.crama.jelin.model.Difficulty;
 import org.crama.jelin.model.Game;
@@ -21,6 +22,7 @@ import org.crama.jelin.model.json.UserJson;
 import org.crama.jelin.repository.GameInitRepository;
 import org.crama.jelin.repository.UserRepository;
 import org.crama.jelin.service.GameInitService;
+import org.crama.jelin.service.PushNotificationService;
 import org.crama.jelin.service.SettingsService;
 import org.crama.jelin.service.UserService;
 import org.crama.jelin.util.DateConverter;
@@ -42,8 +44,8 @@ public class GameInitServiceImpl implements GameInitService {
 	@Autowired
 	private SettingsService settingsService;
 	
-	// @Autowired
-	// private PushNotificationService pushNotificationService;
+	@Autowired
+	private PushNotificationService pushNotificationService;
 		
 	
 	
@@ -150,7 +152,7 @@ public class GameInitServiceImpl implements GameInitService {
 			
 			if (isRandom)
 			{
-				// pushNotificationService.sendNotificationMessage(opponent, NotificationType.ACCEPT_RANDOM, creator, game.getTheme());
+				pushNotificationService.sendNotificationMessage(opponent, NotificationType.ACCEPT_RANDOM, creator, game.getTheme());
 			}
 			else
 			{
@@ -158,11 +160,11 @@ public class GameInitServiceImpl implements GameInitService {
 				Set<UserJson> opponentsInvited = getGameOpponents(game);
 				if (opponentsInvited.size() == 0)
 				{
-					// pushNotificationService.sendNotificationMessage(opponent, NotificationType.ACCEPT_FRIEND, creator, game.getTheme());
+					pushNotificationService.sendNotificationMessage(opponent, NotificationType.ACCEPT_FRIEND, creator, game.getTheme());
 				}
 				else
 				{
-					// pushNotificationService.sendNotificationMessage(opponent, NotificationType.ACCEPT_FRIENDS, creator, game.getTheme(), opponentsInvited.size());
+					pushNotificationService.sendNotificationMessage(opponent, NotificationType.ACCEPT_FRIENDS, creator, game.getTheme(), opponentsInvited.size());
 				}
 			}
 		}
@@ -213,7 +215,7 @@ public class GameInitServiceImpl implements GameInitService {
 			 updatedGame = getCreatedGame(creator);
 			
 			 long missedGames = gameInitRepository.getExpiredInvites(opponent); 
-			 // pushNotificationService.sendNotificationMessage(opponent, NotificationType.MISSED_GAMES, missedGames);
+			 pushNotificationService.sendNotificationMessage(opponent, NotificationType.MISSED_GAMES, missedGames);
 						 
 			 for (GameOpponent o: updatedGame.getGameInvitationOpponents()) {
 				 System.out.println("inside a loop: " + o);

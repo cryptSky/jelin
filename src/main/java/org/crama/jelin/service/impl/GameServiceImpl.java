@@ -112,11 +112,10 @@ public class GameServiceImpl implements GameService {
 		
 		game.setRound(gameRounds.get(0));
 		game.setGameState(GameState.IN_PROGRESS);
-		game.setReadiness(Readiness.CATEGORY);
-		
 		gameRoundRepository.saveOrUpdateRounds(gameRounds);
-		updateGame(game);
 		
+		setReadiness(game, Readiness.CATEGORY);
+				
 		if (hosts.get(0).getType() == UserType.BOT)
 		{
 			setRandomCategory(game);			
@@ -186,9 +185,8 @@ public class GameServiceImpl implements GameService {
 				}
 			}
 			
-			game.setReadiness(Readiness.ANSWER);
-        	updateGame(game);
-        	
+			setReadiness(game, Readiness.ANSWER);
+        	        	
         	if (callerIsOnline || (!callerIsOnline && game.hasActivePlayersExceptPlayer(user)))
         	{
         		offlinePlayerChecker.setUpTimeout(game, Readiness.ANSWER);
@@ -246,9 +244,8 @@ public class GameServiceImpl implements GameService {
         	round.setHumanAnswerCount(0);
         	updateGameRound(round);
         	
-        	game.setReadiness(Readiness.RESULT);
-        	updateGame(game);
-        	
+        	setReadiness(game, Readiness.RESULT);
+        	        	
         	if (callerIsOnline || (!callerIsOnline && game.hasActivePlayersExceptPlayer(player)))
         	{
         		offlinePlayerChecker.setUpTimeout(game, Readiness.RESULT);
@@ -303,9 +300,8 @@ public class GameServiceImpl implements GameService {
 	    		boolean hasNextRound = nextRound(game);
 	        	if (!hasNextRound)
 	        	{       	
-	        		game.setReadiness(Readiness.SUMMARY);
-	            	updateGame(game);
-	            	
+	        		setReadiness(game, Readiness.SUMMARY);
+	            		            	
 	        		saveScores(game);
 	        		
 	        		offlinePlayerChecker.setUpTimeout(game, Readiness.SUMMARY);
@@ -321,9 +317,8 @@ public class GameServiceImpl implements GameService {
 	        		}
 	        		else
 	        		{
-	        			game.setReadiness(Readiness.CATEGORY);
-	        			updateGame(game);
-	        			
+	        			setReadiness(game, Readiness.CATEGORY);
+	        				        			
 	        			offlinePlayerChecker.setUpTimeout(game, Readiness.CATEGORY);
 	          		}
 	        		
@@ -333,8 +328,7 @@ public class GameServiceImpl implements GameService {
 	    	}
 	    	else
 	    	{
-	    		game.setReadiness(Readiness.QUESTION);
-	    		updateGame(game);
+	    		setReadiness(game, Readiness.QUESTION);
 	    		
 	    		setUpAllIntoCategoryReadiness(game);
 	    		
@@ -370,9 +364,8 @@ public class GameServiceImpl implements GameService {
 		
 		gameRoundRepository.updateRound(gameRound);
 		
-		game.setReadiness(Readiness.QUESTION);
-		updateGame(game);
-		
+		setReadiness(game, Readiness.QUESTION);
+				
 		if (game.hasActivePlayers())
 		{
 			offlinePlayerChecker.setUpTimeout(game, Readiness.QUESTION);
@@ -478,7 +471,6 @@ public class GameServiceImpl implements GameService {
 		userInterestsRepository.updateInterests(game);
 		
 		game.setGameState(GameState.ENDED);
-		// game.setReadiness(Readiness.END);
 		updateGame(game);
 		
 		for (User player: game.getHumans())
@@ -608,6 +600,19 @@ public class GameServiceImpl implements GameService {
 	
 	private void updateGameRound(GameRound round) {
 		gameRoundRepository.updateRound(round);
+		
+	}
+
+	@Override
+	public void setReadiness(Game game, Readiness readiness) {
+		gameRepository.setReadiness(game, readiness);
+		
+	}
+
+	@Override
+	@Transactional
+	public Readiness getReadiness(Game game) {
+		return gameRepository.getReadiness(game);
 		
 	}
 

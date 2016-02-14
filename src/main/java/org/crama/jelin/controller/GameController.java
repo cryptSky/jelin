@@ -106,12 +106,6 @@ public class GameController {
     public String getReadiness() throws GameException {
 		
 		User player = userService.getPrincipal();
-		if (player.getNetStatus() == NetStatus.OFFLINE)
-		{
-			player.setNetStatus(NetStatus.ONLINE);
-			userService.changeNetStatus(player, NetStatus.ONLINE.getValue()); 
-		}
-		
 		Game game = gameInitService.getGame(player, GameState.IN_PROGRESS);
 		
         if (game == null) {
@@ -125,6 +119,31 @@ public class GameController {
         if (!game.getGameState().equals(GameState.IN_PROGRESS)) {
         	throw new GameException(513, "Game is not in progress. Current game state: " + game.getGameState().toString());
         }
+        
+        if (player.getNetStatus() == NetStatus.OFFLINE)
+		{
+        	/*try 
+        	{
+	        	if (gameService.getReadiness(game) == Readiness.QUESTION || gameService.getReadiness(game) == Readiness.CATEGORY)
+	        	{
+	        		while (game.getReadiness() != Readiness.ANSWER)
+	        		{        			
+						Thread.sleep(500);
+						System.out.println("Waiting until new QUESTION or CATEGORY round begins...");
+	        		}
+	        	}
+				while(gameService.getReadiness(game) != Readiness.CATEGORY || gameService.getReadiness(game) != Readiness.QUESTION)
+				{
+					Thread.sleep(500);
+	    			System.out.println("Waiting until new QUESTION or CATEGORY round begins...");
+				}
+        	} catch (InterruptedException e) {
+        		// nothing to do here
+        	}*/
+			player.setNetStatus(NetStatus.ONLINE);
+			userService.changeNetStatus(player, NetStatus.ONLINE.getValue()); 
+			System.out.println("User " + player.getUsername() + " is online again");
+		}
         
         return game.getReadiness().toString();
         

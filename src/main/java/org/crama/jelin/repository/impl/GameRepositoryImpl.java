@@ -136,6 +136,16 @@ public class GameRepositoryImpl implements GameRepository {
 		Session session = sessionFactory.getCurrentSession();	
 		session.buildLockRequest(LockOptions.NONE).lock(game);
 		
+	}
+
+	@Override
+	@Transactional
+	public void setReadiness(Game game, Readiness readiness) {
+		game.setReadiness(readiness);
+		Session session = sessionFactory.getCurrentSession();	
+		session.update(game);
+		session.flush();
+		
 	}	
 
 }

@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.crama.jelin.exception.GameException;
 import org.crama.jelin.model.Category;
+import org.crama.jelin.model.Constants.Readiness;
 import org.crama.jelin.model.Game;
 import org.crama.jelin.model.Question;
 import org.crama.jelin.model.QuestionResult;
@@ -32,5 +33,9 @@ public interface GameService {
 	void updateGame(Game game);
 	
 	void finishGame(Game game);
+	
+	void setReadiness(Game game, Readiness readiness);
+	
+	Readiness getReadiness(Game game);
 		
 }
