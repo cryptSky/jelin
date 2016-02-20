@@ -132,8 +132,11 @@ public class GameInitController {
         	game = gameInitService.getInviteGame(user);
         	
         	if (game == null) {
-	        	throw new GameException(515, "Game not found! User " + user.getUsername() + " "
-	        			+ "doesn't created and is not invited to any game"); 
+        		game = gameInitService.getInviteInProgressGame(user);
+        		if (game == null) {
+        			throw new GameException(515, "Game not found! User " + user.getUsername() + " "
+	        			+ "doesn't created and is not invited to any game");
+        		}
 	        }
         }
 		

@@ -9,7 +9,6 @@ import org.crama.jelin.model.Constants.InviteStatus;
 import org.crama.jelin.model.Difficulty;
 import org.crama.jelin.model.Game;
 import org.crama.jelin.model.User;
-import org.crama.jelin.model.UserSession;
 import org.crama.jelin.model.json.UserJson;
 
 public interface GameInitService {
@@ -50,5 +49,7 @@ public interface GameInitService {
 	Game getGame(User creator, GameState state);
 
 	boolean checkLastRejectTime(User opponent);
+
+	Game getInviteInProgressGame(User user);
 		
 }

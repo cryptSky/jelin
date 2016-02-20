@@ -244,9 +244,15 @@ public class GameInitServiceImpl implements GameInitService {
 	@Override
 	public Game getInviteGame(User user) {
 		
-		return gameInitRepository.getInviteGame(user);
+		return gameInitRepository.getInviteGame(user, GameState.CREATED);
 	}
 
+	@Override
+	public Game getInviteInProgressGame(User user) {
+		
+		return gameInitRepository.getInviteGame(user, GameState.IN_PROGRESS);
+	}
+	
 	@Override
 	public void confirmInvite(Game game, User user) {
 	
@@ -437,5 +443,7 @@ public class GameInitServiceImpl implements GameInitService {
 		}
 		
 	}
+
+	
 	
 }

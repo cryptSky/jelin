@@ -15,8 +15,6 @@ public interface GameInitRepository {
 	
 	boolean updateGame(Game game);
 
-	Game getInviteGame(User user);
-
 	GameOpponent getGameOpponent(Game game, User opponent);
 	
 	void clearSession();
@@ -24,5 +22,7 @@ public interface GameInitRepository {
 	boolean removeGameOpponent(Game game, User user);
 	
 	long getExpiredInvites(User user);
+
+	Game getInviteGame(User user, GameState gameState);
 		
 }

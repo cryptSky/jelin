@@ -95,9 +95,9 @@ public class GameInitRepositoryImpl implements GameInitRepository {
 	}
 
 	@Override
-	public Game getInviteGame(User user) {
+	public Game getInviteGame(User user, GameState gameState) {
 		Query query = sessionFactory.getCurrentSession().createQuery(GET_INVITE_GAME);
-		query.setParameter("gameState", GameState.CREATED);
+		query.setParameter("gameState", gameState);
 		query.setParameter("user", user);
 		query.setParameter("accepted", InviteStatus.ACCEPTED);
 		query.setParameter("open", InviteStatus.OPEN);
@@ -140,5 +140,6 @@ public class GameInitRepositoryImpl implements GameInitRepository {
 		long result = (long) criteria.setProjection(Projections.rowCount()).uniqueResult();
 		return result;
 	}
+
 	
 }
