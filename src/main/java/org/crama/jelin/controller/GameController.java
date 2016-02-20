@@ -263,7 +263,7 @@ public class GameController {
         GameRound round = game.getRound();
         if (round.alreadyGotQuestion(player))
         {
-        	throw new GameException(516, "User already got his new question in this round but other players haven't got it yet");
+        	throw new GameException(516, "User already got his new question");
         }
         
            
