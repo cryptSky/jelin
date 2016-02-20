@@ -122,26 +122,9 @@ public class GameController {
         
         if (player.getNetStatus() == NetStatus.OFFLINE)
 		{
-        	/*try 
-        	{
-	        	if (gameService.getReadiness(game) == Readiness.QUESTION || gameService.getReadiness(game) == Readiness.CATEGORY)
-	        	{
-	        		while (game.getReadiness() != Readiness.ANSWER)
-	        		{        			
-						Thread.sleep(500);
-						System.out.println("Waiting until new QUESTION or CATEGORY round begins...");
-	        		}
-	        	}
-				while(gameService.getReadiness(game) != Readiness.CATEGORY || gameService.getReadiness(game) != Readiness.QUESTION)
-				{
-					Thread.sleep(500);
-	    			System.out.println("Waiting until new QUESTION or CATEGORY round begins...");
-				}
-        	} catch (InterruptedException e) {
-        		// nothing to do here
-        	}*/
-			player.setNetStatus(NetStatus.ONLINE);
+        	player.setNetStatus(NetStatus.ONLINE);
 			userService.changeNetStatus(player, NetStatus.ONLINE.getValue()); 
+			player.setCurrentPlayerReadiness(game.getReadiness());
 			System.out.println("User " + player.getUsername() + " is online again");
 		}
         
@@ -260,8 +243,7 @@ public class GameController {
         	throw new GameException(516, "Game Readiness is: " + game.getReadiness().toString() + ". Should be: QUESTION");
         }
         
-        GameRound round = game.getRound();
-        if (round.alreadyGotQuestion(player))
+        if (player.getReadiness() == Readiness.QUESTION)
         {
         	throw new GameException(516, "User already got his new question");
         }
@@ -295,6 +277,11 @@ public class GameController {
         	throw new GameException(517, "Game Readiness is: " + game.getReadiness().toString() + ". Should be: ANSWER");
         }
         
+        if (player.getReadiness() == Readiness.ANSWER)
+        {
+        	throw new GameException(516, "User has already answered.");
+        }
+        
         gameService.processAnswer(game, player, variant, time);
       
 	}
@@ -322,7 +309,7 @@ public class GameController {
         {
         	throw new GameException(518, "Game Readiness is: " + game.getReadiness().toString() + ". Should be: RESULT");
         }
-		
+        
         List<QuestionResult>  result = gameService.processResult(game, player);
 
         return result;
