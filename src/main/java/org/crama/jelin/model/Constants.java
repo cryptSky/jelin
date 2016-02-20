@@ -124,9 +124,8 @@ public class Constants {
 		QUESTION(1),
 		ANSWER(2),
 		RESULT(3),
-		SUMMARY(4),
-		PENDING(5);
-		
+		SUMMARY(4);
+				
 		private final int value;
 		
 	    private Readiness(int value) {

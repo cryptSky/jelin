@@ -232,13 +232,6 @@ public class GameRound implements Serializable {
 	}
 	
 	@Transactional
-	public boolean alreadyGotQuestion(User player)
-	{
-		boolean result = player.getReadiness() == Readiness.QUESTION;
-		return result;
-	}
-	
-	@Transactional
 	public int currentQuestionNumber()
 	{		
 		int maxQuestionNumber = getMaxQuestionNumber();

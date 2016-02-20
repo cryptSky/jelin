@@ -30,6 +30,7 @@ import org.crama.jelin.model.Constants.NetStatus;
 import org.crama.jelin.model.Constants.ProcessStatus;
 import org.crama.jelin.model.Constants.Readiness;
 import org.crama.jelin.model.Constants.UserType;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -342,6 +343,24 @@ public class User implements Serializable {
 
 	public void setRegisterDate(Date registerDate) {
 		this.registerDate = registerDate;
+	}
+	
+	@Transactional
+	public void setCurrentPlayerReadiness(Readiness readiness)
+	{
+		switch(readiness)
+		{
+			case CATEGORY: setReadiness(Readiness.CATEGORY);
+					  break;
+			case QUESTION: setReadiness(Readiness.CATEGORY);
+					  break;
+			case ANSWER:   setReadiness(Readiness.QUESTION);
+					  break;
+			case RESULT:   setReadiness(Readiness.ANSWER);
+					  break;
+			case SUMMARY:  setReadiness(Readiness.SUMMARY);
+					  break;
+		}
 	}
 
 	@Override
