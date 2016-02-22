@@ -18,9 +18,9 @@ public class CharacterRepositoryImpl implements CharacterRepository {
 	private SessionFactory sessionFactory;
 	
 	private static final String GET_STANDARD_CHARACTERS = "FROM Character "
-			+ "WHERE special = false AND acrons = 0 AND goldAcrons = 0";
+			+ "WHERE special = false AND acorns = 0 AND goldAcorns = 0";
 	private static final String GET_ALL_CHARACTERS_FOR_MONEY = "FROM Character "
-			+ "WHERE acrons <> 0 OR goldAcrons <> 0";
+			+ "WHERE acorns <> 0 OR goldAcorns <> 0";
 	private static final String GET_CHARACTER = "FROM Character "
 			+ "WHERE id = :id";
 	private static final String GET_ALL_ENHANCERS = "FROM Enhancer ";
