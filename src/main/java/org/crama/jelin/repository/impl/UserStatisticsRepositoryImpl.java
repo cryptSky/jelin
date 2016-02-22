@@ -18,17 +18,30 @@ public class UserStatisticsRepositoryImpl implements UserStatisticsRepository {
 
 	private static final String GET_ALL_STATISTICS = "FROM UserStatistics "
 													+ "ORDER BY points DESC ";
+	private static final String GET_USERS_STATISTICS = "FROM UserStatistics us WHERE us.user IN (:users) "
+			+ "ORDER BY points DESC ";
 													
 	
 	@Override
 	public List<UserStatistics> getAllUsersStatistics() {
 		
 		Query query = sessionFactory.getCurrentSession().createQuery(GET_ALL_STATISTICS);
-		query.setMaxResults(10);
+		query.setMaxResults(100);
 		@SuppressWarnings("unchecked")
 		List<UserStatistics> stats = (List<UserStatistics>)query.list();
 		return stats;
 		
+	}
+
+
+	@Override
+	public List<UserStatistics> getUsersStatistics(List<User> users) {
+		Query query = sessionFactory.getCurrentSession().createQuery(GET_USERS_STATISTICS);
+		query.setParameterList("users", users);
+		query.setMaxResults(100);
+		@SuppressWarnings("unchecked")
+		List<UserStatistics> stats = (List<UserStatistics>)query.list();
+		return stats;
 	}
 	
 	

@@ -36,8 +36,6 @@
 	
 	<jettyVersion>9.3.6.v20151106</jettyVersion>
 	
-    <alpn-boot-version>8.1.6.v2015110</alpn-boot-version>
-	
   </properties>
   
   <dependencies>

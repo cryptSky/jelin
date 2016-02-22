@@ -3,6 +3,7 @@ package org.crama.jelin.repository.impl;
 import javax.transaction.Transactional;
 
 import org.crama.jelin.model.SocialUser;
+import org.crama.jelin.model.User;
 import org.crama.jelin.repository.SocialUserRepository;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
@@ -61,6 +62,15 @@ public class SocialUserRepositoryImpl implements SocialUserRepository {
 	public void update(SocialUser existSocialUser) {
 		Session session = sessionFactory.getCurrentSession();	
 		session.update(existSocialUser);
+	}
+
+	@Override
+	public SocialUser getSocialUser(User user) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(SocialUser.class);
+		criteria.add(Restrictions.eq("user", user));
+		
+		SocialUser socialUser = (SocialUser)criteria.uniqueResult(); 
+		return socialUser;
 	}
 
 }

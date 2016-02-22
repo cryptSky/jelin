@@ -18,6 +18,7 @@ import org.crama.jelin.model.UserModel;
 import org.crama.jelin.model.UserRole;
 import org.crama.jelin.repository.SocialUserRepository;
 import org.crama.jelin.repository.UserRepository;
+import org.crama.jelin.service.HttpRequestService;
 import org.crama.jelin.service.MailService;
 import org.crama.jelin.service.SettingsService;
 import org.crama.jelin.service.SocialUserService;
@@ -51,6 +52,9 @@ public class SocialUserServiceImpl implements SocialUserService {
 	
 	@Autowired
 	private SettingsService settingsService;
+	
+	@Autowired
+	private HttpRequestService httpRequestService;
 	
 	@Override
 	public UserModel loginSocialUser(SocialUser socialUser) throws GameException {
@@ -182,7 +186,7 @@ public class SocialUserServiceImpl implements SocialUserService {
 		if (providerId.equals("facebook")) {
 
 			String requestURL = Constants.GRAPH_URL  + "me?access_token=" + socialUser.getAccessToken();
-			String responseStr = sendGetRequest(requestURL);
+			String responseStr = httpRequestService.sendGetRequest(requestURL);
 			
 			JSONObject jsonResponse = new JSONObject(responseStr);
 			
@@ -201,7 +205,7 @@ public class SocialUserServiceImpl implements SocialUserService {
 		}
 		else if (providerId.equals("vk")) {
 			String requestURL = Constants.VK_URL  + "?access_token=" + socialUser.getAccessToken();
-			String responseStr = sendGetRequest(requestURL);
+			String responseStr = httpRequestService.sendGetRequest(requestURL);
 			System.out.println("VK user: " + responseStr);
 			JSONObject jsonResponse = new JSONObject(responseStr);
 			
@@ -266,29 +270,5 @@ public class SocialUserServiceImpl implements SocialUserService {
         
 		return false;
 	}
-
-	private String sendGetRequest(String requestURL) throws GameException {
-		String result = null;
-		HttpClient client = HttpClientBuilder.create().build();	
-		try {
-			HttpGet getRequest = new HttpGet(requestURL);
-			
-			HttpResponse response = client.execute(getRequest);
-			int statusCode = response.getStatusLine().getStatusCode();
-			
-			result = EntityUtils.toString(response.getEntity());
-			System.out.println(result);
-			
-			if (statusCode != HttpStatus.OK_200) {
-				throw new GameException(117, "Social service returned error. Check access token");
-			}
-			
-		} catch (ClientProtocolException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
-		return result;
-	}
+	
 }

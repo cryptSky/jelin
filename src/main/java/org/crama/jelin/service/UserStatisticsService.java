@@ -4,11 +4,8 @@ import java.util.List;
 
 import org.crama.jelin.model.ScoreSummary;
 import org.crama.jelin.model.User;
-import org.crama.jelin.model.json.RatingJson;
 
 public interface UserStatisticsService {
-
-	List<RatingJson> getRating(User user, int time, int people);
 
 	void updateDaysInGame(User user);
 

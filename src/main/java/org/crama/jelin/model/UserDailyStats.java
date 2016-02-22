@@ -47,6 +47,9 @@ public class UserDailyStats implements Serializable {
 	
 	@Column(name = "SMM_SHARES")
 	private int smmShares;
+	
+	@Column(name = "POINTS")
+	private int points;
 
 
 	public UserDailyStats(User u) {
@@ -112,6 +115,14 @@ public class UserDailyStats implements Serializable {
 
 	public void setSmmShares(int smmShares) {
 		this.smmShares = smmShares;
+	}
+
+	public int getPoints() {
+		return points;
+	}
+
+	public void setPoints(int points) {
+		this.points = points;
 	}
 
 	public void clear() {

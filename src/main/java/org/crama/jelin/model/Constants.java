@@ -16,10 +16,6 @@ public class Constants {
 	//public static final int QUESTION_NUMBER = 3;
 	//----settings-------
 	
-
-	public static final int QUESTION_NUMBER = 1;
-	public static final int ROUND_NUMBER = 1;
-	
 	public static final String BUNDLE_ID = "com.nt.Jelin"; 
 	public static final String P12_PASSWORD = "p124zI78KlmP";
 	
@@ -37,6 +33,7 @@ public class Constants {
 	public static final String TWITTER_CLIENT_SECRET = "73mdj12K7jihrUlj55Wbtibv2Sl2ENObkSnpro7OAayv2f6zH2";
 	//vk
 	public static final String VK_URL = "https://api.vk.com/method/users.get";
+	public static final String VK_FRIENDS_URL = "https://api.vk.com/method/friends.get?user_id=%s?access_token=%s";
 
 	public enum UserType {
 		HUMAN(0),

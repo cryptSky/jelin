@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import org.crama.jelin.exception.GameException;
 import org.crama.jelin.model.Enhancer;
 import org.crama.jelin.model.ScoreSummary;
 import org.crama.jelin.model.User;
@@ -18,6 +19,7 @@ import org.crama.jelin.model.UserStatistics;
 import org.crama.jelin.model.json.RatingJson;
 import org.crama.jelin.repository.UserRepository;
 import org.crama.jelin.repository.UserStatisticsRepository;
+import org.crama.jelin.service.RatingService;
 import org.crama.jelin.service.UserStatisticsService;
 import org.crama.jelin.util.DateConverter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,53 +29,11 @@ import org.springframework.stereotype.Service;
 public class UserStatisticsServiceImpl implements UserStatisticsService {
 
 	@Autowired
-	private UserStatisticsRepository userStatisticsRepository;
-	
-	@Autowired
 	private UserRepository userRepository;
 	
+	@Autowired
+	private RatingService ratingService;
 	
-	//TODO complete
-	@Override
-	public List<RatingJson> getRating(User user, int time, int people) {
-		
-		List<UserStatistics> userStatistics = null;
-		
-		switch (time) {
-			case 0: 
-				
-				break;
-			case 1:
-				break;
-			case 2:
-				break;
-			case 3:
-				//all
-				if (people == 0) {
-					userStatistics = userStatisticsRepository.getAllUsersStatistics();
-				}
-				//friends
-				else if (people == 1) {
-					
-				}
-				break;
-		}
-		
-		Collections.sort(userStatistics);
-		List<RatingJson> ratings = new ArrayList<RatingJson>();
-		RatingJson rating = null;
-		for (int i = 0; i < userStatistics.size(); i++) {
-			UserStatistics s = userStatistics.get(i);
-			rating = new RatingJson(i + 1, s.getPoints(), 
-					s.getUser().getUserInfo().getAvatar(), s.getUser().getUsername());
-			ratings.add(rating);
-		}
-		
-		
-		return ratings;
-	}
-
-
 	@Override
 	public void updateDaysInGame(User user) {
 		
@@ -196,6 +156,7 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
 			UserDailyStats dailyStats = user.getUserDailyStats();
 			dailyStats = checkDailyStatsDate(dailyStats);
 			dailyStats.setGamesPlayed(dailyStats.getGamesPlayed() + 1);
+			dailyStats.setPoints(dailyStats.getPoints() + points);
 			user.setUserDailyStats(dailyStats);
 			
 			userRepository.updateUser(user);
