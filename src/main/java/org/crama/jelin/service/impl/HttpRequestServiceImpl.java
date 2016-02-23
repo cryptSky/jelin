@@ -11,11 +11,15 @@ import org.apache.http.util.EntityUtils;
 import org.crama.jelin.exception.GameException;
 import org.crama.jelin.service.HttpRequestService;
 import org.eclipse.jetty.http.HttpStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service("httpRequestService")
 public class HttpRequestServiceImpl implements HttpRequestService {
 
+	private static final Logger logger = LoggerFactory.getLogger(HttpRequestServiceImpl.class);
+	
 	@Override
 	public String sendGetRequest(String requestURL) throws GameException {
 		String result = null;
@@ -27,16 +31,16 @@ public class HttpRequestServiceImpl implements HttpRequestService {
 			int statusCode = response.getStatusLine().getStatusCode();
 			
 			result = EntityUtils.toString(response.getEntity());
-			System.out.println(result);
+			logger.info("Response from remote resource: " + result);
 			
 			if (statusCode != HttpStatus.OK_200) {
 				throw new GameException(117, "Social service returned error. Check access token");
 			}
 			
 		} catch (ClientProtocolException e) {
-			e.printStackTrace();
+			logger.error(e.getMessage());
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.error(e.getMessage());
 		}
 		
 		return result;

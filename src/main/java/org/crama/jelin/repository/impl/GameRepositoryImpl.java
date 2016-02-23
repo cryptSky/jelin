@@ -24,6 +24,8 @@ import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Projection;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,7 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository("gameRepository")
 public class GameRepositoryImpl implements GameRepository {
 
-	
+	private static final Logger logger = LoggerFactory.getLogger(GameRepositoryImpl.class);
 	
 	@Autowired
 	private SessionFactory sessionFactory;
@@ -127,7 +129,7 @@ public class GameRepositoryImpl implements GameRepository {
 		}
 		catch(Exception e)
 		{
-			e.printStackTrace();
+			logger.error(e.getMessage());
 		}
 	}
 

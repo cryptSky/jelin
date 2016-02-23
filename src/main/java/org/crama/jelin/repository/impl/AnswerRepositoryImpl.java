@@ -2,6 +2,7 @@ package org.crama.jelin.repository.impl;
 
 import java.util.List;
 
+import org.crama.jelin.controller.UserStatisticController;
 import org.crama.jelin.model.Answer;
 import org.crama.jelin.model.Game;
 import org.crama.jelin.model.GameRound;
@@ -15,6 +16,8 @@ import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;

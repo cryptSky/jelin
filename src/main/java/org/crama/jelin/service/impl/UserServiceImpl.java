@@ -153,7 +153,6 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public boolean checkUserStatusIsEquals(User creator, ProcessStatus ps) throws GameException {
 		if (!creator.getProcessStatus().equals(ps)) {
-        	System.out.println("User is in status: " + creator.getProcessStatus());
         	return false; 
         
 		}

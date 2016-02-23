@@ -26,12 +26,16 @@ import org.crama.jelin.service.PushNotificationService;
 import org.crama.jelin.service.SettingsService;
 import org.crama.jelin.service.UserService;
 import org.crama.jelin.util.DateConverter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service("gameInitService")
 public class GameInitServiceImpl implements GameInitService {
 
+	private static final Logger logger = LoggerFactory.getLogger(GameInitServiceImpl.class);
+	
 	@Autowired
 	private GameInitRepository gameInitRepository;
 	
@@ -93,7 +97,6 @@ public class GameInitServiceImpl implements GameInitService {
 
 	@Override
 	public void removeOpponent(Game game, int userId) throws GameException {
-		System.out.println("inside remove opponent method:");
 		// update user status to free
 		User user = userRepository.getUser(userId);
 		userService.checkUserAuthorized(user);
@@ -108,11 +111,10 @@ public class GameInitServiceImpl implements GameInitService {
 	public Set<UserJson> getGameOpponents(Game game) {
 		Set<GameOpponent> opponents = game.getGameInvitationOpponents();
 		Set<UserJson> acceptedOpponents = new HashSet<UserJson>();
-		System.out.println("Op: " + opponents + ", " + opponents.size());
+		logger.info("Op: " + opponents + ", " + opponents.size());
 		for (GameOpponent o: opponents) {
-			System.out.println("Op: " + o);
 			if (o.getInviteStatus().equals(InviteStatus.ACCEPTED)) {
-				System.out.println("Accepted opponent: " + o);
+				logger.info("Accepted opponent: " + o);
 				acceptedOpponents.add(new UserJson(o.getUser()));
 			}
 		}
@@ -126,26 +128,21 @@ public class GameInitServiceImpl implements GameInitService {
 		
 		Set<GameOpponent> opponents = game.getGameInvitationOpponents();
 		InviteStatus inviteStatus = InviteStatus.OPEN;
-		System.out.println(inviteStatus);
 		GameOpponent newOpponent = new GameOpponent(opponent, game, inviteStatus);
 		
 		boolean isNewOpponent = true;
 		for (GameOpponent o: opponents) {
 			
-			System.out.println("Game opponent: " + o);
-			System.out.println(o.getUser().getUsername() + ", " + o.getUser().getId() + ", " + 
-					opponent.getUsername() + ", " + opponent.getId());
-			
-			//if (o.getUser().equals(opponent)) {
+			 //if (o.getUser().equals(opponent)) {
 			 if (o.getUser().getId() == opponent.getId()) {
 				 
-				 System.out.println("User was already invited to the game. Update invitatioon with OPEN status");
+				 logger.info("User was already invited to the game. Update invitatioon with OPEN status");
 				 o.setInviteStatus(inviteStatus);
 				 isNewOpponent = false;
 				 break;
 			 }
 		}
-		System.out.println("Is new opponent: " + isNewOpponent);
+		logger.info("Is new opponent: " + isNewOpponent);
 		if (isNewOpponent) {
 			opponents.add(newOpponent);
 			game.setGameInvitationOpponents(opponents);
@@ -183,18 +180,18 @@ public class GameInitServiceImpl implements GameInitService {
 				//1000 milliseconds is one second
 			    Thread.sleep(1000 * inviteCheckTimeout);                 
 			} catch(InterruptedException ex) {
-				System.out.println("Interrupted Exception");
+				logger.info("Interrupted Exception");
 			    Thread.currentThread().interrupt();
 			}
 			
-			System.out.println("Check invitation: " + i);
+			logger.info("Check invitation: " + i);
 			
 			gameInitRepository.clearSession();
 			
 			updatedGame = getCreatedGame(creator);
 			
 			if (!checkInviteStatus(updatedGame)) {
-				System.out.println("Invitation handled. Return from the method");
+				logger.info("Invitation handled. Return from the method");
 				invitationHandled = true;
 				
 				GameOpponent go = gameInitRepository.getGameOpponent(updatedGame, opponent);
@@ -207,10 +204,9 @@ public class GameInitServiceImpl implements GameInitService {
 		
 		//after TIMEOUT
 		if (!invitationHandled) {
-			System.out.println("Invitation expired!");
+			logger.info("Invitation expired!");
 			InviteStatus statusExpired = InviteStatus.EXPIRED;
-			 System.out.println("Invite Status: " + statusExpired);
-			 			 
+			 			 			 
 			 gameInitRepository.clearSession();
 			 updatedGame = getCreatedGame(creator);
 			
@@ -218,10 +214,9 @@ public class GameInitServiceImpl implements GameInitService {
 			 pushNotificationService.sendNotificationMessage(opponent, NotificationType.MISSED_GAMES, missedGames);
 						 
 			 for (GameOpponent o: updatedGame.getGameInvitationOpponents()) {
-				 System.out.println("inside a loop: " + o);
 				 if (o.getUser().getId() == opponent.getId()) {
 					 
-					 System.out.println("Update status: " + statusExpired);
+					 logger.info("Update status for user: " + o.getUser().getUsername() + " " + statusExpired);
 					 o.setInviteStatus(statusExpired);
 					 
 					 gameInitRepository.updateGame(updatedGame);
@@ -281,7 +276,7 @@ public class GameInitServiceImpl implements GameInitService {
 		
 		 for (GameOpponent o: opponents) {
 			 
-			 System.out.println("Confirm invite: " + o.getUser().getUsername() + ", " + o.getInviteStatus());
+			 logger.info("Confirm invite: " + o.getUser().getUsername() + ", " + o.getInviteStatus());
 			 
 			 if (o.getUser().getId() == user.getId()) {
 			 //if (o.getUser().equals(user)) {
@@ -335,7 +330,7 @@ public class GameInitServiceImpl implements GameInitService {
 		for (GameOpponent o: opponents) {
 			if (o.getInviteStatus().equals(InviteStatus.OPEN)) {
 				//there is open invite status
-				System.out.println("OPEN invitation: " + o.getUser().getUsername() + ", " + o.getInviteStatus());
+				logger.info("OPEN invitation: " + o.getUser().getUsername() + ", " + o.getInviteStatus());
 				return true;
 			}
 		}
@@ -434,7 +429,7 @@ public class GameInitServiceImpl implements GameInitService {
 		
 		LocalDateTime now = LocalDateTime.now();
 		long minutes = lastInviteLocalTime.until(now, ChronoUnit.MINUTES);
-		System.out.println("minutes since last invite: " + minutes + ", timeoutMin: " + timeoutMin);
+		logger.info("minutes since last invite: " + minutes + ", timeoutMin: " + timeoutMin + "for user: " + opponent.getUsername());
 		if (minutes < timeoutMin) {
 			return false;
 		}

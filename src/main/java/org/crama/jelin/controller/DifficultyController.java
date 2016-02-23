@@ -6,6 +6,8 @@ import org.crama.jelin.exception.GameException;
 import org.crama.jelin.exception.RestError;
 import org.crama.jelin.model.Difficulty;
 import org.crama.jelin.service.DifficultyService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -17,6 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class DifficultyController {
+	
+	private static final Logger logger = LoggerFactory.getLogger(CharacterController.class);
 	
 	@Autowired
 	private DifficultyService difficultyService;
@@ -31,7 +35,7 @@ public class DifficultyController {
 	@ExceptionHandler
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
 	public @ResponseBody RestError handleException(GameException ge) {
-		System.out.println("Difficulty Controller: Game Exception");
+		logger.error(ge.getMessage());
 		
 		RestError re = new RestError(HttpStatus.BAD_REQUEST, ge.getCode(), ge.getMessage());	
         return re;

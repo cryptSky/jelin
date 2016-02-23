@@ -8,6 +8,8 @@ import org.crama.jelin.model.Country;
 import org.crama.jelin.model.Region;
 import org.crama.jelin.model.Locality;
 import org.crama.jelin.service.LocalityService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -20,6 +22,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class LocalityController {
+	
+	private static final Logger logger = LoggerFactory.getLogger(LocalityController.class);
 	
 	@Autowired
 	private LocalityService localityService;
@@ -63,7 +67,7 @@ public class LocalityController {
 	@ExceptionHandler
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
 	public @ResponseBody RestError handleException(GameException ge) {
-		System.out.println("Locality Controller: Game Exception");
+		logger.error(ge.getMessage());
 		
 		RestError re = new RestError(HttpStatus.BAD_REQUEST, ge.getCode(), ge.getMessage());	
         return re;

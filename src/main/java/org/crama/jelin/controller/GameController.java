@@ -125,7 +125,7 @@ public class GameController {
         	player.setNetStatus(NetStatus.ONLINE);
 			userService.changeNetStatus(player, NetStatus.ONLINE.getValue()); 
 			player.setCurrentPlayerReadiness(game.getReadiness());
-			System.out.println("User " + player.getUsername() + " is online again");
+			logger.info("User " + player.getUsername() + " is online again");
 		}
         
         return game.getReadiness().toString();
@@ -358,7 +358,6 @@ public class GameController {
 	@ExceptionHandler
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
 	public @ResponseBody RestError handleException(GameException ge) {
-		logger.error("Game Controller: Game Exception");
 		logger.error(ge.toString());
 		
 		RestError re = new RestError(HttpStatus.BAD_REQUEST, ge.getCode(), ge.getMessage());

@@ -44,7 +44,6 @@ public class RatingController {
 	@ExceptionHandler
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
 	public @ResponseBody RestError handleException(GameException ge) {
-		logger.error("Game Controller: Game Exception");
 		logger.error(ge.toString());
 		
 		RestError re = new RestError(HttpStatus.BAD_REQUEST, ge.getCode(), ge.getMessage());

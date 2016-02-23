@@ -140,8 +140,8 @@ public class GameInitController {
 	        }
         }
 		
-		System.out.println(game);
-		System.out.println(user);
+		logger.info(game.toString());
+		logger.info(user.toString());
 		
 		if (user.getChoosenCharacter() == null) {
 			throw new GameException(501, "Character is not set");
@@ -165,8 +165,8 @@ public class GameInitController {
 		User creator = userService.getPrincipal();
 		Game game = gameInitService.getCreatedGame(creator);
 		
-		System.out.println(creator);
-		System.out.println(game);
+		logger.info(creator.toString());
+		logger.info(game.toString());
 		
 		if (creator.getChoosenCharacter() == null) {
 			throw new GameException(501, "Character is not set");
@@ -263,7 +263,7 @@ public class GameInitController {
 	@RequestMapping(value = "/api/game/invite", method = RequestMethod.GET)
 	public @ResponseBody Game getInvite() throws GameException {
 		User user = userService.getPrincipal();
-		System.out.println(user.getUsername());
+		logger.info(user.getUsername());
 		//1. check if user state is inviting
 		if (!user.getProcessStatus().equals(ProcessStatus.INVITING)) {
 			throw new GameException(102, "User should be in status " + ProcessStatus.INVITING + " to get invitation. "
@@ -384,7 +384,7 @@ public class GameInitController {
 	@ExceptionHandler
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
 	public @ResponseBody RestError handleException(GameException ge) {
-		System.out.println("Game Init Controller: Game Exception");
+		logger.error(ge.getMessage());
 		
 		RestError re = new RestError(HttpStatus.BAD_REQUEST, ge.getCode(), ge.getMessage());	
         return re;

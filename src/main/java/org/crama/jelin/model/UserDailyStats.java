@@ -48,8 +48,8 @@ public class UserDailyStats implements Serializable {
 	@Column(name = "SMM_SHARES")
 	private int smmShares;
 	
-	@Column(name = "POINTS")
-	private int points;
+	@Column(name = "POINTS", nullable = false)
+	private int points = 0;
 
 
 	public UserDailyStats(User u) {

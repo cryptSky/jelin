@@ -21,7 +21,6 @@ public class SocialUserRepositoryImpl implements SocialUserRepository {
 	
 	@Override
 	public SocialUser findByProviderIdAndProviderUserId(String providerId, String providerUserId) {
-		//System.out.println(providerId + ", " + providerUserId);
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(SocialUser.class);
 		Criterion prId = Restrictions.eq("providerId", providerId);
 		Criterion prUsrId = Restrictions.eq("providerUserId", providerUserId);

@@ -49,6 +49,7 @@ public class PushNotificationServiceImpl implements PushNotificationService {
 		catch(Exception exception)
 		{
 			apnsClient = null;
+			logger.error("Something wrong happened while initializing service. ");
 		}
 		
 	}
@@ -56,7 +57,7 @@ public class PushNotificationServiceImpl implements PushNotificationService {
 	@Override
 	public void sendNotificationMessage(User user, NotificationType notificationType, Object... params)
 	{
-		System.out.println("Sending push notification to user: " + user.getUsername() + " ...");
+		logger.info("Sending push notification to user: " + user.getUsername() + " ...");
 		List<UserSession> sessions = userSessionService.getAllSessions(user);
 	    
 	    for (UserSession session: sessions)
@@ -84,32 +85,32 @@ public class PushNotificationServiceImpl implements PushNotificationService {
     	    		result.get();
 
     	    if (pushNotificationReponse.isAccepted()) {
-    	        System.out.println("Push notitification accepted by APNs gateway.");
+    	        logger.info("Push notitification accepted by APNs gateway.");
     	    } else {
-    	    	System.out.println("Notification rejected by the APNs gateway: " +
+    	    	logger.info("Notification rejected by the APNs gateway: " +
     	                pushNotificationReponse.getRejectionReason());
 
     	        if (pushNotificationReponse.getTokenInvalidationTimestamp() != null) {
-    	        	System.out.println("\t…and the token is invalid as of " +
+    	        	logger.info("\t…and the token is invalid as of " +
     	                pushNotificationReponse.getTokenInvalidationTimestamp());
     	        }
     	    }
     	} catch (final ExecutionException e) {
-    		System.out.println("Failed to send push notification.");
-    	    e.printStackTrace();
+    		logger.error("Failed to send push notification.");
+    		logger.error(e.getMessage());
 
     	    if (e.getCause() instanceof ClientNotConnectedException) {
-    	    	System.out.println("Waiting for client to reconnect…");
+    	    	logger.info("Waiting for client to reconnect…");
     	       	try {
 					apnsClient.getReconnectionFuture().await();
 				} catch (Exception e1) {
-					System.out.println("Failed to reconnect the client..");
-					e.printStackTrace();
+					logger.error("Failed to reconnect the client..");
+					logger.error(e.getMessage());
 				}
-    	       	System.out.println("Reconnected.");
+    	       	logger.info("Reconnected.");
     	    }
     	} catch (InterruptedException e1) {
-    		System.out.println("Failed to get push notification response..");
+    		logger.error("Failed to get push notification response..");
 		}
     	
 	}		

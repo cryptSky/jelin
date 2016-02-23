@@ -12,12 +12,16 @@ import org.crama.jelin.repository.GameRepository;
 import org.crama.jelin.repository.UserRepository;
 import org.crama.jelin.service.OfflinePlayerChecker;
 import org.hibernate.Hibernate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service("offlinePlayerChecker")
 public class OfflinePlayerCheckerImpl implements OfflinePlayerChecker {
 
+	private static final Logger logger = LoggerFactory.getLogger(OfflinePlayerCheckerImpl.class);
+	
 	private static int countdownDelay = 5;
 	private static int countdownPeriod = 3;
 	
@@ -47,17 +51,17 @@ public class OfflinePlayerCheckerImpl implements OfflinePlayerChecker {
 					if (gameRepository.getReadiness(game) != condition)
 		            {
 		              	offlineWorker.cancel(false);
-		              	System.out.println("[Game " + game.getId() + "]: All users who were online before are online now! Canceled offlineWorker task. Shutdowning scheduler...");
+		              	logger.debug("[Game " + game.getId() + "]: All users who were online before are online now! Canceled offlineWorker task. Shutdowning scheduler...");
 		               	scheduler.shutdown();	
 		            }
 					else
 					{
-						System.out.println("[Game " + game.getId() + "] Readiness is still " + condition.toString() +". Will check again in " + countdownPeriod + " seconds.");
+						logger.debug("[Game " + game.getId() + "] Readiness is still " + condition.toString() +". Will check again in " + countdownPeriod + " seconds.");
 					}
 				}
 				else
 				{
-					System.out.println("[Game " + game.getId() + "] Offline users processed. Shutdowning scheduler...");					
+					logger.debug("[Game " + game.getId() + "] Offline users processed. Shutdowning scheduler...");					
 					scheduler.shutdown();
 					
 				}

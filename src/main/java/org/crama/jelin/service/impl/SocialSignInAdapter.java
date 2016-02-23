@@ -3,6 +3,8 @@ package org.crama.jelin.service.impl;
 import org.crama.jelin.model.User;
 import org.crama.jelin.model.UserModel;
 import org.crama.jelin.service.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -13,6 +15,8 @@ import org.springframework.web.context.request.NativeWebRequest;
 
 public class SocialSignInAdapter implements SignInAdapter {
 	
+	private static final Logger logger = LoggerFactory.getLogger(SocialSignInAdapter.class);
+	
 	@Autowired
 	private UserService userService;
 	
@@ -20,7 +24,7 @@ public class SocialSignInAdapter implements SignInAdapter {
 	private UserDetailsServiceImpl userDetailsService;
 	
 	public String signIn(String userId, Connection<?> connection, NativeWebRequest request) {
-		System.out.println("Social sign in. User id: " + userId);
+		logger.info("Social sign in. User id: " + userId);
 		User user = userService.getUser(Integer.parseInt(userId));
 		UserModel userModel = userService.getUserModel(user.getUsername());
 	    Authentication authentication = createAuthentication(userModel);

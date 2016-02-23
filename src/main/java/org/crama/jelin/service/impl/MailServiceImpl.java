@@ -16,12 +16,14 @@ import org.crama.jelin.model.Settings;
 import org.crama.jelin.model.User;
 import org.crama.jelin.model.UserModel;
 import org.crama.jelin.service.MailService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service("mailService")
 public class MailServiceImpl implements MailService {
 	
-	
+	private static final Logger logger = LoggerFactory.getLogger(MailServiceImpl.class);
 	
 	private void sendEmail(String from, String to, String subject, String body) {
 		// sets SMTP server properties
@@ -55,7 +57,7 @@ public class MailServiceImpl implements MailService {
 		    
 		    Transport.send(msg);
 	    } catch (MessagingException e) {
-			e.printStackTrace();
+			logger.error(e.toString());
 		}
 	}
 
@@ -76,10 +78,11 @@ public class MailServiceImpl implements MailService {
 		body.append("Thanks! \n");
 		body.append(settings.getShortName());
 		
-		System.out.println(from);
-		System.out.println(to);
-		System.out.println(subject);
-		System.out.println(body.toString());
+		logger.info("Remind password for user: " + userModel.getUsername());
+		logger.debug(from);
+		logger.debug(to);
+		logger.debug(subject);
+		logger.debug(body.toString());
 		
 		this.sendEmail(from, to, subject, body.toString());
 		

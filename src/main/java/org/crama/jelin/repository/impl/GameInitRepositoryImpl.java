@@ -14,12 +14,16 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 @Repository("gameInitRepository")
 public class GameInitRepositoryImpl implements GameInitRepository {
 
+	private static final Logger logger = LoggerFactory.getLogger(GameInitRepositoryImpl.class);
+	
 	@Autowired
 	private SessionFactory sessionFactory;
 	
@@ -75,7 +79,6 @@ public class GameInitRepositoryImpl implements GameInitRepository {
 		Session session = sessionFactory.getCurrentSession();		
 		
 		if (game == null) return false;
-		System.out.println(game);
 		session.update(game);
 		return true;
 	}
@@ -89,7 +92,6 @@ public class GameInitRepositoryImpl implements GameInitRepository {
 		query.setParameter("creator", creator);
 		query.setParameter("gameState", state);
 		Game game = (Game)query.uniqueResult();
-		System.out.println(game);
 		return game;
 	
 	}
@@ -103,7 +105,6 @@ public class GameInitRepositoryImpl implements GameInitRepository {
 		query.setParameter("open", InviteStatus.OPEN);
 		
 		Game inviteGame = (Game)query.uniqueResult();
-		System.out.println(inviteGame);
 		return inviteGame;
 		
 		

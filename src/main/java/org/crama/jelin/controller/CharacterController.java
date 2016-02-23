@@ -10,6 +10,8 @@ import org.crama.jelin.model.Enhancer;
 import org.crama.jelin.model.User;
 import org.crama.jelin.service.CharacterService;
 import org.crama.jelin.service.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -24,6 +26,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class CharacterController {
 
+	private static final Logger logger = LoggerFactory.getLogger(CharacterController.class);
+	
 	@Autowired
 	private CharacterService characterService;
 	
@@ -124,7 +128,7 @@ public class CharacterController {
 	@ExceptionHandler
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
 	public @ResponseBody RestError handleException(GameException ge) {
-		System.out.println("Character Controller: Game Exception");
+		logger.error(ge.getMessage());
 		
 		RestError re = new RestError(HttpStatus.BAD_REQUEST, ge.getCode(), ge.getMessage());	
         return re;

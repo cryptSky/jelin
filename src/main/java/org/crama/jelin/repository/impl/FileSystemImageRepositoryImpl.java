@@ -9,6 +9,8 @@ import javax.servlet.ServletContext;
 
 import org.crama.jelin.model.Constants;
 import org.crama.jelin.repository.ImageRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,6 +18,8 @@ import org.springframework.web.multipart.MultipartFile;
 @Repository("imageRepository")
 public class FileSystemImageRepositoryImpl implements ImageRepository {
 
+	private static final Logger logger = LoggerFactory.getLogger(FileSystemImageRepositoryImpl.class);
+	
 	@Autowired
 	private ServletContext servletContext;
 	
@@ -26,7 +30,7 @@ public class FileSystemImageRepositoryImpl implements ImageRepository {
 		String contextPath = servletContext.getRealPath("");
 		filePath = contextPath + filePath;
 		createDirectory(filePath);
-		System.out.println(filePath);
+		logger.info(filePath);
 		BufferedOutputStream stream =
                  new BufferedOutputStream(new FileOutputStream(new File(filePath + fileName)));
 		

@@ -35,11 +35,15 @@ import org.scribe.model.Response;
 import org.scribe.model.Token;
 import org.scribe.model.Verb;
 import org.scribe.oauth.OAuthService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service("socialUserService")
 public class SocialUserServiceImpl implements SocialUserService {
+	
+	private static final Logger logger = LoggerFactory.getLogger(SocialSignInAdapter.class);
 	
 	@Autowired
 	private UserRepository userRepository;
@@ -71,7 +75,7 @@ public class SocialUserServiceImpl implements SocialUserService {
 		
 		if (email != null) {
 			SocialUser existSocialUser = socialUserRepository.getUserByEmailAndProviderId(email, providerId);
-			System.out.println("By email: " + existSocialUser);
+			logger.debug("By email: " + existSocialUser);
 			if (existSocialUser != null) {
 				updateSocialUser(existSocialUser, socialUser);
 				
@@ -83,7 +87,7 @@ public class SocialUserServiceImpl implements SocialUserService {
 		String phone = socialUser.getPhone();
 		if (phone != null) {
 			SocialUser existSocialUser = socialUserRepository.getUserByPhoneAndProviderId(phone, providerId);
-			System.out.println("By phone: " + existSocialUser);
+			logger.debug("By phone: " + existSocialUser);
 			if (existSocialUser != null) {
 					updateSocialUser(existSocialUser, socialUser);
 				
@@ -95,7 +99,7 @@ public class SocialUserServiceImpl implements SocialUserService {
 		String providerUserId = socialUser.getProviderUserId();
 		if (providerUserId != null) {
 			SocialUser existSocialUser = socialUserRepository.findByProviderIdAndProviderUserId(providerId, providerUserId);
-			System.out.println("By provider user id: " + existSocialUser);
+			logger.debug("By provider user id: " + existSocialUser);
 			if (existSocialUser != null) {
 				updateSocialUser(existSocialUser, socialUser);
 				
@@ -128,7 +132,7 @@ public class SocialUserServiceImpl implements SocialUserService {
 	private void updateSocialUser(SocialUser existSocialUser, SocialUser socialUser) {
 		existSocialUser.setAccessToken(socialUser.getAccessToken());
 		existSocialUser.setProviderUserId(socialUser.getProviderUserId());
-		System.out.println(existSocialUser.getAccessToken() + ", " + existSocialUser.getId());
+		logger.debug("Updating social user: " + existSocialUser.getAccessToken() + ", " + existSocialUser.getId());
 		socialUserRepository.update(existSocialUser);
 		
 	}
@@ -191,9 +195,9 @@ public class SocialUserServiceImpl implements SocialUserService {
 			JSONObject jsonResponse = new JSONObject(responseStr);
 			
 			String facebookUserId = jsonResponse.getString("id");
-			System.out.println("Facebook user id: " + facebookUserId);
+			logger.debug("Facebook user id: " + facebookUserId);
 			if (socialUser.getProviderUserId().equals(facebookUserId)) {
-				System.out.println("Facebook user verified!");
+				logger.debug("Facebook user verified!");
 				return true;
 			}
 			
@@ -206,14 +210,14 @@ public class SocialUserServiceImpl implements SocialUserService {
 		else if (providerId.equals("vk")) {
 			String requestURL = Constants.VK_URL  + "?access_token=" + socialUser.getAccessToken();
 			String responseStr = httpRequestService.sendGetRequest(requestURL);
-			System.out.println("VK user: " + responseStr);
+			logger.debug("VK user: " + responseStr);
 			JSONObject jsonResponse = new JSONObject(responseStr);
 			
 			
 			String vkUserId = jsonResponse.getString("id");
-			System.out.println("VK user id: " + vkUserId);
+			logger.debug("VK user id: " + vkUserId);
 			if (socialUser.getProviderUserId().equals(vkUserId)) {
-				System.out.println("VK user verified!");
+				logger.debug("VK user verified!");
 				return true;
 			}
 			
@@ -247,16 +251,15 @@ public class SocialUserServiceImpl implements SocialUserService {
         Response response = request.send();
         
         JSONObject jsonResponse = new JSONObject(response.getBody());
-        System.out.println(jsonResponse);
+        logger.debug("Response from Twitter: " + jsonResponse.toString());
         
-        System.out.println(response.getCode());
         int responseCode = response.getCode();
         if (responseCode == HttpStatus.OK_200) {
         	
     		String twitterUserId = jsonResponse.getString("id_str");
-    		System.out.println("Twitter user id: " + twitterUserId);
+    		logger.debug("Twitter user id: " + twitterUserId);
     		if (user.getProviderUserId().equals(twitterUserId)) {
-    			System.out.println("Twitter user verified!");
+    			logger.debug("Twitter user verified!");
     			return true;
     		}
         }

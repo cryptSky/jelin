@@ -15,12 +15,16 @@ import org.crama.jelin.model.UserEnhancer;
 import org.crama.jelin.repository.CharacterRepository;
 import org.crama.jelin.repository.UserRepository;
 import org.crama.jelin.service.CharacterService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service("characterService")
 public class CharacterServiceImpl implements CharacterService {
 
+	private static final Logger logger = LoggerFactory.getLogger(CharacterServiceImpl.class);
+	
 	@Autowired
 	private CharacterRepository characterRepository;
 	@Autowired
@@ -48,7 +52,7 @@ public class CharacterServiceImpl implements CharacterService {
 		if (userCharacter == null) {
 			throw new GameException(302, "There is no character with id: " + character);
 		}
-		System.out.println(userCharacter);
+		logger.info(userCharacter.toString());
 		Set<Character> userCharacterSet = user.getCharacterSet();
 		userCharacterSet.add(userCharacter);
 		userRepository.updateUser(user);
@@ -80,9 +84,7 @@ public class CharacterServiceImpl implements CharacterService {
 		List<Character> characters = characterRepository.getCharactersForMoney();
 		Set<Character> userCharacters = user.getCharacterSet();
 		for (Character c: new ArrayList<Character>(characters)) {
-			
-			System.out.println(c);
-			
+						
 			for (Character uc: userCharacters) {
 				if (c.equals(uc)) {
 					characters.remove(c);
@@ -131,7 +133,7 @@ public class CharacterServiceImpl implements CharacterService {
 		if (userCharacter == null) {
 			throw new GameException(306, "There is no character with id: " + character);
 		}
-		System.out.println(userCharacter);
+		logger.info(userCharacter.toString());
 		Set<Character> userCharacterSet = user.getCharacterSet();
 		boolean added = userCharacterSet.add(userCharacter);
 		if (!added) {
@@ -164,7 +166,7 @@ public class CharacterServiceImpl implements CharacterService {
 		if (enhancerObj == null) {
 			throw new GameException(307, "There is no enhancer with id: " + enhancerId);
 		}
-		System.out.println(enhancerObj);
+		logger.info(enhancerObj.toString());
 		
 		List<UserEnhancer> userEnhancerList = user.getEnhancerList(); 
 		for (UserEnhancer ue: userEnhancerList) {
@@ -258,7 +260,6 @@ public class CharacterServiceImpl implements CharacterService {
 					}
 				}
 				if (!found) {
-					System.out.println(il);
 					images.remove(il);
 				}
 			}

@@ -25,12 +25,16 @@ import org.hibernate.Transaction;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 @Repository("userRepository")
 public class UserRepositoryImpl implements UserRepository {
 
+	private static final Logger logger = LoggerFactory.getLogger(UserRepositoryImpl.class);
+	
 	@Autowired
 	private SessionFactory sessionFactory;
 	
@@ -86,7 +90,7 @@ public class UserRepositoryImpl implements UserRepository {
 			
 		}
 		catch (HibernateException e) {
-			e.printStackTrace();
+			logger.error(e.getMessage());
 			session.getTransaction().rollback();
 		}
 		
@@ -106,7 +110,7 @@ public class UserRepositoryImpl implements UserRepository {
 			
 		}
 		catch (HibernateException e) {
-			e.printStackTrace();
+			logger.error(e.getMessage());
 			session.getTransaction().rollback();
 		}
 		
@@ -134,7 +138,6 @@ public class UserRepositoryImpl implements UserRepository {
 	@Override
 	@Transactional
 	public void updateUser(User user) {
-		System.out.println("update user");
 		Session session = sessionFactory.getCurrentSession();	
 		session.update(user);
 				

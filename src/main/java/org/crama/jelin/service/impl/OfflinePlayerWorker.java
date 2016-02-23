@@ -19,12 +19,16 @@ import org.crama.jelin.repository.impl.UserRepositoryImpl;
 import org.crama.jelin.service.GameService;
 import org.hibernate.Hibernate;
 import org.hibernate.SessionFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service("offlinePlayerWorker")
 public class OfflinePlayerWorker implements Runnable {
 
+	private static final Logger logger = LoggerFactory.getLogger(OfflinePlayerWorker.class);
+	
 	private Game game;
 	private Readiness condition;
 	
@@ -54,8 +58,7 @@ public class OfflinePlayerWorker implements Runnable {
 				initialOfflineUpdate(condition, offlineHumans);
 				
 			} catch (GameException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.error(e.getMessage());
 			}
 			
 		}
@@ -72,28 +75,28 @@ public class OfflinePlayerWorker implements Runnable {
 		switch(condition)
 		{
 			case CATEGORY:	User host = game.getRound().getHost();
-							System.out.println("[CATEGORY] User " + host.getUsername() + " is host and he is offline. Adding him to offline users list.");
+							logger.debug("[CATEGORY] User " + host.getUsername() + " is host and he is offline. Adding him to offline users list.");
 							offlineUsers.add(host); 
 						    break;
 			case QUESTION:	users = userRepository.getPlayersNotWithReadiness(Readiness.QUESTION, game);
 							offlineUsers.addAll(users);
 			
-							System.out.println("[QUESTION] Offline users: ");
-							System.out.println(offlineUsers.toString());
+							logger.debug("[QUESTION] Offline users: ");
+							logger.debug(offlineUsers.toString());
 							
 							break;
 			case ANSWER:	users = userRepository.getPlayersNotWithReadiness(Readiness.ANSWER, game);
 							offlineUsers.addAll(users);
 			
-							System.out.println("[QUESTION] Offline users: ");
-							System.out.println(offlineUsers.toString());
+							logger.debug("[QUESTION] Offline users: ");
+							logger.debug(offlineUsers.toString());
 				
 							break;
 			case RESULT:	users = userRepository.getPlayersNotWithReadiness(Readiness.RESULT, game);
 							offlineUsers.addAll(users);
 			
-							System.out.println("[QUESTION] Offline users: ");
-							System.out.println(offlineUsers.toString());
+							logger.debug("[QUESTION] Offline users: ");
+							logger.debug(offlineUsers.toString());
 				
 							break;
 			case SUMMARY:   break;
@@ -113,7 +116,7 @@ public class OfflinePlayerWorker implements Runnable {
 							host.setNetStatus(NetStatus.OFFLINE);
 							userRepository.updateNetStatus(host, NetStatus.OFFLINE);
 							gameService.setRandomCategory(game);
-							System.out.println("[CATEGORY] Set up random round because the host " + host.getUsername()+ " is offline.");
+							logger.debug("[CATEGORY] Set up random round because the host " + host.getUsername()+ " is offline.");
 							break;
 			case QUESTION:	for (User player: offlineUsers)
 							{
@@ -121,7 +124,7 @@ public class OfflinePlayerWorker implements Runnable {
 								userRepository.updateNetStatus(player, NetStatus.OFFLINE);
 																
 								gameService.processQuestion(game, player);
-								System.out.println("[QUESTION] Processing next question for user " + player.getUsername()+ ". He is offline.");								
+								logger.debug("[QUESTION] Processing next question for user " + player.getUsername()+ ". He is offline.");								
 							}
 							break;
 			case ANSWER:	for (User player: offlineUsers)
@@ -130,7 +133,7 @@ public class OfflinePlayerWorker implements Runnable {
 								userRepository.updateNetStatus(player, NetStatus.OFFLINE);
 																
 								gameService.processAnswer(game, player, -1, 0);
-								System.out.println("[ANSWER] Processing answer for user " + player.getUsername()+ ". He is offline.");
+								logger.debug("[ANSWER] Processing answer for user " + player.getUsername()+ ". He is offline.");
 								
 							}
 			
@@ -141,7 +144,7 @@ public class OfflinePlayerWorker implements Runnable {
 								userRepository.updateNetStatus(player, NetStatus.OFFLINE);
 																
 								gameService.processResult(game, player);									
-								System.out.println("[RESULT] Processing result for user " + player.getUsername()+ ". He is offline.");
+								logger.debug("[RESULT] Processing result for user " + player.getUsername()+ ". He is offline.");
 							}
 							break;
 			case SUMMARY:	gameService.finishGame(game);

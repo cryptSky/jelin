@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+import org.crama.jelin.controller.UserStatisticController;
 import org.crama.jelin.model.Bonus;
 import org.crama.jelin.model.Character;
 import org.crama.jelin.model.Constants;
@@ -23,12 +24,16 @@ import org.crama.jelin.repository.UserRepository;
 import org.crama.jelin.service.BonusService;
 import org.crama.jelin.service.SettingsService;
 import org.crama.jelin.util.DateConverter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service("bonusService")
 public class BonusServiceImpl implements BonusService {
 
+	private static final Logger logger = LoggerFactory.getLogger(BonusServiceImpl.class);
+	
 	@Autowired
 	private BonusRepository bonusRepository; 
 	
@@ -57,7 +62,7 @@ public class BonusServiceImpl implements BonusService {
 	@Override
 	public List<Bonus> getBonusesByPromocode(String code, User user) {
 		if (!checkPromocode(code, user).equals(PromocodeStatus.AVAILABLE)) {
-			System.out.println("Promocode is not available");
+			logger.info("Promocode is not available");
 			return null;
 		}
 		List<Bonus> bonuses = bonusRepository.getBonusesByPromocode(code);
@@ -72,10 +77,9 @@ public class BonusServiceImpl implements BonusService {
 
 	@Override
 	public List<Bonus> getEarlyRegisterBonuses(User user) {
-		//check if user registered within early register interval
-		
+				
 		Date registerDate = new Date(user.getRegisterDate().getTime());
-		System.out.println(registerDate + ", " + registerDate.getClass());
+		logger.info(registerDate + ", " + registerDate.getClass());
 		LocalDate localRegisterDate = DateConverter.toLocalDate(registerDate);
 		
 		Settings settings = settingsService.getSettings(); 
@@ -198,12 +202,12 @@ public class BonusServiceImpl implements BonusService {
 			int numOfDailyBonuses = dailyUserBonuses.size();
 			
 			if (limit != 0 && numOfBonuses == limit) {
-				System.out.println("You have reached limit for this bonus: " + limit);
+				logger.info("You have reached limit for this bonus: " + limit);
 				bonuses.remove(bonus);
 				continue;
 			}
 			if (dailyLimit != 0 && numOfDailyBonuses == dailyLimit) {
-				System.out.println("You have reached daily limit for this bonus: " + dailyLimit);
+				logger.info("You have reached daily limit for this bonus: " + dailyLimit);
 				bonuses.remove(bonus);
 				continue;
 			}

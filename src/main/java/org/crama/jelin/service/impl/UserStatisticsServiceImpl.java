@@ -22,17 +22,18 @@ import org.crama.jelin.repository.UserStatisticsRepository;
 import org.crama.jelin.service.RatingService;
 import org.crama.jelin.service.UserStatisticsService;
 import org.crama.jelin.util.DateConverter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service("userStatisticsService")
 public class UserStatisticsServiceImpl implements UserStatisticsService {
 
-	@Autowired
-	private UserRepository userRepository;
+	private static final Logger logger = LoggerFactory.getLogger(UserStatisticsServiceImpl.class);
 	
 	@Autowired
-	private RatingService ratingService;
+	private UserRepository userRepository;
 	
 	@Override
 	public void updateDaysInGame(User user) {
@@ -130,8 +131,8 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
 			int finalAcorns = acorns + acorns * bonusAcorns / 100;
 			int finalPoints = points + points * bonusPoints / 100;
 			 
-			System.out.println("Acorns: " + acorns + ", finalAcorns: " + finalAcorns);
-			System.out.println("Points: " + points + ", finalPoints: " + finalPoints);
+			logger.debug("Acorns: " + acorns + ", finalAcorns: " + finalAcorns);
+			logger.debug("Points: " + points + ", finalPoints: " + finalPoints);
 			
 			UserStatistics userStats = user.getUserStatistics();
 			userStats.setAcorns(finalAcorns);

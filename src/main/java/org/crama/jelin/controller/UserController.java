@@ -14,6 +14,8 @@ import org.crama.jelin.service.SocialUserService;
 import org.crama.jelin.service.UserActivityService;
 import org.crama.jelin.service.UserService;
 import org.crama.jelin.service.UserStatisticsService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
@@ -28,6 +30,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class UserController {
+	
+	private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 	
 	@Autowired
 	private UserService userService;
@@ -44,7 +48,7 @@ public class UserController {
 	@RequestMapping(value="/api/user/checkFree", method=RequestMethod.GET)
 	@ResponseStatus(HttpStatus.OK)
     public boolean checkFree(@RequestParam(required = false) String username, @RequestParam(required = false) String email) {
-		System.out.println(username + ", " + email);
+		logger.info(username + ", " + email);
 		if (username != null && email != null) {
 			
 			boolean isFreeUsername = userService.checkUsername(username);
@@ -70,10 +74,10 @@ public class UserController {
 	@RequestMapping(value="/api/user", method=RequestMethod.PUT)
 	@ResponseStatus(HttpStatus.CREATED)
     public boolean signup(@Valid @RequestBody UserModel model, BindingResult result) {
-		System.out.println(model);
+		logger.info(model.toString());
 		if (result.hasErrors()) {
 			
-			System.out.println("Validation failed");
+			logger.info("Validation failed");
             return false;
         }
        
@@ -130,11 +134,11 @@ public class UserController {
     @RequestMapping(value="/api/user/social/login", method=RequestMethod.PUT)
     public @ResponseBody UserModel socialLogin(@RequestBody SocialUser socialUser) 
     		throws GameException {
-    	System.out.println("Login social user: " + socialUser);
+    	logger.info("Login social user: " + socialUser);
 		UserModel userModel = socialUserService.loginSocialUser(socialUser);
 		if (userModel != null) {
 			User user = userService.getUserByUsername(userModel.getUsername());
-			System.out.println(user);
+			logger.info(user.toString());
 			userActivityService.saveUserLoginActivity(user);
 		}
 		return userModel;
@@ -149,7 +153,7 @@ public class UserController {
 	@ExceptionHandler
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
 	public @ResponseBody RestError handleException(GameException ge) {
-		System.out.println("User Controller: Game Exception");
+		logger.error(ge.getMessage());
 		
 		RestError re = new RestError(HttpStatus.BAD_REQUEST, ge.getCode(), ge.getMessage());
 		
