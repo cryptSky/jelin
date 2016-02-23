@@ -37,6 +37,7 @@ public class Constants {
 	public static final String TWITTER_CLIENT_SECRET = "73mdj12K7jihrUlj55Wbtibv2Sl2ENObkSnpro7OAayv2f6zH2";
 	//vk
 	public static final String VK_URL = "https://api.vk.com/method/users.get";
+	
 
 	public enum UserType {
 		HUMAN(0),

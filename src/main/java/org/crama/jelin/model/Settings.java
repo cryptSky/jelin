@@ -29,6 +29,9 @@ public class Settings {
 	@Column(name = "EMAIL", nullable = false)
 	private String email;
 	
+	@Column(name = "EMAIL_PASSWORD", nullable = false)
+	private String emailPassword;
+	
 	@Column(name = "URL", nullable = false)
 	private String url;
 	
@@ -107,6 +110,14 @@ public class Settings {
 
 	public void setEmail(String email) {
 		this.email = email;
+	}
+	
+	public String getEmailPassword() {
+		return emailPassword;
+	}
+
+	public void setEmailPassword(String emailPassword) {
+		this.emailPassword = emailPassword;
 	}
 
 	public String getUrl() {

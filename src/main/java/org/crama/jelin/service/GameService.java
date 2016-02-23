@@ -37,5 +37,7 @@ public interface GameService {
 	void setReadiness(Game game, Readiness readiness);
 	
 	Readiness getReadiness(Game game);
+
+	List<ScoreSummary> getScoreSummaryAfterRound(Game game, User player);
 		
 }

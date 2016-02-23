@@ -23,26 +23,25 @@ public class MailServiceImpl implements MailService {
 	
 	
 	
-	private void sendEmail(String from, String to, String subject, String body) {
-		// sets SMTP server properties
-		//local system TODO change it
-		final String userName = "vitalii.oleksiv@gmail.com";
-		final String password = "liverpool0_1892";
+	private void sendEmail(Settings settings, String from, String to, String subject, String body) {
 		
+		
+		//Jelin server smtp configuration
 		Properties properties = new Properties();
-		properties.put("mail.smtp.host", "smtp.gmail.com");
-		properties.put("mail.smtp.port", 587);
+		properties.put("mail.smtp.host", "smtp.yandex.ru");
+		properties.put("mail.smtp.port", 465);
 		properties.put("mail.smtp.auth", "true");
-		properties.put("mail.smtp.starttls.enable", "true");
-		properties.put("mail.user", userName);
-		properties.put("mail.password", password);
+		properties.put("mail.smtp.ssl", "true");
+		properties.put("mail.user", settings.getEmail());
+		properties.put("mail.password", settings.getEmailPassword());
 		
 		// creates a new session with an authenticator
 		Authenticator auth = new Authenticator() {
 			public PasswordAuthentication getPasswordAuthentication() {
-				return new PasswordAuthentication(userName, password);
+				return new PasswordAuthentication(settings.getEmail(), settings.getEmailPassword());
 			}
 		};
+		
 		Session session = Session.getInstance(properties, auth);
 		
 		//create and send message
@@ -81,7 +80,7 @@ public class MailServiceImpl implements MailService {
 		System.out.println(subject);
 		System.out.println(body.toString());
 		
-		this.sendEmail(from, to, subject, body.toString());
+		this.sendEmail(settings, from, to, subject, body.toString());
 		
 	}
 
@@ -105,7 +104,7 @@ public class MailServiceImpl implements MailService {
 		body.append("Thanks! \n");
 		body.append(settings.getShortName());
 		
-		this.sendEmail(from, to, subject, body.toString());
+		this.sendEmail(settings, from, to, subject, body.toString());
 		
 	}
 }

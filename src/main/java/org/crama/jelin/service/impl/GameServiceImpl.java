@@ -459,6 +459,12 @@ public class GameServiceImpl implements GameService {
 	}
 	
 	@Override
+	public List<ScoreSummary> getScoreSummaryAfterRound(Game game, User player) {
+		List<ScoreSummary> summary = scoreSummaryRepository.getSummaryByGame(game);
+		return summary;
+	}
+	
+	@Override
 	@Transactional
 	public void updateGame(Game game) {
 		gameRepository.updateGame(game);		
@@ -615,6 +621,8 @@ public class GameServiceImpl implements GameService {
 		return gameRepository.getReadiness(game);
 		
 	}
+
+	
 
 			
 }

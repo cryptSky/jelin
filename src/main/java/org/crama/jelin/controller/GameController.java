@@ -333,14 +333,21 @@ public class GameController {
 	        }
         }
 		
-        if (game.getReadiness() != Readiness.SUMMARY)
+        if (game.getReadiness() != Readiness.SUMMARY && game.getReadiness() != Readiness.RESULT)
         {
-        	throw new GameException(519, "Game Readiness is: " + game.getReadiness().toString() + ". Should be: SUMMARY");
+        	throw new GameException(519, "Game Readiness is: " + game.getReadiness().toString() + ". Should be: SUMMARY or RESULT");
         }
         
+        List<ScoreSummary> summaries = new ArrayList<ScoreSummary>();
+        if (game.getReadiness() == Readiness.SUMMARY) {
+        	summaries = gameService.getScoreSummary(game, player);
+            userStatisticsService.saveGameSummaryStats(summaries);
+        }
                 
-        List<ScoreSummary> summaries = gameService.getScoreSummary(game, player);
-        userStatisticsService.saveGameSummaryStats(summaries);
+        else if (game.getReadiness() == Readiness.RESULT) {
+        	summaries = gameService.getScoreSummaryAfterRound(game, player);
+        }
+        
         
         return summaries;
 	}
