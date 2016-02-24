@@ -8,9 +8,11 @@ import java.util.concurrent.ScheduledFuture;
 import org.crama.jelin.model.Constants;
 import org.crama.jelin.model.Constants.Readiness;
 import org.crama.jelin.model.Game;
+import org.crama.jelin.model.Settings;
 import org.crama.jelin.repository.GameRepository;
 import org.crama.jelin.repository.UserRepository;
 import org.crama.jelin.service.OfflinePlayerChecker;
+import org.crama.jelin.service.SettingsService;
 import org.hibernate.Hibernate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +28,9 @@ public class OfflinePlayerCheckerImpl implements OfflinePlayerChecker {
 	private static int countdownPeriod = 3;
 	
 	@Autowired
+	private SettingsService settingsService;
+	
+	@Autowired
 	private OfflinePlayerWorker offlinePlayerWorker;
 	
 	@Autowired 
@@ -33,12 +38,13 @@ public class OfflinePlayerCheckerImpl implements OfflinePlayerChecker {
 	
 	@Override
 	public void setUpTimeout(Game game, Readiness condition) {
+		Settings settings = settingsService.getSettings();
 		final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 		offlinePlayerWorker.setUp(game, condition);
 		
 		ScheduledFuture<?> offlineWorker =
-	    		scheduler.schedule(offlinePlayerWorker, 
-	    				Constants.OFFLINE_TIMEOUT_SEC[condition.getValue()], TimeUnit.SECONDS);  
+	    		scheduler.schedule(offlinePlayerWorker, settings.getOfflineTimeout(condition),
+	    				TimeUnit.SECONDS);  
 		
 		
 		Runnable countDownRunnable = new Runnable()

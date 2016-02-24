@@ -30,6 +30,14 @@ public class ScoreSummaryRepositoryImpl implements ScoreSummaryRepository {
 		session.save(summary);
 
 	}
+	
+	@Override
+	@Transactional
+	public void updateSummary(ScoreSummary summary) {
+		Session session = sessionFactory.getCurrentSession();	
+		session.update(summary);
+
+	}
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -38,6 +46,16 @@ public class ScoreSummaryRepositoryImpl implements ScoreSummaryRepository {
 		criteria.add(Restrictions.eq("game", game));
 		
 		return criteria.list();
+	}
+	
+	@Override
+	public ScoreSummary getSummaryByGameAndUser(Game game, User player) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ScoreSummary.class);
+		criteria.add(Restrictions.eq("game", game));
+		criteria.add(Restrictions.eq("user", player));
+		
+		ScoreSummary summary = (ScoreSummary) criteria.uniqueResult();
+		return summary;
 	}
 
 }

@@ -67,6 +67,19 @@ public class QuestionResultRepositoryImpl implements QuestionResultRepository {
 		
 		return result;
 	}
+	
+	@Override
+	public long getCorrectAnswerCount(Game game, User user) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(QuestionResult.class);
+		criteria.add(Restrictions.eq("game", game))
+			    .add(Restrictions.eq("player", user))
+				.add(Restrictions.gt("score", 0));
+		criteria.setProjection(Projections.rowCount());
+		
+		long result = (long) criteria.uniqueResult();
+		
+		return result;
+	}
 
 	@SuppressWarnings("unchecked")
 	@Override

@@ -10,6 +10,7 @@ import org.crama.jelin.model.User;
 public interface QuestionResultRepository {
 	List<QuestionResult> getPersonalResults(Game game, User player) throws GameException;
 	long getWrongAnswerCount(Game game, User user);
+	long getCorrectAnswerCount(Game game, User user);
 		
 	void saveResult(QuestionResult result);
 	void update(QuestionResult result);

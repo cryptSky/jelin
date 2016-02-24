@@ -19,10 +19,7 @@ public class PointsCalculatorServiceImpl implements PointsCalculatorService {
 
 	@Autowired
 	private AnswerRepository answerRepository;
-	
-	@Autowired
-	private GameRoundRepository gameRoundRepository;
-	
+		
 	@Autowired
 	private QuestionResultRepository questionResultRepository;
 	

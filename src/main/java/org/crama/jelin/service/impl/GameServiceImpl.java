@@ -459,6 +459,13 @@ public class GameServiceImpl implements GameService {
 	}
 	
 	@Override
+	public List<ScoreSummary> getScoreSummaryAfterRound(Game game, User player) {
+		saveScores(game);
+		List<ScoreSummary> summary = scoreSummaryRepository.getSummaryByGame(game);
+		return summary;
+	}
+	
+	@Override
 	@Transactional
 	public void updateGame(Game game) {
 		gameRepository.updateGame(game);		
@@ -526,9 +533,7 @@ public class GameServiceImpl implements GameService {
     			
     			processUserAnswer(game, user, botChoice, botTime);
     		}
-    	}
-
-       		
+    	}       		
 	}
 	
 	private GameRound getNextRound(Game game) {
@@ -589,12 +594,22 @@ public class GameServiceImpl implements GameService {
 			int playerNumber = i + 1;
 			User player = game.getUserByPlayerNumber(playerNumber);
 			
-			Settings settings = settingsService.getSettings();
 			long wrongAnswers = questionResultRepository.getWrongAnswerCount(game, player);
-			long rightAnswers = settings.getRoundNumber()*settings.getQuestionNumber() - wrongAnswers;
-			ScoreSummary summary = new ScoreSummary(scores[i], player, game, wrongAnswers, rightAnswers);
+			long correctAnswers = questionResultRepository.getCorrectAnswerCount(game, player);
 			
-			scoreSummaryRepository.saveSummary(summary);
+			ScoreSummary summary = scoreSummaryRepository.getSummaryByGameAndUser(game, player);
+			if (summary == null)
+			{
+				summary = new ScoreSummary(scores[i], player, game, wrongAnswers, correctAnswers);
+				scoreSummaryRepository.saveSummary(summary);
+			}
+			else
+			{
+				summary.setScore(scores[i]);
+				summary.setCorrectAnswers(correctAnswers);
+				summary.setWrongAnswers(wrongAnswers);
+				scoreSummaryRepository.updateSummary(summary);
+			}
 		}
 	}
 	
@@ -615,6 +630,8 @@ public class GameServiceImpl implements GameService {
 		return gameRepository.getReadiness(game);
 		
 	}
+
+	
 
 			
 }

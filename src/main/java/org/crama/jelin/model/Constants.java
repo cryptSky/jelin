@@ -35,6 +35,7 @@ public class Constants {
 	public static final String VK_URL = "https://api.vk.com/method/users.get";
 	public static final String VK_FRIENDS_URL = "https://api.vk.com/method/friends.get?user_id=%s?access_token=%s";
 
+
 	public enum UserType {
 		HUMAN(0),
 		BOT(1);
@@ -195,8 +196,6 @@ public class Constants {
 	    	return result;
 	    }
 	}
-	
-	public static final int[] OFFLINE_TIMEOUT_SEC = {30, 30, 30, 30, 30};
 	
 	public enum NotificationType {
 		

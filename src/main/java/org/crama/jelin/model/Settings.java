@@ -11,6 +11,8 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.crama.jelin.model.Constants.Readiness;
+
 @Entity
 @Table(name = "settings")
 public class Settings {
@@ -28,6 +30,9 @@ public class Settings {
 	
 	@Column(name = "EMAIL", nullable = false)
 	private String email;
+	
+	@Column(name = "EMAIL_PASSWORD", nullable = false)
+	private String emailPassword;
 	
 	@Column(name = "URL", nullable = false)
 	private String url;
@@ -60,6 +65,21 @@ public class Settings {
 	@Temporal(TemporalType.DATE)
 	@Column(name = "END_REGISTER_DATE", nullable = false)
 	private Date endRegisterDate;
+	
+	@Column(name = "CATEGORY_OFFLINE_TIMEOUT", nullable = false)
+	private int categoryOfflineTimeout;
+	
+	@Column(name = "QUESTION_OFFLINE_TIMEOUT", nullable = false)
+	private int questionOfflineTimeout;
+	
+	@Column(name = "ANSWER_OFFLINE_TIMEOUT", nullable = false)
+	private int answerOfflineTimeout;
+	
+	@Column(name = "RESULT_OFFLINE_TIMEOUT", nullable = false)
+	private int resultOfflineTimeout;
+	
+	@Column(name = "SUMMARY_OFFLINE_TIMEOUT", nullable = false)
+	private int summaryOfflineTimeout;
 	
 	public Date getStartRegisterDate() {
 		return startRegisterDate;
@@ -107,6 +127,14 @@ public class Settings {
 
 	public void setEmail(String email) {
 		this.email = email;
+	}
+	
+	public String getEmailPassword() {
+		return emailPassword;
+	}
+
+	public void setEmailPassword(String emailPassword) {
+		this.emailPassword = emailPassword;
 	}
 
 	public String getUrl() {
@@ -171,6 +199,67 @@ public class Settings {
 
 	public void setQuestionNumber(int questionNumber) {
 		this.questionNumber = questionNumber;
+	}
+
+	public int getCategoryOfflineTimeout() {
+		return categoryOfflineTimeout;
+	}
+
+	public void setCategoryOfflineTimeout(int categoryOfflineTimeout) {
+		this.categoryOfflineTimeout = categoryOfflineTimeout;
+	}
+
+	public int getQuestionOfflineTimeout() {
+		return questionOfflineTimeout;
+	}
+
+	public void setQuestionOfflineTimeout(int questionOfflineTimeout) {
+		this.questionOfflineTimeout = questionOfflineTimeout;
+	}
+
+	public int getAnswerOfflineTimeout() {
+		return answerOfflineTimeout;
+	}
+
+	public void setAnswerOfflineTimeout(int answerOfflineTimeout) {
+		this.answerOfflineTimeout = answerOfflineTimeout;
+	}
+
+	public int getResultOfflineTimeout() {
+		return resultOfflineTimeout;
+	}
+
+	public void setResultOfflineTimeout(int resultOfflineTimeout) {
+		this.resultOfflineTimeout = resultOfflineTimeout;
+	}
+
+	public int getSummaryOfflineTimeout() {
+		return summaryOfflineTimeout;
+	}
+
+	public void setSummaryOfflineTimeout(int summaryOfflineTimeout) {
+		this.summaryOfflineTimeout = summaryOfflineTimeout;
+	}
+	
+	public int getOfflineTimeout(Readiness readiness)
+	{
+		int result = 30;
+		switch(readiness)
+		{
+			case CATEGORY: result = getCategoryOfflineTimeout();
+									break;
+			case QUESTION: result = getQuestionOfflineTimeout();
+									break;
+			case ANSWER: result = getAnswerOfflineTimeout();
+								  	break;
+			case RESULT: result = getResultOfflineTimeout();
+									break;
+			case SUMMARY: result = getSummaryOfflineTimeout();
+									break;
+			default: break;
+		}
+		
+		return result;
 	}
 
 }
