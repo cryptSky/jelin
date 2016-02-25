@@ -122,6 +122,6 @@ public class ScoreSummary implements Serializable, Comparable<ScoreSummary> {
 	@Override
 	public int compareTo(ScoreSummary o) {
 		
-		return this.score - o.score;
+		return o.score - this.score;
 	}
 }

@@ -152,8 +152,6 @@ public class GameInitController {
 		}
 		
 		difficultyService.checkDifficultyNotNull(game.getDifficulty());
-		gameInitService.checkGameRandom(game);
-		
 		
 		Set<UserJson> opponents = gameInitService.getGameOpponents(game);
 		return opponents;
