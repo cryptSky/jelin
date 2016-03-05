@@ -450,6 +450,8 @@ public class GameServiceImpl implements GameService {
                 
 		List<ScoreSummary> summary = scoreSummaryRepository.getSummaryByGame(game);
 		
+		Collections.sort(summary);
+		
 		if (game.allActiveHasReadiness(Readiness.SUMMARY))
 		{
 			finishGame(game);
@@ -462,6 +464,9 @@ public class GameServiceImpl implements GameService {
 	public List<ScoreSummary> getScoreSummaryAfterRound(Game game, User player) {
 		saveScores(game);
 		List<ScoreSummary> summary = scoreSummaryRepository.getSummaryByGame(game);
+		
+		Collections.sort(summary);
+		
 		return summary;
 	}
 	

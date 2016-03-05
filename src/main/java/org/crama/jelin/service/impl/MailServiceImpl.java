@@ -31,11 +31,17 @@ public class MailServiceImpl implements MailService {
 		//Jelin server smtp configuration
 		Properties properties = new Properties();
 		properties.put("mail.smtp.host", "smtp.yandex.ru");
-		properties.put("mail.smtp.port", 465);
+		properties.put("mail.smtp.port", "465");
 		properties.put("mail.smtp.auth", "true");
 		properties.put("mail.smtp.ssl", "true");
+		properties.setProperty("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+		properties.setProperty("mail.smtp.socketFactory.fallback", "false");
+		properties.setProperty("mail.smtp.socketFactory.port", "465");
 		properties.put("mail.user", settings.getEmail());
 		properties.put("mail.password", settings.getEmailPassword());
+		
+		logger.debug("email: " + settings.getEmail());
+		logger.debug("password: " + settings.getEmailPassword());
 		
 		// creates a new session with an authenticator
 		Authenticator auth = new Authenticator() {
@@ -46,6 +52,8 @@ public class MailServiceImpl implements MailService {
 		
 		Session session = Session.getInstance(properties, auth);
 		
+		logger.debug("session created");
+		
 		//create and send message
 		MimeMessage msg = new MimeMessage(session);
 	    try {
@@ -53,10 +61,17 @@ public class MailServiceImpl implements MailService {
 		    msg.setFrom(new InternetAddress(from));
 		    msg.setSubject(subject);
 		    msg.setText(body);
-		    
+		    logger.debug("sending message");
 		    Transport.send(msg);
+		    logger.debug("message have been sent");
 	    } catch (MessagingException e) {
-			logger.error(e.toString());
+	    	
+	    	logger.info("Mail Exception");
+	    	logger.info(e.toString());
+	    	logger.error(e.toString());
+	    	e.printStackTrace();
+	    	
+			
 		}
 	}
 
@@ -106,6 +121,12 @@ public class MailServiceImpl implements MailService {
 		body.append("\n");
 		body.append("Thanks! \n");
 		body.append(settings.getShortName());
+		
+		logger.info("Registration email: " + user.getUsername());
+		logger.debug(from);
+		logger.debug(to);
+		logger.debug(subject);
+		logger.debug(body.toString());
 		
 		this.sendEmail(settings, from, to, subject, body.toString());
 		
