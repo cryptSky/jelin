@@ -148,8 +148,8 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
 			logger.debug("Points: " + points + ", finalPoints: " + finalPoints);
 			
 			UserStatistics userStats = user.getUserStatistics();
-			userStats.setAcorns(finalAcorns);
-			userStats.setPoints(finalPoints);
+			userStats.setAcorns(userStats.getAcorns() + finalAcorns);
+			userStats.setPoints(userStats.getPoints() + finalPoints);
 			
 			//all games, wins, lost, middle
 			userStats.setGamesPlayed(userStats.getGamesPlayed() + 1);
