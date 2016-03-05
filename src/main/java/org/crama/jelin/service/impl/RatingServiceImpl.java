@@ -50,25 +50,38 @@ public class RatingServiceImpl implements RatingService {
 					{
 						result = getAllTimeRating(player, people);
 					}
-					result = getAllUsersRating(time);
+					else
+					{
+						result = getAllUsersRating(time);
+					}
 					break;
 			case 1: if (time == 0)
 					{
 						result = getAllTimeRating(player, people);
 					}
-					result = getFriendsRating(player, time);
+					else
+					{
+						result = getFriendsRating(player, time);
+					
+					}
 					break;
 			case 2: if (time == 0)
 					{
 						result = getAllTimeRating(player, people);
 					}
-					result = getFBRating(player, time);
+					else
+					{
+						result = getFBRating(player, time);
+					}
 					break;
 			case 3: if (time == 0)
 					{
 						result = getAllTimeRating(player, people);
 					}
-					result = getVKRating(player, time);
+					else
+					{
+						result = getVKRating(player, time);
+					}
 					break;
 		}
 		

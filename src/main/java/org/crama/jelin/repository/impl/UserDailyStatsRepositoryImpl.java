@@ -7,9 +7,11 @@ import org.crama.jelin.model.User;
 import org.crama.jelin.model.UserDailyStats;
 import org.crama.jelin.repository.UserDailyStatsRepository;
 import org.hibernate.Query;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository("userDailyStatsRepository")
 public class UserDailyStatsRepositoryImpl implements UserDailyStatsRepository {
@@ -19,7 +21,7 @@ public class UserDailyStatsRepositoryImpl implements UserDailyStatsRepository {
 			+ "AND u.date >= (:fromDate) GROUP BY u.user";
 	
 	private static final String GET_STATS_FROM_DATE = "FROM UserDailyStats u "
-			+ "AND u.date >= (:fromDate) GROUP BY u.user";
+			+ "WHERE u.date >= (:fromDate) GROUP BY u.user";
 	
 	@Autowired
 	private SessionFactory sessionFactory;
@@ -47,6 +49,14 @@ public class UserDailyStatsRepositoryImpl implements UserDailyStatsRepository {
 		List<UserDailyStats> usr = query.list();
 	    		
 		return usr;
+	}
+
+	@Override
+	@Transactional
+	public void update(UserDailyStats stats) {
+		Session session = sessionFactory.getCurrentSession();	
+		session.update(stats);
+		
 	}
 
 }

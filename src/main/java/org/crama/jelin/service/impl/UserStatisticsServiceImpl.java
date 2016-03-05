@@ -17,6 +17,7 @@ import org.crama.jelin.model.UserDailyStats;
 import org.crama.jelin.model.UserEnhancer;
 import org.crama.jelin.model.UserStatistics;
 import org.crama.jelin.model.json.RatingJson;
+import org.crama.jelin.repository.UserDailyStatsRepository;
 import org.crama.jelin.repository.UserRepository;
 import org.crama.jelin.repository.UserStatisticsRepository;
 import org.crama.jelin.service.RatingService;
@@ -34,6 +35,12 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
 	
 	@Autowired
 	private UserRepository userRepository;
+	
+	@Autowired
+	private UserStatisticsRepository userStatisticsRepository;
+	
+	@Autowired
+	private UserDailyStatsRepository userDailyStatsRepository;
 	
 	@Override
 	public void updateDaysInGame(User user) {
@@ -60,6 +67,8 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
 			
 		}
 		user.setUserStatistics(userStats);
+		userStatisticsRepository.update(userStats);
+		
 		userRepository.updateUser(user);
 		
 		
@@ -72,6 +81,8 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
 		stats.setGoldAcorns(stats.getGoldAcorns() + acorns);
 		stats.setMoneySpent(stats.getMoneySpent() + acorns);
 		user.setUserStatistics(stats);
+		
+		userStatisticsRepository.update(stats);
 		userRepository.updateUser(user);
 	}
 
@@ -81,11 +92,13 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
 		UserStatistics stats = creator.getUserStatistics();
 		stats.setGamesInitiated(stats.getGamesInitiated() + 1);
 		creator.setUserStatistics(stats);
+		userStatisticsRepository.update(stats);
 		
 		UserDailyStats dailyStats = creator.getUserDailyStats();
 		dailyStats = checkDailyStatsDate(dailyStats);
 		dailyStats.setGamesInitiated(dailyStats.getGamesInitiated() + 1);
 		creator.setUserDailyStats(dailyStats);
+		userDailyStatsRepository.update(dailyStats);
 		
 		userRepository.updateUser(creator);
 	}
@@ -152,6 +165,7 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
 			}
 			
 			user.setUserStatistics(userStats);
+			userStatisticsRepository.update(userStats);
 			
 			//update daily statistics
 			UserDailyStats dailyStats = user.getUserDailyStats();
@@ -159,6 +173,7 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
 			dailyStats.setGamesPlayed(dailyStats.getGamesPlayed() + 1);
 			dailyStats.setPoints(dailyStats.getPoints() + points);
 			user.setUserDailyStats(dailyStats);
+			userDailyStatsRepository.update(dailyStats);
 			
 			userRepository.updateUser(user);
 		}
@@ -173,12 +188,14 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
 		UserStatistics stats = user.getUserStatistics();
 		stats.setSmmInvites(stats.getSmmInvites() + 1);
 		user.setUserStatistics(stats);
+		userStatisticsRepository.update(stats);
 		
 		//update daily statistics
 		UserDailyStats dailyStats = user.getUserDailyStats();
 		dailyStats = checkDailyStatsDate(dailyStats);
 		dailyStats.setSmmInvites(dailyStats.getSmmInvites() + 1);
 		user.setUserDailyStats(dailyStats);
+		userDailyStatsRepository.update(dailyStats);
 		
 		userRepository.updateUser(user);
 		
@@ -191,12 +208,14 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
 		UserStatistics stats = user.getUserStatistics();
 		stats.setSmmShares(stats.getSmmShares() + 1);
 		user.setUserStatistics(stats);
+		userStatisticsRepository.update(stats);
 		
 		//update daily statistics
 		UserDailyStats dailyStats = user.getUserDailyStats();
 		dailyStats = checkDailyStatsDate(dailyStats);
 		dailyStats.setSmmShares(dailyStats.getSmmShares() + 1);
 		user.setUserDailyStats(dailyStats);
+		userDailyStatsRepository.update(dailyStats);
 		
 		userRepository.updateUser(user);
 		

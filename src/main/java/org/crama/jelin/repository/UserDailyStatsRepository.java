@@ -9,4 +9,6 @@ import org.crama.jelin.model.UserDailyStats;
 public interface UserDailyStatsRepository {
 	List<UserDailyStats> getRatingByTimeAndUsers(List<User> users, Date fromDate);
 	List<UserDailyStats> getRatingByTime(Date fromDate);
+	
+	void update(UserDailyStats stats);
 }

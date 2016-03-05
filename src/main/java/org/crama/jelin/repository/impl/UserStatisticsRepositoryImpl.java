@@ -6,9 +6,11 @@ import org.crama.jelin.model.User;
 import org.crama.jelin.model.UserStatistics;
 import org.crama.jelin.repository.UserStatisticsRepository;
 import org.hibernate.Query;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository("userStatisticsRepository")
 public class UserStatisticsRepositoryImpl implements UserStatisticsRepository {
@@ -42,6 +44,15 @@ public class UserStatisticsRepositoryImpl implements UserStatisticsRepository {
 		@SuppressWarnings("unchecked")
 		List<UserStatistics> stats = (List<UserStatistics>)query.list();
 		return stats;
+	}
+
+
+	@Override
+	@Transactional
+	public void update(UserStatistics stats) {
+		Session session = sessionFactory.getCurrentSession();	
+		session.update(stats);
+		
 	}
 	
 	
