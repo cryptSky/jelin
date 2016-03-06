@@ -28,15 +28,15 @@ public class Answer implements Serializable {
 	@JoinColumn(name = "ROUND_ID")
 	private GameRound round;
 	
-	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
 	@JoinColumn(name = "QUESTION_ID")
 	private Question question;
 	
-	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
 	@JoinColumn(name = "GAME_ID")
 	private Game game;
 	
-	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
 	@JoinColumn(name = "PLAYER_ID")
 	private User player;
 	

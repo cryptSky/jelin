@@ -65,12 +65,12 @@ public class User implements Serializable {
 	private ProcessStatus processStatus;
 	
 	@JsonIgnore
-	@ManyToOne(cascade=CascadeType.ALL, fetch = FetchType.LAZY)
+	@ManyToOne(cascade=CascadeType.REFRESH, fetch = FetchType.LAZY)
 	@JoinColumn(name = "BOT_ID")
 	private GameBot bot;
 	
 	@JsonIgnore
-	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@ManyToMany(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
 	@JoinTable(name = "user_character", 
     joinColumns = { 
            @JoinColumn(name = "USER_ID")
@@ -82,7 +82,7 @@ public class User implements Serializable {
 	
 	
 	@JsonIgnore
-	@ManyToOne(cascade=CascadeType.ALL, fetch = FetchType.EAGER) 
+	@ManyToOne(cascade=CascadeType.REFRESH, fetch = FetchType.EAGER) 
 	@JoinColumn(name = "CHARACTER_ID", nullable = true)
 	private Character choosenCharacter;
 	
@@ -92,7 +92,7 @@ public class User implements Serializable {
 	private Date lastGameTime;
 		
 	@JsonIgnore
-	@OneToMany(cascade=CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "user") 
+	@OneToMany(cascade=CascadeType.REFRESH, fetch = FetchType.LAZY, mappedBy = "user") 
 	private List<UserEnhancer> enhancerList = new ArrayList<UserEnhancer>();
 	
 	@JsonIgnore
@@ -116,7 +116,7 @@ public class User implements Serializable {
 	private UserActivity userActivity;
 	
 	@JsonIgnore
-	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@ManyToMany(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
 	@JoinTable(name = "user_friend", 
     joinColumns = { 
            @JoinColumn(name = "USER_ID")
@@ -127,7 +127,7 @@ public class User implements Serializable {
 	private Set<User> friendList = new HashSet<User>();
 	
 	@JsonIgnore
-	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@ManyToMany(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
 	@JoinTable(name = "user_group", 
     joinColumns = { 
            @JoinColumn(name = "USER_ID")

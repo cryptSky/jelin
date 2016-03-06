@@ -32,14 +32,14 @@ public class GameRound implements Serializable {
     @Column(name = "ID")
     private int id;
 	
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
 	@JoinColumn(name="GAME_ID")
 	private Game game;
 	
 	@Column(name = "ROUND_NUMBER")
 	private int roundNumber = 0;
 	
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
 	@JoinColumn(name = "HOST")
 	private User host;
 	
@@ -67,11 +67,11 @@ public class GameRound implements Serializable {
 	@Column(name = "PLAYER4_QUESTION_NUM", nullable = false)
 	private int player4QuestionNumber;
 	
-	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
 	@JoinColumn(name = "CATEGORY_ID")
 	private Category category;
 	
-	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@ManyToMany(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
 	@JoinTable(name = "round_question", 
 	   joinColumns = { 
 	          @JoinColumn(name = "ROUND_ID", unique = false)

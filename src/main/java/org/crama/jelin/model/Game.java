@@ -55,7 +55,7 @@ public class Game implements Serializable {
 	@Column(name="ID", nullable=false, unique=true)
 	private int id;
 	
-	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
 	@JoinColumn(name="THEME_ID")
 	private Category theme;
 	
@@ -65,11 +65,11 @@ public class Game implements Serializable {
 	@Column(name = "STATE")
 	private GameState gameState;
 	
-	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	@ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
 	@JoinColumn(name="DIFFICULTY_ID")
 	private Difficulty difficulty;
 	
-	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
 	@JoinColumn(name="CREATOR_ID", nullable = false)
 	private User creator;
 	

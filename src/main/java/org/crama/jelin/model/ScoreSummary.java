@@ -30,12 +30,12 @@ public class ScoreSummary implements Serializable, Comparable<ScoreSummary> {
 	@Column(name="SCORE", nullable=false)
 	private int score;
 	
-	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
     @JoinColumn(name="USER_ID")
 	private User user;
 	
 	@JsonIgnore
-	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
     @JoinColumn(name="GAME_ID")
 	private Game game;
 	

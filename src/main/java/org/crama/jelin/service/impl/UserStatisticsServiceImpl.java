@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.crama.jelin.exception.GameException;
+import org.crama.jelin.model.Constants.UserType;
 import org.crama.jelin.model.Enhancer;
 import org.crama.jelin.model.ScoreSummary;
 import org.crama.jelin.model.User;
@@ -113,6 +114,13 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
 		
 		for (ScoreSummary scoreSummary: summaries) {
 			User user = scoreSummary.getUser();
+			if (user.getType().equals(UserType.BOT)) {
+				continue;
+			}
+			
+			int userAcorns = user.getUserStatistics().getAcorns();
+			int userPoints = user.getUserStatistics().getPoints();
+			
 			int acorns = scoreSummary.getAcrons();
 			int points = scoreSummary.getScore();
 			
@@ -128,8 +136,8 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
 				bonusPoints += pointsPercent;
 						
 			}
-			int finalAcorns = acorns + acorns * bonusAcorns / 100;
-			int finalPoints = points + points * bonusPoints / 100;
+			int finalAcorns = userAcorns + acorns * bonusAcorns / 100;
+			int finalPoints = userPoints + points * bonusPoints / 100;
 			 
 			logger.debug("Acorns: " + acorns + ", finalAcorns: " + finalAcorns);
 			logger.debug("Points: " + points + ", finalPoints: " + finalPoints);
