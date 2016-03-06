@@ -35,13 +35,7 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
 	
 	@Autowired
 	private UserRepository userRepository;
-	
-	@Autowired
-	private UserStatisticsRepository userStatisticsRepository;
-	
-	@Autowired
-	private UserDailyStatsRepository userDailyStatsRepository;
-	
+		
 	@Override
 	public void updateDaysInGame(User user) {
 		
@@ -67,10 +61,8 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
 			
 		}
 		user.setUserStatistics(userStats);
-		userStatisticsRepository.update(userStats);
-		
-		userRepository.updateUser(user);
-		
+				
+		userRepository.updateUser(user);		
 		
 	}
 
@@ -82,7 +74,6 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
 		stats.setMoneySpent(stats.getMoneySpent() + acorns);
 		user.setUserStatistics(stats);
 		
-		userStatisticsRepository.update(stats);
 		userRepository.updateUser(user);
 	}
 
@@ -92,14 +83,12 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
 		UserStatistics stats = creator.getUserStatistics();
 		stats.setGamesInitiated(stats.getGamesInitiated() + 1);
 		creator.setUserStatistics(stats);
-		userStatisticsRepository.update(stats);
-		
+				
 		UserDailyStats dailyStats = creator.getUserDailyStats();
 		dailyStats = checkDailyStatsDate(dailyStats);
 		dailyStats.setGamesInitiated(dailyStats.getGamesInitiated() + 1);
 		creator.setUserDailyStats(dailyStats);
-		userDailyStatsRepository.update(dailyStats);
-		
+				
 		userRepository.updateUser(creator);
 	}
 
@@ -108,7 +97,7 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
 		SimpleDateFormat fmt = new SimpleDateFormat("yyyyMMdd");
 		
 		if (!fmt.format(dailyStats.getDate()).equals(fmt.format(new Date()))) {
-			dailyStats.clear();
+			dailyStats = new UserDailyStats(dailyStats.getUser());
 		}
 		return dailyStats;
 		
@@ -148,8 +137,8 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
 			logger.debug("Points: " + points + ", finalPoints: " + finalPoints);
 			
 			UserStatistics userStats = user.getUserStatistics();
-			userStats.setAcorns(userStats.getAcorns() + finalAcorns);
-			userStats.setPoints(userStats.getPoints() + finalPoints);
+			userStats.setAcorns(finalAcorns);
+			userStats.setPoints(finalPoints);
 			
 			//all games, wins, lost, middle
 			userStats.setGamesPlayed(userStats.getGamesPlayed() + 1);
@@ -165,16 +154,14 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
 			}
 			
 			user.setUserStatistics(userStats);
-			userStatisticsRepository.update(userStats);
-			
+						
 			//update daily statistics
 			UserDailyStats dailyStats = user.getUserDailyStats();
 			dailyStats = checkDailyStatsDate(dailyStats);
 			dailyStats.setGamesPlayed(dailyStats.getGamesPlayed() + 1);
 			dailyStats.setPoints(dailyStats.getPoints() + points);
 			user.setUserDailyStats(dailyStats);
-			userDailyStatsRepository.update(dailyStats);
-			
+						
 			userRepository.updateUser(user);
 		}
 				
@@ -188,15 +175,13 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
 		UserStatistics stats = user.getUserStatistics();
 		stats.setSmmInvites(stats.getSmmInvites() + 1);
 		user.setUserStatistics(stats);
-		userStatisticsRepository.update(stats);
-		
+				
 		//update daily statistics
 		UserDailyStats dailyStats = user.getUserDailyStats();
 		dailyStats = checkDailyStatsDate(dailyStats);
 		dailyStats.setSmmInvites(dailyStats.getSmmInvites() + 1);
 		user.setUserDailyStats(dailyStats);
-		userDailyStatsRepository.update(dailyStats);
-		
+				
 		userRepository.updateUser(user);
 		
 	}
@@ -208,15 +193,13 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
 		UserStatistics stats = user.getUserStatistics();
 		stats.setSmmShares(stats.getSmmShares() + 1);
 		user.setUserStatistics(stats);
-		userStatisticsRepository.update(stats);
-		
+				
 		//update daily statistics
 		UserDailyStats dailyStats = user.getUserDailyStats();
 		dailyStats = checkDailyStatsDate(dailyStats);
 		dailyStats.setSmmShares(dailyStats.getSmmShares() + 1);
 		user.setUserDailyStats(dailyStats);
-		userDailyStatsRepository.update(dailyStats);
-		
+				
 		userRepository.updateUser(user);
 		
 	}

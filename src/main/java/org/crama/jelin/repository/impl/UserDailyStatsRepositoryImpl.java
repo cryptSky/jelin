@@ -1,5 +1,6 @@
 package org.crama.jelin.repository.impl;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -18,11 +19,11 @@ public class UserDailyStatsRepositoryImpl implements UserDailyStatsRepository {
 
 	private static final String GET_STATS_FROM_DATE_USERS = "FROM UserDailyStats u "
 			+ "WHERE u.user IN (:users) "
-			+ "AND u.date >= (:fromDate) GROUP BY u.user";
+			+ "AND u.date >= (:fromDate) ORDER BY u.user";
 	
 	private static final String GET_STATS_FROM_DATE = "FROM UserDailyStats u "
-			+ "WHERE u.date >= (:fromDate) GROUP BY u.user";
-	
+			+ "WHERE u.date >= (:fromDate) ORDER BY u.user";
+		
 	@Autowired
 	private SessionFactory sessionFactory;
 	
@@ -33,6 +34,7 @@ public class UserDailyStatsRepositoryImpl implements UserDailyStatsRepository {
 		{
 			return getRatingByTime(fromDate);
 		}
+		
 		Query query = sessionFactory.getCurrentSession().createQuery(GET_STATS_FROM_DATE_USERS);
 		query.setParameterList("users", users);
 		query.setParameter("fromDate", fromDate);
@@ -44,19 +46,12 @@ public class UserDailyStatsRepositoryImpl implements UserDailyStatsRepository {
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<UserDailyStats> getRatingByTime(Date fromDate) {
+			
 		Query query = sessionFactory.getCurrentSession().createQuery(GET_STATS_FROM_DATE);
 		query.setParameter("fromDate", fromDate);
 		List<UserDailyStats> usr = query.list();
-	    		
+			    		
 		return usr;
-	}
-
-	@Override
-	@Transactional
-	public void update(UserDailyStats stats) {
-		Session session = sessionFactory.getCurrentSession();	
-		session.update(stats);
-		
 	}
 
 }

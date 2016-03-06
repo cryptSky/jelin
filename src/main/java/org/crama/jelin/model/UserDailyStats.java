@@ -11,6 +11,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -22,13 +24,12 @@ public class UserDailyStats implements Serializable {
 	
 	private static final long serialVersionUID = -2373929802285599646L;
 	
-	
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name="ID", nullable=false)
 	private int id;
 	
-	@OneToOne(cascade=CascadeType.ALL, fetch = FetchType.LAZY) 
+	@ManyToOne(cascade=CascadeType.ALL, fetch = FetchType.LAZY) 
 	@JoinColumn(name = "USER_ID", nullable = false)
 	private User user;
 	
@@ -125,16 +126,4 @@ public class UserDailyStats implements Serializable {
 		this.points = points;
 	}
 
-	public void clear() {
-		this.date = new Date();
-		this.gamesInitiated = 0;
-		this.gamesPlayed = 0;
-		this.smmInvites = 0;
-		this.smmShares = 0;
-		
-	}
-
-	
-	
-	
 }

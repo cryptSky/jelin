@@ -10,5 +10,4 @@ public interface UserStatisticsRepository {
 	List<UserStatistics> getAllUsersStatistics();
 	List<UserStatistics> getUsersStatistics(List<User> users);
 
-	void update(UserStatistics stats);
 }

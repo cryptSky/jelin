@@ -108,9 +108,9 @@ public class User implements Serializable {
 	private UserStatistics userStatistics;
 	
 	@JsonIgnore
-	@OneToOne(mappedBy = "user", fetch = FetchType.LAZY, cascade=CascadeType.ALL)  
-	private UserDailyStats userDailyStats;
-	
+	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade=CascadeType.ALL)  
+	private List<UserDailyStats> userDailyStatsList = new ArrayList<UserDailyStats>();
+		
 	@JsonIgnore
 	@OneToOne(mappedBy = "user", fetch = FetchType.LAZY, cascade=CascadeType.ALL)  
 	private UserActivity userActivity;
@@ -142,6 +142,7 @@ public class User implements Serializable {
 	@Column(name = "REGISTER_DATE", nullable = false)
 	private Date registerDate;
 	
+	
 	@JsonIgnore
 	@Column(name = "Readiness")
 	private Readiness readiness;
@@ -172,14 +173,12 @@ public class User implements Serializable {
 		this.email = socialUser.getEmail();
 		setCommon();
 		
-	}
-	
+	}	
 	
 	private void setCommon() {
 		this.userActivity = new UserActivity();
 		this.userActivity.setUser(this);
-		this.userDailyStats = new UserDailyStats();
-		this.userDailyStats.setUser(this);
+		this.userDailyStatsList.add(new UserDailyStats(this));
 		this.userStatistics = new UserStatistics();
 		this.userStatistics.setUser(this);
 		this.userInfo = new UserInfo();
@@ -306,11 +305,13 @@ public class User implements Serializable {
 	}
 
 	public UserDailyStats getUserDailyStats() {
-		return userDailyStats;
+		int index = userDailyStatsList.size() - 1;
+		return userDailyStatsList.get(index);
 	}
 
 	public void setUserDailyStats(UserDailyStats userDailyStats) {
-		this.userDailyStats = userDailyStats;
+		int index = userDailyStatsList.size() - 1;
+		userDailyStatsList.set(index, userDailyStats);
 	}
 
 	public List<UserBonus> getBonusList() {

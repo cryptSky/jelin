@@ -28,7 +28,6 @@ public class UserStatisticsRepositoryImpl implements UserStatisticsRepository {
 	public List<UserStatistics> getAllUsersStatistics() {
 		
 		Query query = sessionFactory.getCurrentSession().createQuery(GET_ALL_STATISTICS);
-		query.setMaxResults(100);
 		@SuppressWarnings("unchecked")
 		List<UserStatistics> stats = (List<UserStatistics>)query.list();
 		return stats;
@@ -40,21 +39,9 @@ public class UserStatisticsRepositoryImpl implements UserStatisticsRepository {
 	public List<UserStatistics> getUsersStatistics(List<User> users) {
 		Query query = sessionFactory.getCurrentSession().createQuery(GET_USERS_STATISTICS);
 		query.setParameterList("users", users);
-		query.setMaxResults(100);
 		@SuppressWarnings("unchecked")
 		List<UserStatistics> stats = (List<UserStatistics>)query.list();
 		return stats;
 	}
 
-
-	@Override
-	@Transactional
-	public void update(UserStatistics stats) {
-		Session session = sessionFactory.getCurrentSession();	
-		session.update(stats);
-		
-	}
-	
-	
-	
 }

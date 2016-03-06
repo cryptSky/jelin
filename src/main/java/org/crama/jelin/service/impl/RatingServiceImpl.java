@@ -46,16 +46,16 @@ public class RatingServiceImpl implements RatingService {
 		List<RatingJson> result = null;
 		switch (people) 
 		{
-			case 0: if (time == 0)
+			case 0: if (time == 3)
 					{
 						result = getAllTimeRating(player, people);
 					}
 					else
 					{
-						result = getAllUsersRating(time);
+						result = getAllUsersRating(time, player);
 					}
 					break;
-			case 1: if (time == 0)
+			case 1: if (time == 3)
 					{
 						result = getAllTimeRating(player, people);
 					}
@@ -65,7 +65,7 @@ public class RatingServiceImpl implements RatingService {
 					
 					}
 					break;
-			case 2: if (time == 0)
+			case 2: if (time == 3)
 					{
 						result = getAllTimeRating(player, people);
 					}
@@ -74,7 +74,7 @@ public class RatingServiceImpl implements RatingService {
 						result = getFBRating(player, time);
 					}
 					break;
-			case 3: if (time == 0)
+			case 3: if (time == 3)
 					{
 						result = getAllTimeRating(player, people);
 					}
@@ -94,7 +94,7 @@ public class RatingServiceImpl implements RatingService {
 		friends.add(player);
 		Date fromDate = getStatsBeginingDate(time);
 		
-		List<RatingJson> rating = getRatingByTimeAndUsers(friends, fromDate);
+		List<RatingJson> rating = getRatingByTimeAndUsers(friends, fromDate, player);
 		return rating;
 	}
 
@@ -103,7 +103,7 @@ public class RatingServiceImpl implements RatingService {
 		friends.add(player);
 		Date fromDate = getStatsBeginingDate(time);
 		
-		List<RatingJson> rating = getRatingByTimeAndUsers(friends, fromDate);
+		List<RatingJson> rating = getRatingByTimeAndUsers(friends, fromDate, player);
 		return rating;
 	}
 
@@ -112,11 +112,8 @@ public class RatingServiceImpl implements RatingService {
 		friends.addAll(player.getFriendList());
 		friends.add(player);
 		Date fromDate = getStatsBeginingDate(time);
-		if (fromDate == null)
-		{
-			
-		}
-		List<RatingJson> rating = getRatingByTimeAndUsers(friends, fromDate);
+		
+		List<RatingJson> rating = getRatingByTimeAndUsers(friends, fromDate, player);
 		return rating;
 	}
 
@@ -127,30 +124,35 @@ public class RatingServiceImpl implements RatingService {
 		
 		switch(people)
 		{
-			case 0: rating = getRating(null);
+			case 0: rating = getRating(null, player);
 					break;
 			case 1: friends = new ArrayList<User>();
 					friends.addAll(player.getFriendList());
-					friends.add(player);
-					rating = getRating(friends);
+					rating = getRating(friends, player);
 					break;
 			case 2: friends = getFBFriends(player);
-					friends.add(player);
-					rating = getRating(friends);
+					rating = getRating(friends, player);
 					break;
 			case 3: friends = getVKFriends(player);
-					friends.add(player);
-					rating = getRating(friends);
+					rating = getRating(friends, player);
 					break;				
 		}
 						
 		return rating;
 	}
 	
-	private List<RatingJson> getAllUsersRating(int time) {
+	private List<RatingJson> getAllUsersRating(int time, User player) {
 		
 		Date fromDate = getStatsBeginingDate(time);
-		List<RatingJson> rating = getRatingByTimeAndUsers(null, fromDate);
+		List<RatingJson> rating = null;
+		if (fromDate == null)
+		{
+			rating = getRating(null, player);
+		}
+		else
+		{
+			rating = getRatingByTimeAndUsers(null, fromDate, player);
+		}
 		
 		return rating;
 	}
@@ -248,7 +250,7 @@ public class RatingServiceImpl implements RatingService {
 		return result;
 	}
 	
-	private List<RatingJson> getRatingByTimeAndUsers(List<User> users, Date fromDate)
+	private List<RatingJson> getRatingByTimeAndUsers(List<User> users, Date fromDate, User user)
 	{
 		Map<User, Integer> userPointsMap = new HashMap<User, Integer>();
 		List<UserDailyStats> dailyStats = null;
@@ -295,16 +297,49 @@ public class RatingServiceImpl implements RatingService {
 		    		entry.getKey().getUserInfo().getAvatar(), entry.getKey().getUsername());
 		    rating.add(ratingObj);
 		    position++;
-		    if (rating.size() > 100)
-		    {
-		    	break;
-		    }
 		}
 		
-		return rating;
+		List<RatingJson> result = this.excludeOver100(rating, user);
+				
+		return result;
 	}
 	
-	private List<RatingJson> getRating(List<User> users)
+	private List<RatingJson> excludeOver100(List<RatingJson> userRating, User player)
+	{
+		List<RatingJson> ratings = new ArrayList<RatingJson>();
+		boolean alreadyAdded = false;
+		for (RatingJson rating: userRating)
+		{
+			if (alreadyAdded && rating.getNumber() >= 100)
+			{
+				break;
+			}
+			
+			if (!alreadyAdded && rating.getNumber() >= 100 && rating.getUsername() == player.getUsername())
+			{
+				ratings.add(rating);
+				alreadyAdded = true;
+			}
+			else if (!alreadyAdded && rating.getNumber() >= 100 && rating.getUsername() != player.getUsername())
+			{
+				continue;
+			}
+			
+			if (rating.getNumber() < 100)
+			{
+				ratings.add(rating);
+				if (rating.getUsername() == player.getUsername())
+				{
+					alreadyAdded = true;
+				}
+			}
+						
+		}
+		
+		return ratings;
+	}
+	
+	private List<RatingJson> getRating(List<User> users, User player)
 	{
 		List<RatingJson> userRating = new ArrayList<RatingJson>();
 		List<UserStatistics> userStatistics = null;
@@ -314,6 +349,7 @@ public class RatingServiceImpl implements RatingService {
 		}
 		else
 		{
+			users.add(player);
 			userStatistics = userStatisticsRepository.getUsersStatistics(users);
 		}
 		
@@ -327,7 +363,8 @@ public class RatingServiceImpl implements RatingService {
 			userRating.add(rating);
 		}
 		
-		return userRating;
+		List<RatingJson> result = this.excludeOver100(userRating, player);
+		return result;
 	}
 
 }
