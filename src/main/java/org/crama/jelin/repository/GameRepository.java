@@ -14,4 +14,6 @@ public interface GameRepository {
 	Game reloadGame(Game game);
 
 	void lock(Game game);
+
+	Game getGameById(int gameId);
 }

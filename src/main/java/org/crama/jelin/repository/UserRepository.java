@@ -51,5 +51,7 @@ public interface UserRepository {
 	List<User> getPlayersNotWithReadiness(Readiness readiness, Game game);
 
 	void lock(User user);
+
+	List<User> getAllBots();
 	
 }

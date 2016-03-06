@@ -10,11 +10,10 @@ import org.crama.jelin.model.Constants.ProcessStatus;
 import org.crama.jelin.model.Constants.Readiness;
 import org.crama.jelin.model.Constants.UserType;
 import org.crama.jelin.model.Game;
-import org.crama.jelin.repository.UserRepository;
 import org.crama.jelin.model.User;
 import org.crama.jelin.model.UserModel;
 import org.crama.jelin.model.UserRole;
-import org.crama.jelin.model.UserSession;
+import org.crama.jelin.repository.UserRepository;
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.LockOptions;
@@ -259,6 +258,15 @@ public class UserRepositoryImpl implements UserRepository {
 		Session session = sessionFactory.getCurrentSession();
 		session.buildLockRequest(LockOptions.NONE).lock(user);
 		
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<User> getAllBots() {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(User.class);
+		Criterion isBot = Restrictions.eq("type", UserType.BOT);
+		criteria.add(isBot);
+		return criteria.list();
 	}
 
 	

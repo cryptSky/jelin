@@ -636,6 +636,19 @@ public class GameServiceImpl implements GameService {
 		
 	}
 
+	@Override
+	public void cleanUpGame(Game game) {
+		
+		gameRepository.cleanUpGame(game);
+		
+	}
+
+	@Override
+	public Game getGameById(int gameId) {
+		return gameRepository.getGameById(gameId);
+		
+	}
+
 	
 
 			

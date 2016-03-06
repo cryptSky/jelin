@@ -5,23 +5,20 @@ import java.util.List;
 import org.crama.jelin.model.Answer;
 import org.crama.jelin.model.Constants.Readiness;
 import org.crama.jelin.model.Game;
-import org.crama.jelin.model.GameBot;
-import org.crama.jelin.model.GameRound;
 import org.crama.jelin.model.QuestionResult;
 import org.crama.jelin.model.ScoreSummary;
+import org.crama.jelin.model.User;
 import org.crama.jelin.repository.AnswerRepository;
 import org.crama.jelin.repository.GameRepository;
 import org.crama.jelin.repository.GameRoundRepository;
 import org.crama.jelin.repository.QuestionResultRepository;
 import org.crama.jelin.repository.ScoreSummaryRepository;
+import org.crama.jelin.repository.UserRepository;
 import org.hibernate.Criteria;
-import org.hibernate.LockMode;
 import org.hibernate.LockOptions;
-import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Criterion;
-import org.hibernate.criterion.Projection;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
@@ -37,10 +34,7 @@ public class GameRepositoryImpl implements GameRepository {
 	
 	@Autowired
 	private SessionFactory sessionFactory;
-	
-	@Autowired
-	private GameRoundRepository gameRoundRepository;
-	
+
 	@Autowired
 	private AnswerRepository answerRepository;
 	
@@ -48,9 +42,14 @@ public class GameRepositoryImpl implements GameRepository {
 	private QuestionResultRepository questionResultRepository;
 	
 	@Autowired
+	private GameRoundRepository gameRoundRepository;
+	
+	@Autowired
 	private ScoreSummaryRepository scoreSummaryRepository;
 	
-
+	@Autowired
+	private UserRepository userRepository;
+	
 	@Override
 	@Transactional
 	public void updateGame(Game game) {
@@ -81,55 +80,41 @@ public class GameRepositoryImpl implements GameRepository {
 	
 	@Override
 	@Transactional
-	public void cleanUpGame(Game game)
-	{
-		try
-		{
+	public void cleanUpGame(Game game) {
+		try {
 			Session session = sessionFactory.getCurrentSession();
-		//	game.setRound(null);
-		//	updateGame(game);
-		//	session.flush();
+		
+			List<Answer> answers = answerRepository.getAnswersByGame(game);
+			for (Answer ans: answers) {
 				
-		//	session.delete(game);
-			session.flush();
-		
-		/*
-		List<Answer> answers = answerRepository.getAnswersByGame(game);
-		for (Answer ans: answers)
-		{
-			ans.setQuestion(null);
-			answerRepository.update(ans);
-			session.flush();
-			session.delete(ans);
-		}
-		
-		List<QuestionResult> qresults = questionResultRepository.getQuestionResultsByGame(game);
-		for (QuestionResult qr: qresults)
-		{
-			qr.setQuestion(null);
-			questionResultRepository.update(qr);
-			session.flush();
-			session.delete(qr);
-		}
-		
-		List<GameRound> rounds = gameRoundRepository.getAllRoundsByGame(game);
-		for (GameRound round: rounds)
-		{
-			session.delete(round);
-		}
-		
-		List<ScoreSummary> summaries = scoreSummaryRepository.getSummaryByGame(game);
-		for (ScoreSummary summary: summaries)
-		{
-			session.delete(summary);
-		}
+				session.delete(ans);
+			}
+			
+			List<QuestionResult> qresults = questionResultRepository.getQuestionResultsByGame(game);
+			for (QuestionResult qr: qresults) {
 				
-		*/
-		
-		}
-		catch(Exception e)
-		{
+				session.delete(qr);
+			}
+			
+			List<ScoreSummary> summaries = scoreSummaryRepository.getSummaryByGame(game);
+			for (ScoreSummary summary: summaries) {
+				
+				session.delete(summary);
+			}
+			
+			List<User> bots = userRepository.getAllBots();
+			for (User bot: bots) {
+				session.delete(bot);
+			}
+			
+			logger.debug("DELETE GAME!!");
+			session.delete(game);
+			session.flush();
+			
+			}
+		catch(Exception e) {
 			logger.error(e.getMessage());
+			e.printStackTrace();
 		}
 	}
 
@@ -147,6 +132,17 @@ public class GameRepositoryImpl implements GameRepository {
 		Session session = sessionFactory.getCurrentSession();	
 		session.update(game);
 		session.flush();
+		
+	}
+
+	@Override
+	public Game getGameById(int gameId) {
+		
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Game.class);
+		Criterion id = Restrictions.eq("id", gameId);
+		criteria.add(id);
+		
+		return (Game) criteria.uniqueResult();
 		
 	}	
 

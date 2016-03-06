@@ -371,4 +371,14 @@ public class GameController {
 		return re;
    }
 	
+	
+	//TEST METHODS
+	@RequestMapping(value="/api/game/clean", method=RequestMethod.POST)
+	public void cleanUpGame(@RequestParam int id) throws GameException {
+		
+		Game game = gameService.getGameById(id);
+		
+		gameService.cleanUpGame(game);
+	}
+	
 }

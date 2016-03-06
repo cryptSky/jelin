@@ -39,5 +39,10 @@ public interface GameService {
 	Readiness getReadiness(Game game);
 
 	List<ScoreSummary> getScoreSummaryAfterRound(Game game, User player);
+	
+	void cleanUpGame(Game game);
+
+	Game getGameById(int gameId);
+	
 		
 }
