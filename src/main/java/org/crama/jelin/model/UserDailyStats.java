@@ -18,6 +18,8 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "user_daily_stats")
 public class UserDailyStats implements Serializable {
@@ -29,6 +31,7 @@ public class UserDailyStats implements Serializable {
 	@Column(name="ID", nullable=false)
 	private int id;
 	
+	@JsonIgnore
 	@ManyToOne(cascade=CascadeType.ALL, fetch = FetchType.LAZY) 
 	@JoinColumn(name = "USER_ID", nullable = false)
 	private User user;

@@ -42,9 +42,6 @@ public class GameRepositoryImpl implements GameRepository {
 	private QuestionResultRepository questionResultRepository;
 	
 	@Autowired
-	private GameRoundRepository gameRoundRepository;
-	
-	@Autowired
 	private ScoreSummaryRepository scoreSummaryRepository;
 	
 	@Autowired
