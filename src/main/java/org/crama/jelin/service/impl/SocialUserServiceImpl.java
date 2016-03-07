@@ -187,7 +187,7 @@ public class SocialUserServiceImpl implements SocialUserService {
 
 	private boolean checkToken(SocialUser socialUser) throws GameException {
 		String providerId = socialUser.getProviderId();
-		if (providerId.equals("facebook")) {
+		if (providerId.equals(Constants.FB_PROVIDER_ID)) {
 
 			String requestURL = Constants.GRAPH_URL  + "me?access_token=" + socialUser.getAccessToken();
 			String responseStr = httpRequestService.sendGetRequest(requestURL);
@@ -203,11 +203,11 @@ public class SocialUserServiceImpl implements SocialUserService {
 			
 		}
 		
-		else if (providerId.equals("twitter")) {
+		else if (providerId.equals(Constants.TW_PROVIDER_ID)) {
 			return checkTwitter(socialUser);
 			
 		}
-		else if (providerId.equals("vk")) {
+		else if (providerId.equals(Constants.VK_PROVIDER_ID)) {
 			String requestURL = Constants.VK_URL  + "?access_token=" + socialUser.getAccessToken();
 			String responseStr = httpRequestService.sendGetRequest(requestURL);
 			logger.debug("VK user: " + responseStr);

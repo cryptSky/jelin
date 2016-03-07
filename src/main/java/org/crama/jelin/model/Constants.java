@@ -22,6 +22,10 @@ public class Constants {
 	public static final String IMAGE_PATH = "avatar" + File.separator + "users" + File.separator;
 	
 	//social constants
+	public static final String FB_PROVIDER_ID = "facebook";
+	public static final String VK_PROVIDER_ID = "vk";
+	public static final String TW_PROVIDER_ID = "twitter";
+	
 	//facebook
 	public static final String GRAPH_URL = "https://graph.facebook.com/";
 	public static final String FACEBOOK_CLIENT_ID = "1693231397627775";
@@ -33,7 +37,7 @@ public class Constants {
 	public static final String TWITTER_CLIENT_SECRET = "73mdj12K7jihrUlj55Wbtibv2Sl2ENObkSnpro7OAayv2f6zH2";
 	//vk
 	public static final String VK_URL = "https://api.vk.com/method/users.get";
-	public static final String VK_FRIENDS_URL = "https://api.vk.com/method/friends.get?user_id=%s?access_token=%s";
+	public static final String VK_FRIENDS_URL = "https://api.vk.com/method/friends.get?user_id=%s&access_token=%s";
 
 
 	public enum UserType {
