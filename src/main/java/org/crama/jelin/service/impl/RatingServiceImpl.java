@@ -159,23 +159,46 @@ public class RatingServiceImpl implements RatingService {
 	
 	private List<User> getFBFriends(User player) throws GameException
 	{
-		String providerId = "facebook";
 		List<User> result = new ArrayList<User>();
 		SocialUser su = socialUserRepository.getSocialUser(player);
-		if (su == null || su.getProviderId() != providerId)
+		if (su == null || !su.getProviderId().equals(Constants.FB_PROVIDER_ID))
 		{
 			return null;
 		}
 		
 		String requestURL = Constants.GRAPH_URL  + "me/friends?access_token=" + su.getAccessToken();
 		String responseStr = httpRequestService.sendGetRequest(requestURL);
+		JSONObject jsonResponse = new JSONObject(responseStr);
+		JSONArray items = jsonResponse.getJSONArray("data");
+		List<User> currentUsers = getGameUsersFromFBResponse(items);
+		result.addAll(currentUsers);
 		
-		JSONArray items = new JSONArray(responseStr);
+		JSONObject paging = jsonResponse.getJSONObject("paging");
+		
+		while(paging.has("next"))
+		{
+			requestURL = paging.getString("next");
+			responseStr = httpRequestService.sendGetRequest(requestURL);
+			jsonResponse = new JSONObject(responseStr);
+			
+			items = jsonResponse.getJSONArray("data");
+			currentUsers = getGameUsersFromFBResponse(items);
+			result.addAll(currentUsers);
+			
+			paging = jsonResponse.getJSONObject("paging");
+		}
+				
+		return result;
+	}
+	
+	private List<User> getGameUsersFromFBResponse(JSONArray items)
+	{
+		List<User> result = new ArrayList<User>();
 		for (int i = 0; i < items.length(); i++)
 		{
 			JSONObject friendObj = items.getJSONObject(i);
 			String providerUserId = friendObj.getString("id");
-			SocialUser friend = socialUserRepository.findByProviderIdAndProviderUserId(providerId, providerUserId);
+			SocialUser friend = socialUserRepository.findByProviderIdAndProviderUserId(Constants.FB_PROVIDER_ID, providerUserId);
 			if (friend == null)
 			{
 				continue;
@@ -191,10 +214,9 @@ public class RatingServiceImpl implements RatingService {
 	
 	private List<User> getVKFriends(User player) throws GameException
 	{
-		String providerId = "vk";
 		List<User> result = new ArrayList<User>();
 		SocialUser su = socialUserRepository.getSocialUser(player);
-		if (su == null || su.getProviderId() != providerId)
+		if (su == null || !su.getProviderId().equals(Constants.VK_PROVIDER_ID))
 		{
 			return null;
 		}
@@ -203,14 +225,13 @@ public class RatingServiceImpl implements RatingService {
 		String responseStr = httpRequestService.sendGetRequest(requestURL);
 		
 		JSONObject jsonResponse = new JSONObject(responseStr);
-		JSONArray items = jsonResponse.getJSONArray("items");
-		int count = jsonResponse.getInt("count");
-		
-		for (int i = 0; i < count; i++)
+		JSONArray items = jsonResponse.getJSONArray("response");
+				
+		for (int i = 0; i < items.length(); i++)
 		{
-			JSONObject friendObj = items.getJSONObject(i);
-			String providerUserId = friendObj.getString("id");
-			SocialUser friend = socialUserRepository.findByProviderIdAndProviderUserId(providerId, providerUserId);
+			Long longProviderUserId = items.getLong(i);
+			String providerUserId = longProviderUserId.toString();
+			SocialUser friend = socialUserRepository.findByProviderIdAndProviderUserId(Constants.VK_PROVIDER_ID, providerUserId);
 			if (friend == null)
 			{
 				continue;
