@@ -1,14 +1,7 @@
 package org.crama.jelin.service.impl;
 
-import java.io.IOException;
 import java.util.Date;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.util.EntityUtils;
 import org.crama.jelin.exception.GameException;
 import org.crama.jelin.model.Constants;
 import org.crama.jelin.model.Settings;
@@ -43,7 +36,7 @@ import org.springframework.stereotype.Service;
 @Service("socialUserService")
 public class SocialUserServiceImpl implements SocialUserService {
 	
-	private static final Logger logger = LoggerFactory.getLogger(SocialSignInAdapter.class);
+	private static final Logger logger = LoggerFactory.getLogger(SocialUserServiceImpl.class);
 	
 	@Autowired
 	private UserRepository userRepository;
@@ -179,8 +172,8 @@ public class SocialUserServiceImpl implements SocialUserService {
 		socialUserRepository.saveSocialUser(socialUser);
 		
 		Settings settings = settingsService.getSettings();
-		//TODO send email
-		//mailService.sendRegistrationEmail(user, settings);
+		
+		mailService.sendRegistrationEmail(user, settings);
 		
 		return userModel;
 	}

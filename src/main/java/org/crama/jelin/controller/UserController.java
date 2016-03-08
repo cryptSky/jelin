@@ -143,11 +143,6 @@ public class UserController {
 		}
 		return userModel;
 		
-		/*OAuth2ConnectionFactory<?> connectionFactory = (OAuth2ConnectionFactory<?>) connectionFactoryLocator.
-				getConnectionFactory(providerId);
-	    Connection<?> connection = connectionFactory.createConnection(new AccessGrant(request.getAccessToken()));
-	    SocialUser socialUser = userService.socialLogin(connection);
-	    return socialUser;*/
 	}
 	
 	@ExceptionHandler
