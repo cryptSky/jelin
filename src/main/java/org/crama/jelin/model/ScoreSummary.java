@@ -39,8 +39,8 @@ public class ScoreSummary implements Serializable, Comparable<ScoreSummary> {
     @JoinColumn(name="GAME_ID")
 	private Game game;
 	
-	@Column(name = "ACRONS")
-	private int acrons;
+	@Column(name = "ACORNS")
+	private int acorns;
 	
 	@Column(name = "CORRECT_ANSWERS")
 	private long correctAnswers;
@@ -58,7 +58,7 @@ public class ScoreSummary implements Serializable, Comparable<ScoreSummary> {
 		this.score = score;
 		this.user = user;
 		this.game = game;
-		this.acrons = (int)(score * 0.43);
+		this.acorns = (int)(score * 0.43);
 		this.correctAnswers = rightAnswers;
 		this.wrongAnswers = wrongAnswers;
 	}
@@ -95,12 +95,12 @@ public class ScoreSummary implements Serializable, Comparable<ScoreSummary> {
 		this.game = game;
 	}
 
-	public int getAcrons() {
-		return acrons;
+	public int getAcorns() {
+		return acorns;
 	}
 
-	public void setAcrons(int acrons) {
-		this.acrons = acrons;
+	public void setAcorns(int acorns) {
+		this.acorns = acorns;
 	}
 	
 	public long getCorrectAnswers() {

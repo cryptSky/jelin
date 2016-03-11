@@ -125,7 +125,7 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
 			int userAcorns = user.getUserStatistics().getAcorns();
 			int userPoints = user.getUserStatistics().getPoints();
 			
-			int acorns = scoreSummary.getAcrons();
+			int acorns = scoreSummary.getAcorns();
 			int points = scoreSummary.getScore();
 			
 			List<UserEnhancer> userEnhancerList = user.getEnhancerList();
