@@ -50,5 +50,7 @@ public interface UserService {
 
 	User getPrincipal();
 
+	void updateUser(User user);
+
 
 }

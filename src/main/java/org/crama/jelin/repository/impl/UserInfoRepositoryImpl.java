@@ -31,8 +31,22 @@ public class UserInfoRepositoryImpl implements UserInfoRepository {
 	@Override
 	@Transactional
 	public void updateUserInfo(UserInfo userInfo) {
-		Session session = sessionFactory.getCurrentSession();	
+		Session session = sessionFactory.getCurrentSession();
+		
 		session.update(userInfo);
+	}
+	
+	@Override
+	@Transactional
+	public void updateUserFullInfo(User user, UserInfo userInfo) {
+		Session session = sessionFactory.getCurrentSession();
+		
+		UserInfo oldInfo = getUserInfo(user);
+		UserInfo dbInfo = (UserInfo)session.get(UserInfo.class, oldInfo.getId());
+		
+		dbInfo.update(userInfo);
+		
+		session.update(dbInfo);
 	}
 
 }

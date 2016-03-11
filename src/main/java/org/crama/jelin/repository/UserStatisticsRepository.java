@@ -8,6 +8,9 @@ import org.crama.jelin.model.UserStatistics;
 public interface UserStatisticsRepository {
 
 	List<UserStatistics> getAllUsersStatistics();
+	
 	List<UserStatistics> getUsersStatistics(List<User> users);
+	
+	void update(UserStatistics userStats);
 
 }

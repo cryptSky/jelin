@@ -7,6 +7,9 @@ public interface UserInfoRepository {
 
 	UserInfo getUserInfo(User user);
 
+	void updateUserFullInfo(User user, UserInfo userInfo);
+	
 	void updateUserInfo(UserInfo userInfo);
+
 
 }

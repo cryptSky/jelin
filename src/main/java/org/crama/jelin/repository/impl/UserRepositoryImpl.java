@@ -139,7 +139,7 @@ public class UserRepositoryImpl implements UserRepository {
 	public void updateUser(User user) {
 		Session session = sessionFactory.getCurrentSession();	
 		session.update(user);
-				
+		session.flush();		
 	}
 
 	@SuppressWarnings("unchecked")

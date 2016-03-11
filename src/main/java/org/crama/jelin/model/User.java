@@ -304,6 +304,7 @@ public class User implements Serializable {
 		this.userStatistics = userStatistics;
 	}
 
+	@JsonIgnore
 	public UserDailyStats getUserDailyStats() {
 		int index = userDailyStatsList.size() - 1;
 		return userDailyStatsList.get(index);

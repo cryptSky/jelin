@@ -44,4 +44,15 @@ public class UserStatisticsRepositoryImpl implements UserStatisticsRepository {
 		return stats;
 	}
 
+
+	@Override
+	public void update(UserStatistics userStats) {
+		
+		Session session = sessionFactory.getCurrentSession();
+		
+		session.saveOrUpdate(userStats);
+		session.flush();
+		
+	}
+
 }

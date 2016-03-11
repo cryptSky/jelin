@@ -94,8 +94,10 @@ public class UserController {
 		if (user == null) { 
 			throw new GameException(101, "User is not authenticated");
 		}
-		userActivityService.saveUserLoginActivity(user);
 		userStatisticsService.updateDaysInGame(user);
+		userActivityService.saveUserLoginActivity(user);
+		//User userUp = userService.getUser(user.getId());
+		//userStatisticsService.updateDaysInGame(userUp);
         return true;
 	}
 	

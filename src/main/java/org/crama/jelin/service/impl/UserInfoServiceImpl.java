@@ -29,8 +29,9 @@ public class UserInfoServiceImpl implements UserInfoService {
 	}
 
 	@Override
-	public void updateUserInfo(UserInfo userInfo) {
-		userInfoRepository.updateUserInfo(userInfo);
+	public void updateUserInfo(User user, UserInfo userInfo) {
+		
+		userInfoRepository.updateUserFullInfo(user, userInfo);
 	}
 
 	@Override

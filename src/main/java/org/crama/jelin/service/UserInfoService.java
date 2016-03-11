@@ -12,7 +12,7 @@ public interface UserInfoService {
 
 	UserInfo getUserInfo(User user);
 
-	void updateUserInfo(UserInfo userInfo);
+	void updateUserInfo(User user, UserInfo userInfo);
 
 	void uploadAvatar(MultipartFile avatar, User user) throws FileNotFoundException, IOException;
 

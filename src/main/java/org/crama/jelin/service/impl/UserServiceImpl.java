@@ -269,6 +269,12 @@ public class UserServiceImpl implements UserService {
 		mailService.remindPassword(userModel, settings);
 		
 	}
+
+	@Override
+	public void updateUser(User user) {
+		userRepository.updateUser(user);
+		
+	}
 	
 	
 

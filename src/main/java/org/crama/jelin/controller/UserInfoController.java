@@ -56,8 +56,8 @@ public class UserInfoController {
 	@ResponseStatus(HttpStatus.OK)
     public void updateUserInfo(@RequestBody UserInfo userInfo) {
 		User user = userService.getPrincipal();
-		userInfo.setUser(user);
-    	userInfoService.updateUserInfo(userInfo);
+		
+    	userInfoService.updateUserInfo(user, userInfo);
 		
     }
 	

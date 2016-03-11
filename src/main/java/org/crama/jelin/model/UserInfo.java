@@ -142,6 +142,17 @@ public class UserInfo implements Serializable {
 			return false;
 		return true;
 	}
+
+	public void update(UserInfo userInfo) {
+		
+		this.age = userInfo.getAge();
+		this.avatar = userInfo.getAvatar();
+		this.firstName = userInfo.getFirstName();
+		this.gender = userInfo.getGender();
+		this.lastName = userInfo.getLastName();
+		this.locality = userInfo.getLocality();
+		
+	}
 	
 	
 }

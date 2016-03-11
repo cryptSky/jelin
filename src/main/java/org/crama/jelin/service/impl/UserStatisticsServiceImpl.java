@@ -36,31 +36,33 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
 	
 	@Autowired
 	private UserRepository userRepository;
-		
+	
 	@Override
 	public void updateDaysInGame(User user) {
 		
 		UserStatistics userStats = user.getUserStatistics();
 		UserActivity userActivity = user.getUserActivity();
 		Date lastEnterDate = userActivity.getLastLogin();
+		
 		if (lastEnterDate == null) {
 			userStats.setDaysInGame(1);
 		}
 		else {
 			LocalDateTime localEnterDate = DateConverter.toLocalDateTime(lastEnterDate);
 			LocalDateTime now = LocalDateTime.now();
-			long days = ChronoUnit.DAYS.between(now, localEnterDate);
+			long days = ChronoUnit.DAYS.between(localEnterDate, now);
+			
 			if (days == 1) {
 				userStats.setDaysInGame(userStats.getDaysInGame() + 1);
 			}
 			else if (days == 0) {
-				
 			}
 			else {
 				userStats.setDaysInGame(1);
 			}
 			
 		}
+		
 		user.setUserStatistics(userStats);
 				
 		userRepository.updateUser(user);		

@@ -29,7 +29,7 @@ public class UserStatistics implements Serializable, Comparable<UserStatistics> 
 	private User user;
 	
 	@Column(name = "DAYS_IN_GAME")
-	private int daysInGame = 0;
+	private int daysInGame;
 	
 	@Column(name = "POINTS")
 	private int points = 0;
