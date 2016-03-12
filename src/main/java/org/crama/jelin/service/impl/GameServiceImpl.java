@@ -454,7 +454,8 @@ public class GameServiceImpl implements GameService {
 		
 		if (game.allActiveHasReadiness(Readiness.SUMMARY))
 		{
-			finishGame(game);
+			userStatisticsService.saveGameSummaryStats(summary);
+			finishGame(game);			
 		}
 		
 		return summary;

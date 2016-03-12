@@ -341,7 +341,6 @@ public class GameController {
         List<ScoreSummary> summaries = new ArrayList<ScoreSummary>();
         if (game.getReadiness() == Readiness.SUMMARY) {
         	summaries = gameService.getScoreSummary(game, player);
-            userStatisticsService.saveGameSummaryStats(summaries);
         }
                 
         else if (game.getReadiness() == Readiness.RESULT) {
