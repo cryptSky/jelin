@@ -60,7 +60,8 @@ public class SocialUserServiceImpl implements SocialUserService {
 		
 		//check if access token is valid
 		if (!checkToken(socialUser)) {
-			return null;
+			throw new GameException(117, "Token is not valid");
+			
 		}
 		//check if user with given email exist
 		String providerId = socialUser.getProviderId();
@@ -193,6 +194,9 @@ public class SocialUserServiceImpl implements SocialUserService {
 				logger.debug("Facebook user verified!");
 				return true;
 			}
+			else {
+    			throw new GameException(117, "User is not verified. Check providerUserID");
+    		}
 			
 		}
 		
@@ -206,13 +210,18 @@ public class SocialUserServiceImpl implements SocialUserService {
 			logger.debug("VK user: " + responseStr);
 			JSONObject jsonResponse = new JSONObject(responseStr);
 			
-			
-			String vkUserId = jsonResponse.getString("id");
+			JSONArray responseArray = jsonResponse.getJSONArray("response");
+        	JSONObject userJSON = (JSONObject)responseArray.get(0);
+        	
+			String vkUserId = String.valueOf(userJSON.getLong("uid"));
 			logger.debug("VK user id: " + vkUserId);
 			if (socialUser.getProviderUserId().equals(vkUserId)) {
 				logger.debug("VK user verified!");
 				return true;
 			}
+			else {
+    			throw new GameException(117, "User is not verified. Check providerUserID");
+    		}
 			
 		}
 		else {
@@ -220,7 +229,6 @@ public class SocialUserServiceImpl implements SocialUserService {
 		}
 		
 		
-		return false;
 	}
 	
 	private boolean checkTwitter(SocialUser user) throws JSONException, GameException {
@@ -255,6 +263,9 @@ public class SocialUserServiceImpl implements SocialUserService {
     			logger.debug("Twitter user verified!");
     			return true;
     		}
+    		else {
+    			throw new GameException(117, "User is not verified. Check providerUserID");
+    		}
         }
         else {
         	
@@ -264,7 +275,7 @@ public class SocialUserServiceImpl implements SocialUserService {
     		
         }
         
-		return false;
+		
 	}
 	
 }

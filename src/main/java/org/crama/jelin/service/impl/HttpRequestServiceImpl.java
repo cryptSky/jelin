@@ -32,8 +32,8 @@ public class HttpRequestServiceImpl implements HttpRequestService {
 			
 			result = EntityUtils.toString(response.getEntity());
 			logger.info("Response from remote resource: " + result);
-			
-			if (statusCode != HttpStatus.OK_200) {
+			logger.info("" + statusCode);
+			if (statusCode != HttpStatus.OK_200 || result.contains("error")) {
 				throw new GameException(117, "Social service returned error. Check access token");
 			}
 			

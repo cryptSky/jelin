@@ -41,7 +41,7 @@ public class SocialUser implements Serializable {
 	@Column(name = "ACCESS_TOKEN", nullable = false)
 	private String accessToken;
 	
-	@Column(name = "SECRET", nullable = false)
+	@Column(name = "SECRET", nullable = true)
 	private String secret;
 	
 	@Column(name = "FIRST_NAME", nullable = false)
