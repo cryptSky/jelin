@@ -82,6 +82,10 @@ public class GameRepositoryImpl implements GameRepository {
 	public void cleanUpGame(Game game) {
 		try {
 			Session session = sessionFactory.getCurrentSession();
+			
+			game.setRound(null);
+			updateGame(game);
+			session.flush();
 		
 			List<Answer> answers = answerRepository.getAnswersByGame(game);
 			for (Answer ans: answers) {

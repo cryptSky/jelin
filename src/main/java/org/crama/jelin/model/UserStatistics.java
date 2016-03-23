@@ -63,6 +63,9 @@ public class UserStatistics implements Serializable, Comparable<UserStatistics> 
 	
 	@Column(name = "SMM_SHARES")
 	private int smmShares = 0;
+	
+	@Column(name = "EXPIRED_INVITES")
+	private int expiredInvites = 0;
 
 	public UserStatistics() {
 		super();
@@ -186,6 +189,14 @@ public class UserStatistics implements Serializable, Comparable<UserStatistics> 
 		this.smmShares = smmShares;
 	}
 
+
+	public int getExpiredInvites() {
+		return expiredInvites;
+	}
+
+	public void setExpiredInvites(int expiredInvites) {
+		this.expiredInvites = expiredInvites;
+	}
 
 	@Override
 	public int compareTo(UserStatistics o) {

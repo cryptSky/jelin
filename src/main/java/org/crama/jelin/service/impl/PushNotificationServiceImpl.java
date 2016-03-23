@@ -59,13 +59,19 @@ public class PushNotificationServiceImpl implements PushNotificationService {
 	{
 		logger.info("Sending push notification to user: " + user.getUsername() + " ...");
 		List<UserSession> sessions = userSessionService.getAllSessions(user);
-	    
-	    for (UserSession session: sessions)
+	    try 
 	    {
-	    	String message = messageBuilder(session.getLanguage(), notificationType, params);
-	    	sendMessage(message, session.getDeviceToken());
+	    	for (UserSession session: sessions)
+	    	{
+	    		String message = messageBuilder(session.getLanguage(), notificationType, params);
+	    		sendMessage(message, session.getDeviceToken());
+	    	}
 	    }
-	   
+	    catch(Exception e)
+	    {
+	    	e.printStackTrace();
+	    	logger.error(e.getMessage());
+	    }	   
 	}
 
 	private void sendMessage(String message, String deviceToken)

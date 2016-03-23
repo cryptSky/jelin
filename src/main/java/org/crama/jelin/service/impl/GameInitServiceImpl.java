@@ -209,8 +209,11 @@ public class GameInitServiceImpl implements GameInitService {
 			 			 			 
 			 gameInitRepository.clearSession();
 			 updatedGame = getCreatedGame(creator);
-			
-			 long missedGames = gameInitRepository.getExpiredInvites(opponent); 
+			 
+			 		
+			 int missedGames = opponent.getUserStatistics().getExpiredInvites() + 1; 
+			 opponent.getUserStatistics().setExpiredInvites(missedGames);
+			 			 
 			 pushNotificationService.sendNotificationMessage(opponent, NotificationType.MISSED_GAMES, missedGames);
 						 
 			 for (GameOpponent o: updatedGame.getGameInvitationOpponents()) {
