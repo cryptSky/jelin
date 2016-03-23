@@ -92,7 +92,7 @@ public class User implements Serializable {
 	private Date lastGameTime;
 		
 	@JsonIgnore
-	@OneToMany(cascade=CascadeType.REFRESH, fetch = FetchType.LAZY, mappedBy = "user") 
+	@OneToMany(cascade=CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "user") 
 	private List<UserEnhancer> enhancerList = new ArrayList<UserEnhancer>();
 	
 	@JsonIgnore

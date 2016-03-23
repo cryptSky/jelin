@@ -1,16 +1,18 @@
 package org.crama.jelin.repository.impl;
 
 import java.util.List;
+import java.util.Set;
 
 import org.crama.jelin.model.Answer;
 import org.crama.jelin.model.Constants.Readiness;
+import org.crama.jelin.model.Constants.UserType;
 import org.crama.jelin.model.Game;
+import org.crama.jelin.model.GameOpponent;
 import org.crama.jelin.model.QuestionResult;
 import org.crama.jelin.model.ScoreSummary;
 import org.crama.jelin.model.User;
 import org.crama.jelin.repository.AnswerRepository;
 import org.crama.jelin.repository.GameRepository;
-import org.crama.jelin.repository.GameRoundRepository;
 import org.crama.jelin.repository.QuestionResultRepository;
 import org.crama.jelin.repository.ScoreSummaryRepository;
 import org.crama.jelin.repository.UserRepository;
@@ -99,10 +101,14 @@ public class GameRepositoryImpl implements GameRepository {
 				session.delete(summary);
 			}
 			
-			List<User> bots = userRepository.getAllBots();
-			for (User bot: bots) {
-				session.delete(bot);
+			Set<GameOpponent> gameOpponents = game.getGameOpponents();
+			for (GameOpponent go: gameOpponents) {
+				User u = go.getUser();
+				if (u.getType().equals(UserType.BOT)) {
+					session.delete(u);
+				}
 			}
+			
 			
 			logger.debug("DELETE GAME!!");
 			session.delete(game);
