@@ -133,7 +133,8 @@ public class OpponentSearchServiceImpl implements OpponentSearchService {
 			
 			Collections.sort(users, new Comparator<User>(){
 				   public int compare(User u1, User u2){
-				      return u1.getLastGameTime().compareTo(u2.getLastGameTime());
+				      return u1.getUserActivity().getLastGame().compareTo(
+				    		  u2.getUserActivity().getLastGame());
 				   }
 				});
 			

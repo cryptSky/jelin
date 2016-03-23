@@ -52,6 +52,8 @@ public class UserActivity implements Serializable {
 
 	public UserActivity(User u) {
 		this.user = u;
+		this.lastGame = new Date();
+		
 	}
 
 	public int getId() {
