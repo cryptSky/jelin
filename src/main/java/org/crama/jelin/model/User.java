@@ -87,11 +87,6 @@ public class User implements Serializable {
 	private Character choosenCharacter;
 	
 	@JsonIgnore
-	@Column(name = "LAST_GAME_TIME", columnDefinition="DATETIME")
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date lastGameTime;
-		
-	@JsonIgnore
 	@OneToMany(cascade=CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "user") 
 	private List<UserEnhancer> enhancerList = new ArrayList<UserEnhancer>();
 	
@@ -256,14 +251,6 @@ public class User implements Serializable {
 		this.type = type;
 	}
 
-	public Date getLastGameTime() {
-		return lastGameTime;
-	}
-
-	public void setLastGameTime(Date lastGameTime) {
-		this.lastGameTime = lastGameTime;
-	}
-	
 	public List<UserEnhancer> getEnhancerList() {
 		return enhancerList;
 	}
